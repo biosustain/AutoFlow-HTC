@@ -13,11 +13,11 @@ OD_handler is a Python library for dealing with optical density (OD) measurement
 Installation
 ==============
 
-- Windows users 
+**- Windows users** 
 
 
 
--  Mac users
+**-  Mac users**
 Use the package manager ``pip`` to install OD_handler from ``GitHub``
 
 pip installation :
@@ -37,7 +37,7 @@ Usage
 
 OD_handler can be used from the command-line or as a Python library.
 
-- Command line usage :
+**- Command line usage :**
 
 ``OD_handler <calc.tsv>``
 
@@ -51,7 +51,7 @@ BS1.A2	    False    True     ...        1
 ...   	    ...      ...      ...        2
 ========== ======== ======== ========== =======
 
-- Plotting options :
+**- Plotting options :**
 
 The plots can be customized by selecting how to group the samples combine them on a single plot. By default, the generated plot will contain all the samples in one plot. Although, the samples can be grouped by the Strain_ID or by the group. The plots can also be generated separately. The commands for the different options are shown below :
 Default :

@@ -31,7 +31,8 @@ OD_handler installation :
 
 ```
 
-## Usage : From the terminal console
+Usage : From the terminal console
+==================================
 
 ``OD_handler <calc.tsv>``
 
@@ -49,10 +50,12 @@ BS1.A2	   0.14     0.06      ...
 
 
 
-## Contributing
+Contributing
+=============
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
-## License
-IT`  `M``
+License
+=========
+``MIT

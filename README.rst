@@ -55,11 +55,14 @@ BS1.A2	    False    True     ...        1
 
 The plots can be customized by selecting how to group the samples combine them on a single plot. By default, the generated plot will contain all the samples in one plot. Although, the samples can be grouped by the Strain_ID or by the group. The plots can also be generated separately. The commands for the different options are shown below :
 Default :
-`ÒD_handler <calc.tsv>``
+``OD_handler <calc.tsv>``
+
 Plot by strain :
 ``OD_handler <calc.tsv>  by_strain``
-Plot by grouo :
+
+Plot by group :
 ``OD_handler <calc.tsv>  by_group``
+
 Plot individually :
 ``OD_handler <calc.tsv>  individual``
 

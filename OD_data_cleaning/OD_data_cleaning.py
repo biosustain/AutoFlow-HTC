@@ -13,6 +13,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 from croissance.estimation.util import with_overhangs
 from croissance.estimation import regression
+from pandas import Series
+
 
 
 
@@ -48,7 +50,7 @@ def sample_outcome(sample_file, df_raw) :
 	df_gr = df_raw[df_raw.Sample_ID.isin(gr_samples)]
 	df_gr = df_gr.loc[df_gr["Measurement_type"] == "OD600"]
 	df_vl = df_raw[df_raw.Sample_ID.isin(vol_loss_samples)]
-	
+	df_vl = df_vl.loc[df_vl["Measurement_type"] == "OD450"]
 	return df_gr, df_vl
 
 
@@ -84,6 +86,7 @@ def vol_correlation(df_gr, df_vl):
 	df_vl = df_vl.loc[df_vl["Measurement_type"] == "OD450"]
 	unique_IDs_vl = df_vl["Sample_ID"].unique()
 	df_vl["bioshaker"] = df_vl["Sample_ID"].str[0:3]
+	df_gr["bioshaker"] = df_gr["Sample_ID"].str[0:3]
 	unique_bioshaker = df_vl["bioshaker"].unique()
 	cor_df = pd.DataFrame()
 
@@ -92,34 +95,43 @@ def vol_correlation(df_gr, df_vl):
 		df_vl_ID = df_vl.loc[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
 		init_val = float((df_vl_ID["Measurement"].tolist()[0]))
 		df_vl_ID["Correlation"] = df_vl_ID["Measurement"]/init_val
-		''' # This is done because I spotted something in the data and wanted to get rid of some noisy obs
-		if df_vl_ID["Correlation"].max() < 5 :
-			df_vl_ID = pd.DataFrame()
-		
-		else : 
-			cor_df = cor_df.append(df_vl_ID)
-			df_vl_ID = pd.DataFrame()
-		'''
 		cor_df = cor_df.append(df_vl_ID)
 		df_vl_ID = pd.DataFrame()
 	cor_df = gr_time_format(cor_df)
 	#plt.scatter(cor_df["time_hours"],cor_df["Correlation"])
-	return cor_df
+	return cor_df, df_gr
 
-def compensation_lm(cor_df) :
+def compensation_lm(cor_df, df_gr) :
+	''' Given the correlation between volume and time, a linear model is built and plotted, the correction is applied to the growth measurements using the linear model'''
+	#For every bioshaker a linear model is created
 	unique_bioshaker = cor_df["bioshaker"].unique()
 	linear = lambda x, a, b: a * x + b
-	fig, axes = plt.subplots(nrows=2, ncols=2)
+	fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(10,10))
 	fig.subplots_adjust(hspace=0.4, wspace=0.4)
 	fig.suptitle('Linear models of volume loss correlation to time for different plates')
+	lm_eq = []
+	
+	#Iterate through unique shakers and compute linear model and plot
 	for shaker in range(len(unique_bioshaker)) :
 		sub_cor_df = cor_df[cor_df["bioshaker"]== unique_bioshaker[shaker]]
 		popt, pcov = curve_fit(linear, sub_cor_df ["time_hours"], sub_cor_df["Correlation"], p0=[1, 1])
+		lm_eq.append(popt)
 		ax = fig.add_subplot(2, 2, shaker+1)
-		ax.plot(sub_cor_df["time_hours"], sub_cor_df["Correlation"], "rx")
+		ax.plot(sub_cor_df["time_hours"], sub_cor_df["Correlation"], "o")
+		ax.get_xaxis().set_visible(False)
+		ax.get_yaxis().set_visible(False)
 		ax.plot(sub_cor_df["time_hours"], linear(sub_cor_df ["time_hours"], *popt), "b-")
+		ax.set_title(unique_bioshaker[shaker])
 	
-	return plt.show()
+	#Use the linear models to correct the volume loss by bioshaker
+	df_gr_comp = pd.DataFrame()
+	df_gr_comp_out = pd.DataFrame()
+	for pos in range(len(lm_eq)) :
+		df_gr_comp = df_gr[df_gr["bioshaker"] ==  unique_bioshaker[pos]]
+		df_gr_comp["Correlation"] = lm_eq[pos][0]*df_gr_comp["time_hours"]+lm_eq[pos][1]
+		df_gr_comp["Corrected_Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"]
+		df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
+	return fig, df_gr_comp_out
 
 
 
@@ -127,7 +139,9 @@ def compensation_lm(cor_df) :
 
 def reshape_gr(df_gr) :
 	''' Collects the times belonging to every sample and creates a time column relative the sample, returns the modified dataframe '''
-
+	cols = ["Sample_ID", "Measurement", "Corrected_Measurement", "time_hours"]	#relevant variables
+	df_gr = df_gr[cols]
+	
 	#Get unique ID and times
 	unique_IDs = df_gr["Sample_ID"].unique()
 	unique_times = df_gr["time_hours"].unique()
@@ -137,44 +151,49 @@ def reshape_gr(df_gr) :
 	#An ID column is created for the measurement of every sample and another column timeID is created to relate it to the times
 	for i in range(len(unique_IDs)) :
 		m_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
-		column1 = pd.DataFrame({unique_IDs[i] : m_list})
+		column1 = pd.DataFrame({"Raw_"+unique_IDs[i] : m_list})
+		n_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "Corrected_Measurement"].tolist()
+		column2 = pd.DataFrame({"Corrected_"+unique_IDs[i] : n_list})
 		t_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "time_hours"].tolist()
-		column2 = pd.DataFrame({"time"+unique_IDs[i] : t_list})
+		column3 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
 		df_gr_final = pd.concat([df_gr_final,column1], ignore_index=False, axis=1)
 		df_gr_final = pd.concat([df_gr_final,column2], ignore_index=False, axis=1)
+		df_gr_final = pd.concat([df_gr_final,column3], ignore_index=False, axis=1)
+	
 	return df_gr_final
 
 
-# --- AUTOMATED PLOT GENERATION FOR EVERY SAMPLE
+# --- AUTOMATED GROWTH ESTIMATION FOR EVERY SAMPLE
 
 #Attempt to do a linear model
 def func(x, a, b, c):
 	return a * np.exp(b * x) + c
 
-def gr_plots(df_gr_final) :
-	''' removes outliers for every sample and outputs a growth curve plot for a given sample ID'''
+def gr_estimation(df_gr_final) :
+	''' removes outliers for every sample and outputs growth rate estimates for every given sample ID'''
 	
 	#OPTION 1 : USE CROISSANCE
 	#croissance series input format 
-	#The idea is to produce the gr plots in a for loop interating through the datafrane every 2 cols
 	#To start with we try it with one column
-	my_series = pd.Series(data = (df_gr_final["BS1_A1"]).tolist(), index=(df_gr_final["timeBS1_A1"]).tolist())
-	#gr_estimation = process_curve(my_series)  #This gives an error 
-	#OPTION 2 :  USE CROISSANCE TO REMOVE OUTLIERS AND THEN PLOT THE SMOOTH CURVE WITH INTERPOLATION 
-	'''
-	clean_series = remove_outliers(my_series)[0]	#Extract series withoyt outliers
-	df = pd.DataFrame({"time":clean_series.index, "BS1_A1":clean_series.values})
-	x_new = np.linspace(df["time"].min(),df["time"].max(),500)
-	a_BSpline = interpolate.make_interp_spline(df["time"], df["BS1_A1"])
-	y_new = a_BSpline(x_new)
-	sd_pos = y_new+np.std(df["BS1_A1"])
-	sd_neg = y_new-np.std(df["BS1_A1"])
-	plt.plot(x_new,y_new)
-	fig = plt.scatter(df["time"],df["BS1_A1"],5, facecolor=(.18, .31, .31))
-	plt.fill_between(x_new, sd_pos, sd_neg, facecolor="red", color="dodgerblue", alpha=0.3)
-	plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
-	plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
-	plt.title("Growth rate curve for sample BS1_A1", fontname="Arial", fontsize=12)
-	'''
-	return my_series
+	df_gr_est = df_gr_final.loc[:,~df_gr_final.columns.str.startswith('Raw')]
+	df_gr_est = df_gr_est.loc[:,~df_gr_est.columns.str.startswith('time')]
+	colnames = []
+	colnames = (df_gr_est.columns.values)
+	estimations = []
+	errors = []
+	for col in range(len(colnames)):
+		my_series = pd.Series(data = (df_gr_final[colnames[col]]).tolist(), index= df_gr_final[colnames[col].replace("Corrected","time")].tolist())
+		# Estimation for every sample
+		try :
+			gr_estimation = process_curve(my_series)
+			estimations.append(colnames[col])
+			estimations.append(gr_estimation)
+		except :
+			errors.append(colnames[col])
+			errors.append(remove_outliers(my_series)[0])
+
+	return estimations , errors
+	
+
+
 

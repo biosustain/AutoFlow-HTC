@@ -43,8 +43,11 @@ OD_handler can be used from the command-line by executing it in the directory wh
 - Options :
 
 ``od_handler --estimations``     outputs estimations for every sample in a text file.
+
 ``od_handler --figures``         outputs the growth curves are shown together in the same plot based on their species.
+
 ``od_handler --summary``         outputs the estimations for every species and bioshaker.
+
 ``od_handler --individual``      outputs the growth curve for every sample individually.
 
 When used with the command line the user must execute the programme in the data directory. The default outputs the estimations, the figures and the statistics summary.

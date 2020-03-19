@@ -71,7 +71,7 @@ BS1.A2	    False    True     ...
 The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately.
 
 
-The different options can be consulted by typing : ``OD_handler --figure_options``
+The different options can be consulted by typing : ``OD_handler --help``
 
 Contributing
 =============

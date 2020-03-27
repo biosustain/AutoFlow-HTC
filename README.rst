@@ -5,27 +5,15 @@ OD_handler
 Description
 ============
 
-OD_handler is a Python library for dealing with optical density (OD) measurements related to time from TECAN. The tool creates growth rate plots, estimates the phases of each sample as well as a statistics summary of the exponential growth pase by species.
+OD_handler is a Python package for analysing optical density (OD) measurements taken from the Tecan Nano plate reader. The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file. This is done by using the autflow_parser package. This package estimates the growth phases using the croissance library on the parsed data by using the croissance package. Subsequently, growth rate plots are computed and summary statistics are also computed.
 
 
-The OD_handler first parses the xlsx files corresponding to every OD measurement using the autoflow_parser. Then, the resulting merged xlsx file is read as a dataframe and everysample is labelled according to its purpose and species; some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The resulting plots and estimations are corrected according to the volume loss estimation and are free of outliers. They are subsequently plotted, the phases are estimated and statistics are computed.
+The OD_handler first parses the xlsx files corresponding to every OD measurement using the autoflow_parser. Then, the resulting merged xlsx file is read as a dataframe and everysample is labelled according to its purpose and species; some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The resulting plots and estimations are corrected according to the volume loss estimation and are free of outliers. They are subsequently plotted, the phases are estimated and statistics are computed using the croissance library.
 
 Installation
 ==============
 
-**- Windows users** 
-
-
-
-**-  Mac users**
-Use the package manager ``pip`` to install OD_handler from ``GitHub``
-
-pip installation :
-
-``get-pip.py``
-
-
-OD_handler installation :
+**- Installation from GitHub using pip :**
 
 ``pip install git+https://github.com/felixpacheco/AutoFlow-HTC``
 

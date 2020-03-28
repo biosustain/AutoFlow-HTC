@@ -434,7 +434,7 @@ def gr_plots(df, sample, color_ = None, ind = False) :
 	fig 		-- object containing the figure
 	plt.savefig -- saving the figure as a png file
 	'''
-	
+	#Create plots individually
 	if ind == True :
 		x_new = np.linspace(df["time"].min(),df["time"].max(),500)
 		a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
@@ -447,6 +447,7 @@ def gr_plots(df, sample, color_ = None, ind = False) :
 		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
 		return fig, plt.savefig(sample+"_GR_curve.png")
 
+	#Create plots by species
 	elif ind == False :
 
 		x_new = np.linspace(df["time"].min(),df["time"].max(),500)

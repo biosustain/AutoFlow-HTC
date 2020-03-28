@@ -5,10 +5,8 @@ OD_handler
 Description
 ============
 
-OD_handler is a Python package for analysing optical density (OD) measurements taken from the Tecan Nano plate reader. The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file. This is done by using the autflow_parser package. This package estimates the growth phases using the croissance library on the parsed data by using the croissance package. Subsequently, growth rate plots are computed and summary statistics are also computed.
+OD_handler is a Python package for analysing optical density (OD) measurements taken from the Tecan Nano plate reader. The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file. The merged file is read as a dataframe and every sample is labelled according to the calc.tsv file that should be provided by the user. The labelling is used since some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The next step concerns the outlier detection and growth phase estimation, which are done by using the croissance package. Subsequently, growth rate plots and summary statistics are also computed.
 
-
-The OD_handler first parses the xlsx files corresponding to every OD measurement using the autoflow_parser. Then, the resulting merged xlsx file is read as a dataframe and every sample is labelled according to its purpose and species; some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The resulting plots and estimations are corrected according to the volume loss estimation and are free of outliers. They are subsequently plotted, the phases are estimated and statistics are computed using the croissance library.
 
 Installation
 ==============
@@ -17,7 +15,6 @@ Installation
 
 ``pip install git+https://github.com/felixpacheco/AutoFlow-HTC``
 
-```
 
 Usage 
 ======
@@ -59,10 +56,10 @@ BS1.A2	    False    True     ...
 
 **- Plotting options :**
 
-The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately.
+The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately and split by bioshaker.
 
 
-The different options can be consulted by typing : ``OD_handler --help``
+The different options can be consulted by typing : ``OD_handler --help`` or ``OD_handler -h``
 
 Contributing
 =============

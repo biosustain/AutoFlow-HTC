@@ -46,34 +46,23 @@ In order to run the program the user has to execute it where the data is. The in
 
 Furthermore, to classify the samples, a file where the purpose of each sample figures is needed. This file must be a tab-separated file (*.tsv) with the following format :
 
-+------------+------------+-----------+
-| Sample_ID   | gr_calc   | vl_calc  |
-+============+============+===========+
-| body row 1 | column 2   | column 3  |
-+------------+------------+-----------+
-| body row 2 | Cells may span columns.|
-+------------+------------+-----------+
-| body row 3 | Cells may  | - Cells   |
-+------------+ span rows. | - contain |
-| body row 4 |            | - blocks. |
-+------------+------------+-----------+
 
-===== ===== ===== =====
-time  A1    A2    ...
-===== ===== ===== =====
+========= ===== ===== =====
+Sample_ID  A1    A2    ...
+========= ===== ===== =====
 0.0   0.0   0.01  ...
 0.17  0.14  0.06  ...
 ...   ...   ...   ...
 ===== ===== ===== =====
 
 
-========== ======== ======== ========== 
-Sample_ID  gr_calc  vl_calc  Species   
-========== ======== ======== ==========
-BS1.A1     True   	False    ...       
-BS1.A2	   False    True     ...       
-...   	   ...      ...      ...       
-========== ======== ======== ==========
+========== ========== ========== ========== 
+Sample_ID  gr_calc    vl_calc    Species   
+========== ========== ========== ==========
+BS1.A1     True   	  False      ...       
+BS1.A2	   False      True       ...       
+...   	   ...        ...        ...       
+========== ========== ========== ==========
 
 
 **- Plotting options :**

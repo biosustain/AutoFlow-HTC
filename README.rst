@@ -54,7 +54,7 @@ BS1.A2	   FALSE      TRUE       ...        TRUE
 ...   	   ...        ...        ...        TRUE
 ========== ========== ========== ========== ==========
 
-
+It is important that the headers of every column must be written as it can be seen in the table. Concerning the Sample_ID, the bioshaker must appear at the beggining of the string.
 **- Plotting options :**
 
 The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately and split by bioshaker.

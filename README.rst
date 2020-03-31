@@ -40,7 +40,8 @@ OD_handler can be used from the command-line by executing it in the directory wh
 
 When used with the command line the user must execute the program in the data directory. The default outputs the estimations, the figures and the statistics summary.
 
-**- Command line usage :**
+Required input 
+==============
 
 In order to run the program the user has to execute it where the data is. The inputs to the program correspond to the ones required for the autoflow_parser (log file, xlsx file, etc). 
 

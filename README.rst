@@ -14,6 +14,8 @@ Installation
 **- Installation from GitHub using pip :**
 
 ``pip install git+https://github.com/felixpacheco/AutoFlow-HTC``
+``pip install -i https://test.pypi.org/simple/ tecan-od-analyzer
+``pip 
 
 
 Usage 

@@ -21,8 +21,12 @@ import sys
 from scipy import interpolate
 import math
 import argparse
+from matplotlib.legend_handler import HandlerLine2D
+import seaborn as sns
 
-__version__ = "0.0.5"
+
+
+__version__ = "0.0.8"
 
 
 
@@ -40,54 +44,56 @@ def argument_parser(argv_list=None):
 	#Initialize the argument parser
 	parser = argparse.ArgumentParser()
 
-	#Adding
+	
+	#Adding general arguments
+	
 	parser.add_argument("-e", "--estimations", help="Get only the estimations for every sample", action = "store_true")
 	parser.add_argument("-f", "--figures", help="Get only the growth curve figures", action = "store_true")
 	parser.add_argument("-s", "--summary", help="Get only the summary of growth rate estimations",action = "store_true")
-	parser.add_argument("-b", "--bioshaker", help="Get one growth rates figures for every individual bioshaker", action = "store_true")
-	parser.add_argument("-i", "--individual", help="Get one growth rates figures for every individual sample", action = "store_true")
+	
+
+	#Visualization arguments
+	
+	parser.add_argument("-b", "--bioshaker", help="Get one growth rate figure for every individual bioshaker", action = "store_true")
+	parser.add_argument("-i", "--individual", help="Get one growth rate figure for every individual sample", action = "store_true")
+	parser.add_argument("-bc", "--bioshakercolor", help="Get one growth rate figure for every species colored by bioshaker", action = "store_true")
+
+
+	#Volume loss related arguments
+	
+	parser.add_argument("-v", "--volumeloss", help="Get one growth rate figure for every individual sample without volume loss compesation", action = "store_false")
 	parser.parse_args()
 	args = parser.parse_args(argv_list[1:])
 
 	#Create flags 
 
-	if args.estimations == False and args.figures == False and args.individual == False and  args.summary == False and args.bioshaker == False:
-		
-		flag_all = True
-		flag_est = False
-		flag_sum = False
-		flag_fig = False
-		flag_ind = False
-		flag_bioshaker = False
 
-	elif args.estimations == False and args.figures == False and args.individual == True and  args.summary == False :
+	if args.estimations == False and args.figures == False and  args.summary == False :
 
 		flag_all = True
 		flag_est = False
 		flag_sum = False
 		flag_fig = False
-		flag_ind = True
-		flag_bioshaker = False
+		flag_ind = args.individual
+		flag_bioshakercolor = args.bioshakercolor
+		flag_volume_loss = args.volumeloss
+		flag_bioshaker = args.bioshaker
 
-	elif args.estimations == False and args.figures == False and args.individual == False and  args.summary == False and args.bioshaker == True:
-
-		flag_all = True
-		flag_est = False
-		flag_sum = False
-		flag_fig = False
-		flag_ind = False
-		flag_bioshaker = True
 	
-	else :
+	elif args.estimations == True or args.figures == True or args.summary == True :
 
 		flag_all = False
 		flag_est = args.estimations
 		flag_sum = args.summary
 		flag_fig = args.figures
 		flag_ind = args.individual
+		flag_bioshakercolor = args.bioshakercolor
+		flag_volume_loss = args.volumeloss
 		flag_bioshaker = args.bioshaker
 
-	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshaker
+
+
+	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker
 
 
 
@@ -187,20 +193,53 @@ def time_formater(df) :
 
 		#Subset initial dataframe by bioshaker
 		df_temp = df.loc[df["bioshaker"] == bioshaker]
+		unique_date = df["Sampling_date"].unique()
+		
+		#The counter will indicate if the date corresponds to the first day
+		counter = 0
 
-		#Merge date and time variable to datetime format
-		df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
-		df_temp = df_temp.drop(columns=["Sampling_date", "Sampling_time"])
-		df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
+		for date in unique_date :
 
-		#Substracting the time of the first obs to all obs
-		df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
-		df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
+			if counter == 0 :
+				#Subset dataframe by date
+				df_temp = df.loc[df["Sampling_date"] == date]
 
-		#Append dataframes together
-		df_out = df_out.append(df_temp)
+				#Merge date and time variable to datetime format
+				df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
+				df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
 
-	#Removal of date_time temporary variable
+				#Substracting the time of the first obs to all obs
+				df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
+				df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
+
+				#Append dataframes together
+				df_out = df_out.append(df_temp)
+			
+			else :		#When it is not the same date, we do exactly the same but at the end we add the time of the last observation of the previous day
+
+				#Subset dataframe by date
+				df_temp = df.loc[df["Sampling_date"] == date]
+
+				#Merge date and time variable to datetime format
+				df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
+				df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
+
+				#Substracting the time of the first obs to all obs
+				df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
+				df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
+				
+				#We add the time of the last observation of the previous day
+				df_temp["time_hours"] +=  df_out['time_hours'].iloc[-1]
+
+				#Append dataframes together
+				df_out = df_out.append(df_temp)
+			
+			counter += 1
+		
+
+	#Removal of temporary variables
+	df_out = df_out.drop_duplicates()
+	df_out = df_out.drop(columns=["Sampling_date", "Sampling_time"])
 	df_out = df_out.drop(columns=["date_time"])
 	
 	return df_out
@@ -252,22 +291,33 @@ def compensation_lm(cor_df, df_gr) : #done
 	#For every bioshaker a linear model is created
 	unique_bioshaker = cor_df["bioshaker"].unique()
 	linear = lambda x, a, b: a * x + b
-	fig, axes = plt.subplots(nrows=math.ceil(len(unique_bioshaker)), ncols=math.ceil(len(unique_bioshaker)/2))
-	fig.subplots_adjust(hspace=0.4, wspace=0.4)
-	fig.suptitle('Linear models of volume loss correlation to time for different plates')
+	sns.set(style="white", palette="muted", color_codes=True)
+	fig = plt.figure()
+	fig.suptitle('Linear models of volume loss correlation to time for different plates', fontweight="bold")
+	#sns.despine(left=True)
 	lm_eq = []
+
 	
 	#Iterate through unique shakers and compute linear model and plot
 	for shaker in range(len(unique_bioshaker)) :
+
 		sub_cor_df = cor_df[cor_df["bioshaker"]== unique_bioshaker[shaker]]
 		popt, pcov = curve_fit(linear, sub_cor_df["time_hours"], sub_cor_df["Correlation"], p0=[1, 1])
 		lm_eq.append(popt)
+		
 		ax = fig.add_subplot(math.ceil(len(unique_bioshaker)), math.ceil(len(unique_bioshaker)/2), shaker+1)
-		ax.plot(sub_cor_df["time_hours"], sub_cor_df["Correlation"], "o")
-		ax.get_xaxis().set_visible(False)
-		ax.get_yaxis().set_visible(False)
-		ax.plot(sub_cor_df["time_hours"], linear(sub_cor_df ["time_hours"], *popt), "b-")
-		ax.set_title(unique_bioshaker[shaker])
+		#ax.get_xaxis().set_visible(True)
+		#ax.get_yaxis().set_visible(True)
+		ax.plot(sub_cor_df["time_hours"], sub_cor_df["Correlation"], "o", label="Empirical data", markerfacecolor='skyblue', markeredgecolor="dodgerblue", alpha= 0.5)
+		ax.plot(sub_cor_df["time_hours"], linear(sub_cor_df ["time_hours"], *popt), "b-", label="Linear model", color = "darkred")
+		ax.set_ylabel('Volume loss correlation', labelpad=10)
+		ax.set_xlabel('Time (h)', labelpad=10)
+		ax.set_title("\n"+unique_bioshaker[shaker])
+		plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+		plt.tight_layout()
+
+
+		
 	
 	#Use the linear models to correct the volume loss by bioshaker
 	df_gr_comp = pd.DataFrame()
@@ -275,7 +325,7 @@ def compensation_lm(cor_df, df_gr) : #done
 	for pos in range(len(lm_eq)) :
 		df_gr_comp = df_gr[df_gr["bioshaker"] ==  unique_bioshaker[pos]]
 		df_gr_comp["Correlation"] = lm_eq[pos][0]*df_gr_comp["time_hours"]+lm_eq[pos][1]
-		df_gr_comp["Corrected_Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"]
+		df_gr_comp["Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"]
 		df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
 	return fig, df_gr_comp_out
 
@@ -285,21 +335,23 @@ def compensation_lm(cor_df, df_gr) : #done
 # ------ RESHAPE GROWTH RATE DATAFRAME FOR CROISSANCE INPUT ------
 
 
-def reshape_dataframe(df_gr, flag = False) :
+def reshape_dataframe(df_gr, flag_species = False, flag_bioshaker = False) :
 	''' Collects the times belonging to every sample and creates a time column relative to a specific sample, returns the modified dataframe.
 	Keyword arguments:
     df_gr 	-- dataframe containing growth rate measurements and differential time in hours.
-	flag  	-- flag that corresponds to the presence of more than one species (True), False if only one species
+	species_flag  	-- flag that corresponds to the presence of more than one species (True), False if only one species
 	Returned variables:
-	if flag is False 
+	if species_flag is False 
 	df_gr -- dataframe with differential time measurements in hours displayed horizontally (one column containing the time measurements and one column contaning the OD measurements PER SAMPLE).
 
 	if flag is True :
 	df_gr_final 	 --  dataframe with differential time measurements in hours displayed horizontally (one column containing the time measurements and one column contaning the OD measurements PER SAMPLE).
 	df_gr_final_list -- list of dataframes originated from df_gr_final and split by common sample species
 	'''
+
+
 	df_gr_temp = df_gr
-	cols = ["Sample_ID", "Measurement", "Corrected_Measurement", "time_hours"]	#relevant variables
+	cols = ["Sample_ID", "Measurement", "time_hours"]	#relevant variables
 	df_gr = df_gr[cols]
 	
 	#Get unique ID and times
@@ -311,60 +363,74 @@ def reshape_dataframe(df_gr, flag = False) :
 	#An ID column is created for the measurement of every sample and another column timeID is created to relate it to the times
 	
 	for i in range(len(unique_IDs)) :
-		m_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
-		column1 = pd.DataFrame({"Raw_"+unique_IDs[i] : m_list})
-		n_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "Corrected_Measurement"].tolist()
-		column2 = pd.DataFrame({"Corrected_"+unique_IDs[i] : n_list})
+
+		n_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
+		column1 = pd.DataFrame({unique_IDs[i] : n_list})
 		t_list = df_gr.loc[df_gr["Sample_ID"] == unique_IDs[i], "time_hours"].tolist()
-		column3 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
+		column2 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
 		df_gr_final = pd.concat([df_gr_final,column1], ignore_index=False, axis=1)
 		df_gr_final = pd.concat([df_gr_final,column2], ignore_index=False, axis=1)
-		df_gr_final = pd.concat([df_gr_final,column3], ignore_index=False, axis=1)
 
-	if flag == False :
+	if flag_species == False :
 
 		return df_gr_final
-	
-	df_gr_temp["Sample_ID"] = df_gr_temp["Sample_ID"]+"_"+df_gr_temp["Species"]
-	unique_species = df_gr_temp["Species"].unique()
-	cols = ["Sample_ID", "Measurement", "Corrected_Measurement", "time_hours", "Species"]	#relevant variables
-	df_gr = df_gr_temp[cols]
-
-	list_df_species = []
-	df_gr_final_list = []
-
-	for pos in range(len(unique_species)) :
-
-		df_temp = df_gr[df_gr.Species.str.contains(unique_species[pos])]
-		df_temp = df_temp.drop(columns=["Species"])
-		list_df_species.append(df_temp)
-	
-	for df in list_df_species :
-
-		unique_IDs = df["Sample_ID"].unique()
-		unique_times = df["time_hours"].unique()
-		df_fin = pd.DataFrame()
-		#Initialize new dataframe
-		#An ID column is created for the measurement of every sample and another column timeID is created to relate it to the times
-		
-		for i in range(len(unique_IDs)) :
-
-			m_list = df.loc[df["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
-			column1 = pd.DataFrame({"Raw_"+unique_IDs[i] : m_list})
-			n_list = df.loc[df["Sample_ID"] == unique_IDs[i], "Corrected_Measurement"].tolist()
-			column2 = pd.DataFrame({"Corrected_"+unique_IDs[i] : n_list})
-			t_list = df.loc[df["Sample_ID"] == unique_IDs[i], "time_hours"].tolist()
-			column3 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
-			df_fin = pd.concat([df_fin,column1], ignore_index=False, axis=1)
-			df_fin = pd.concat([df_fin,column2], ignore_index=False, axis=1)
-			df_fin = pd.concat([df_fin,column3], ignore_index=False, axis=1)
-			column1 = pd.DataFrame()
-			column2 = pd.DataFrame()
-			column3 = pd.DataFrame()
-
-		df_gr_final_list.append(df_fin)
 
 	else :
+	
+		df_gr_temp["Sample_ID"] = df_gr_temp["Sample_ID"]+"_"+df_gr_temp["Species"]
+		unique_species = df_gr_temp["Species"].unique()
+		unique_bioshaker = (df_gr_temp["Sample_ID"].str[0:3]).unique()
+		cols = ["Sample_ID", "Measurement", "time_hours", "Species"]	#relevant variables
+		df_gr = df_gr_temp[cols]
+
+		list_df_species = []
+		df_gr_final_list = []
+
+		if flag_bioshaker == True :
+
+			for pos1 in range(len(unique_species)) :
+
+				df_temp = pd.DataFrame()
+
+				for pos2 in range(len(unique_bioshaker)) :
+
+					df_temp = df_gr[df_gr.Species.str.contains(unique_species[pos1])]
+					df_temp = df_temp[df_temp.Sample_ID.str.contains(unique_bioshaker[pos2])]
+					df_temp = df_temp.drop(columns=["Species"])
+
+					list_df_species.append(df_temp)
+
+		elif flag_bioshaker == False :
+
+
+			for pos in range(len(unique_species)) :
+
+				df_temp = pd.DataFrame()
+				df_temp = df_gr[df_gr.Species.str.contains(unique_species[pos])]
+				df_temp = df_temp.drop(columns=["Species"])
+
+				list_df_species.append(df_temp)
+		
+		for df in list_df_species :
+
+			unique_IDs = df["Sample_ID"].unique()
+			unique_times = df["time_hours"].unique()
+			df_fin = pd.DataFrame()
+			#Initialize new dataframe
+			#An ID column is created for the measurement of every sample and another column timeID is created to relate it to the times
+			
+			for i in range(len(unique_IDs)) :
+
+				m_list = df.loc[df["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
+				column1 = pd.DataFrame({unique_IDs[i] : m_list})
+				t_list = df.loc[df["Sample_ID"] == unique_IDs[i], "time_hours"].tolist()
+				column2 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
+				df_fin = pd.concat([df_fin,column1], ignore_index=False, axis=1)
+				df_fin = pd.concat([df_fin,column2], ignore_index=False, axis=1)
+				column1 = pd.DataFrame()
+				column2 = pd.DataFrame()
+
+			df_gr_final_list.append(df_fin)
 
 		return df_gr_final, df_gr_final_list
 
@@ -385,46 +451,109 @@ def gr_estimation(df_gr_final) :
 	'''
 	
 	#croissance series input format 
-	df_gr_est = df_gr_final.loc[:,~df_gr_final.columns.str.startswith('Raw')]
-	df_gr_est = df_gr_est.loc[:,~df_gr_est.columns.str.startswith('time')]
-	colnames = []
-	colnames = (df_gr_est.columns.values)
+	df_gr_est = df_gr_final.loc[:,~df_gr_final.columns.str.startswith('time')]
+	colnames = df_gr_est.columns.values
 	estimations = []
 	errors = []
 	est_IDs = []
 	err_IDs = []
-	
+	df_data_series = pd.DataFrame()
+	df_annotations = pd.DataFrame()
+	list_annotations = []
+
+	df_annotations["Parameter"] = ["Start", "End", "Slope", "Intercept", "n0", "SNR", "rank"]
+
+
 	for col in range(len(colnames)):
-		my_series = pd.Series(data = (df_gr_final[colnames[col]]).tolist(), index= df_gr_final[colnames[col].replace("Corrected","time")].tolist())
+
+		#Series format for process_curve input
+		my_series = pd.Series(data = (df_gr_final[colnames[col]]).tolist(), index= df_gr_final["time_"+colnames[col]].tolist())
 		
-		# Estimation for every sample
-		try :
+		#Estimation computation
+		try :	
+
+			#Some samples are too noise to handle by the croissance library and raise an error
 			gr_estimation = process_curve(my_series)
-			estimations.append(gr_estimation)
-			est_IDs.append(colnames[col])
-		
+
 		except :
-			errors.append(remove_outliers(my_series)[0])
-			err_IDs.append(colnames[col])
-	
-	return estimations , errors, est_IDs, err_IDs
+
+			#For those samples that raise errors, the outliers are removed and a series is returned
+			gr_estimation = remove_outliers(my_series)
+			errors.append(colnames[col])
+
+		#--Outlier free series--
+		est_series = gr_estimation[0]
+		#Dataframe generation with outlier free data
+		df_temp = pd.DataFrame({colnames[col]+'_data':est_series.index, colnames[col]+"_time":est_series.values})
+		df_data_series = pd.concat([df_data_series,df_temp], ignore_index=False, axis=1)
+
+
+		#--Annotated growth curve--
+
+		if colnames[col] in errors :
+
+			pass
+
+		else :
+			
+			#Initialize objects
+			list_annotations = [] 
+			df_temp_annotations = pd.DataFrame()
+
+			#Get annotations
+			Annotated_gc = gr_estimation[2]
+
+			try  :
+
+				#Extract annotations from namedtuple
+				list_annotations.append(Annotated_gc[0].start)
+				list_annotations.append(Annotated_gc[0].end)
+				list_annotations.append(Annotated_gc[0].slope)
+				list_annotations.append(Annotated_gc[0].intercept)
+				list_annotations.append(Annotated_gc[0].n0)
+				list_annotations.append((Annotated_gc[0].attributes)["SNR"])
+				list_annotations.append((Annotated_gc[0].attributes)["rank"])
+
+			except IndexError :
+
+				errors.append(colnames[col])
+			
+			#Append Annotations to returned dataframe
+			df_temp_annotations[colnames[col]] = list_annotations
+			df_annotations = pd.concat([df_annotations , df_temp_annotations], ignore_index=False, axis=1)
+			
+	return df_data_series, df_annotations, errors
 
 
 
 # ----- ESTIMATION WRITTER TO XLSX FILE -----
 #The writter function goes here
 
-def estimation_writer(estimation_list, error_list) :
+def estimation_writer(df_data_series, df_annotations, error_list) :
 	'''Writes a xlsx file with the estimations for every sample and outputs the errors on a log file.
 	Keyword arguments:
-    estimation_list		-- list containing the estimations (output from gr_estimation).
-    sample 				-- list containing the non-estimated samples.	
+    df_data_series				-- dataframe containing the time series without outliers.
+    df_annotations      		-- dataframe containing the annotations of the linear phase.
+    error_list					-- list containing the non-estimated samples by croissance due to noisy data
 	Returned variables:
-	est_xlsx_file 		-- file containing the estimations and IDs
-	err_xlsx_file 		-- file containing the data series and IDs without outliers of the non-estimated samples
-	log_file 			-- file containing the non estimated samples 
+	series_xlsx_file 			-- file containing the estimations and IDs
+	annotations_xlsx_file 		-- file containing the data series and IDs without outliers of the non-estimated samples
+	log_file 					-- file containing the non estimated samples 
 	'''
-	pass
+	df_data_series.to_excel(r'Data_series.xlsx', header = True,index = False)
+	df_annotations.to_excel(r'Annotations.xlsx', header = True, index = False)
+	'''
+	outfile = open(’errors.txt’, ’w’)
+	
+
+
+	outfile.write("List of non estimated samples :\n")
+	for error in error_list :
+
+		outfile.write(error+"\n")
+
+	outfile.close()
+	'''
 	return None
 
 
@@ -432,7 +561,7 @@ def estimation_writer(estimation_list, error_list) :
 # ----- PLOTTING GROWTH RATE CURVE -----
 
 
-def gr_plots(df, sample, color_ = None, ind = False) :
+def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", title_ = "species" ) :
 	'''Generates a growth curve plot for a given series for common species, returns the plot.
 	Keyword arguments:
     df		-- dataframe containing differential times and OD measurements
@@ -444,6 +573,10 @@ def gr_plots(df, sample, color_ = None, ind = False) :
 	plt.savefig -- saving the figure as a png file
 	'''
 	#Create plots individually
+
+	sns.set(style="white", palette="muted", color_codes=True)
+	
+	#Individual plots
 	if ind == True :
 		x_new = np.linspace(df["time"].min(),df["time"].max(),500)
 		a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
@@ -454,20 +587,56 @@ def gr_plots(df, sample, color_ = None, ind = False) :
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
+		#plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+		plt.tight_layout()
 		return fig, plt.savefig(sample+"_GR_curve.png")
 
-	#Create plots by species
+	#Create plots by combined by species
 	elif ind == False :
+		
+		#Set the legend label
+		if legend_ == "bioshaker" :
+
+			legend_label = sample[:3]
+
+		elif legend_ == "species" :
+
+			legend_label = sample[-6:]
+
+		else :
+
+			legend_label = ""
+
+		#Set the title label
+		if title_ == "bioshaker" :
+
+			title_label = sample[:3]
+
+		elif title_ == "species" :
+
+			title_label = sample[-6:]
+
+		elif title_ == "species_bioshaker" :
+
+			title_label = sample[:3]+"_"+sample[-6:]
+		
+		else :
+			
+			pass
+
 
 		x_new = np.linspace(df["time"].min(),df["time"].max(),500)
 		a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
 		y_new = a_BSpline(x_new)
-		plt.plot(x_new,y_new , color = color_)
+		plt.plot(x_new,y_new , color = color_, label=legend_label)
 		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31))
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
-		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
+		plt.title("Growth rate curve of "+str(title_label), fontname="Arial", fontsize=12)
+		plt.tight_layout()
+		
 		return fig
+
 
 
 

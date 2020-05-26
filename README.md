@@ -54,7 +54,7 @@ This produces growth phase estimation, summary statistics on the estimations and
 
 When used with the command line the user must execute the program in the data directory. The default outputs the estimations, the figures and the statistics summary.
 
-##Input
+## Input
 
 ### Standard required input 
 

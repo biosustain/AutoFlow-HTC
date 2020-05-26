@@ -23,6 +23,7 @@ import math
 import argparse
 from matplotlib.legend_handler import HandlerLine2D
 import seaborn as sns
+import xlsxwriter
 
 
 
@@ -50,7 +51,7 @@ def argument_parser(argv_list=None):
 	parser.add_argument("-e", "--estimations", help="Get only the estimations for every sample", action = "store_true")
 	parser.add_argument("-f", "--figures", help="Get only the growth curve figures", action = "store_true")
 	parser.add_argument("-s", "--summary", help="Get only the summary of growth rate estimations",action = "store_true")
-	
+	parser.add_argument("-it", "--interpolation", help="Get interpolation of growth rate measurements with given od", action = "store_true")
 
 	#Visualization arguments
 	
@@ -78,6 +79,7 @@ def argument_parser(argv_list=None):
 		flag_bioshakercolor = args.bioshakercolor
 		flag_volume_loss = args.volumeloss
 		flag_bioshaker = args.bioshaker
+		flag_interpolation = args.interpolation
 
 	
 	elif args.estimations == True or args.figures == True or args.summary == True :
@@ -90,10 +92,12 @@ def argument_parser(argv_list=None):
 		flag_bioshakercolor = args.bioshakercolor
 		flag_volume_loss = args.volumeloss
 		flag_bioshaker = args.bioshaker
+		flag_interpolation = args.interpolation
 
 
 
-	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker
+
+	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker, flag_interpolation
 
 
 
@@ -257,6 +261,7 @@ def vol_correlation(df_vl): #done
 	Returned variables:
 	cor_df 	-- dataframe containing correlation values of the volume loss according to time measurements.
 	'''
+
 	#Subset initial df_raw according to OD measurement and get unique IDs
 	unique_IDs_vl = df_vl["Sample_ID"].unique()
 	unique_bioshaker = df_vl["bioshaker"].unique()
@@ -351,10 +356,12 @@ def reshape_dataframe(df_gr, flag_species = False, flag_bioshaker = False) :
 
 
 	df_gr_temp = df_gr
-	cols = ["Sample_ID", "Measurement", "time_hours"]	#relevant variables
+	cols = ["Sample_ID", "Measurement", "time_hours", "Species"]	#relevant variables
 	df_gr = df_gr[cols]
 	
 	#Get unique ID and times
+	df_gr["Sample_ID"]=  df_gr["Sample_ID"]+"_"+df_gr["Species"]
+	df_gr.drop(columns=["Species"])
 	unique_IDs = df_gr["Sample_ID"].unique()
 	unique_times = df_gr["time_hours"].unique()
 
@@ -370,6 +377,7 @@ def reshape_dataframe(df_gr, flag_species = False, flag_bioshaker = False) :
 		column2 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
 		df_gr_final = pd.concat([df_gr_final,column1], ignore_index=False, axis=1)
 		df_gr_final = pd.concat([df_gr_final,column2], ignore_index=False, axis=1)
+
 
 	if flag_species == False :
 
@@ -487,12 +495,12 @@ def gr_estimation(df_gr_final) :
 		df_temp = pd.DataFrame({colnames[col]+'_data':est_series.index, colnames[col]+"_time":est_series.values})
 		df_data_series = pd.concat([df_data_series,df_temp], ignore_index=False, axis=1)
 
-
 		#--Annotated growth curve--
 
-		if colnames[col] in errors :
+		if colnames[col] in errors or len(gr_estimation[2]) == 0 :
 
 			pass
+
 
 		else :
 			
@@ -529,7 +537,7 @@ def gr_estimation(df_gr_final) :
 # ----- ESTIMATION WRITTER TO XLSX FILE -----
 #The writter function goes here
 
-def estimation_writer(df_data_series, df_annotations, error_list) :
+def estimation_writter(df_data_series, df_annotations, error_list) :
 	'''Writes a xlsx file with the estimations for every sample and outputs the errors on a log file.
 	Keyword arguments:
     df_data_series				-- dataframe containing the time series without outliers.
@@ -542,8 +550,8 @@ def estimation_writer(df_data_series, df_annotations, error_list) :
 	'''
 	df_data_series.to_excel(r'Data_series.xlsx', header = True,index = False)
 	df_annotations.to_excel(r'Annotations.xlsx', header = True, index = False)
-	'''
-	outfile = open(’errors.txt’, ’w’)
+
+	outfile = open('errors.txt', 'w')
 	
 
 
@@ -553,7 +561,7 @@ def estimation_writer(df_data_series, df_annotations, error_list) :
 		outfile.write(error+"\n")
 
 	outfile.close()
-	'''
+	
 	return None
 
 
@@ -636,6 +644,175 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 		plt.tight_layout()
 		
 		return fig
+
+
+def stats_summary(df_annotations) :
+
+	'''Generates a statistics summary of the growth rate annotations.
+	Keyword arguments:
+    df_annotations				-- dataframe containing growth rate annotations
+
+	Returned variables:
+	summary_df 					-- dataframe containing the summary statistics
+	'''
+
+	#-- Summary by species and bioshaker --
+	
+	#Label column names of df according to species 
+
+	#Initialize object
+	summary_df =  pd.DataFrame()
+
+	#Species and bioshaker labels
+	species_list= [re.sub(r'\S+[.]\S+[_](\S+)', r'\1', i) for i in (df_annotations.columns.values[1:])]
+	x = slice(0, 3) 
+	bioshaker_list = [i[x] for i in (df_annotations.columns.values[1:])]
+	summary_df["species"] =  species_list
+	summary_df["bioshaker"] =  bioshaker_list
+
+	#Append annotations as rows in df_summary
+
+	summary_df["start"] = pd.to_numeric((df_annotations.iloc[0,1:]).values)
+	summary_df["end"] = pd.to_numeric((df_annotations.iloc[1,1:]).values)
+	summary_df["slope"] = pd.to_numeric((df_annotations.iloc[2,1:]).values)
+	summary_df["intercep"] = pd.to_numeric((df_annotations.iloc[3,1:]).values)
+	summary_df["n0"] = pd.to_numeric((df_annotations.iloc[4,1:]).values)
+	summary_df["SNR"] = pd.to_numeric((df_annotations.iloc[5,1:]).values)
+
+	#Mean and std on annotations per species
+	summary_df_species = (summary_df.drop(columns=['bioshaker']))
+	mean_df_species = summary_df_species.groupby('species').mean().reset_index()
+	std_df_species = summary_df_species.groupby('species').std().reset_index()
+	
+	#Mean and std on annotations split by bioshaker and species
+	mean_df_bs = summary_df.groupby(['species', 'bioshaker']).mean().reset_index()
+	std_df_bs = summary_df.groupby(['species', 'bioshaker']).std().reset_index()
+
+	# Create a Pandas Excel writer using XlsxWriter as the engine.
+	writer = pd.ExcelWriter('summary_stats.xlsx', engine='xlsxwriter')
+
+	# Write each dataframe to a different worksheet.
+	mean_df_species.to_excel(writer, sheet_name='species mean')
+	mean_df_bs.to_excel(writer, sheet_name='species bioshaker mean')
+	std_df_species.to_excel(writer, sheet_name='Species std')
+	std_df_bs.to_excel(writer, sheet_name='Species bioshaker std')
+
+	# Close the Pandas Excel writer and output the Excel file.
+	writer.save()
+
+	return summary_df, mean_df_species, mean_df_bs
+
+
+
+def exponential(x, intercep, slope, n0):
+	'''Calculates the od for a given time with the parameters estimated with the croissance package'''
+	estimation = (n0 * np.exp(slope * x))
+	return estimation
+
+
+
+
+def interpolation(od_measurements, df_annotations, mean_df_bs):
+	'''Interpolates the values of given od readings and returns growth rate measurements.
+	Keyword arguments:
+    od_measurements 			-- Dataframe containing the desired samples to estimate
+    df_annotations				-- Dataframe containing growth rate annotations of every sample
+	mean_df_bs 					-- Dataframe containing the growth rate annotations grouped by common species and bioshaker
+
+	Returned variables:
+	od_measurements				-- Returned estimated od measurements and if the prediction lies in the model's range
+	'''
+	od_measurements = pd.read_csv(od_measurements, sep="\t")
+
+	#estimation using only well specific fitted regression model
+
+	#Initialize list object
+	estimation_list = list()
+	range_list = list()
+
+	#List of samples to estimate
+	estimated_samples_list = od_measurements["Sample_ID"]
+	time_points_list = od_measurements["Time"]
+	method_used_list = od_measurements["Regression_used"]
+
+	#Computation of estimations for every sample
+	for sample_pos in range(len(estimated_samples_list)) :
+
+		time = float(time_points_list[sample_pos])
+		method = method_used_list[sample_pos]
+
+		if method == "well" :
+
+			parameters = df_annotations[estimated_samples_list[sample_pos]].tolist()
+			estimation = exponential(time, parameters[3], parameters[2], parameters[4])
+
+			if time < parameters[0] or  time > parameters[1] :
+
+				estimation_range = "outside model range"
+			else :
+
+				estimation_range = "inside model range"
+		
+		else :
+			
+			#subset to select appropriate bioshaker parameters
+			df_temp = mean_df_bs.loc[(mean_df_bs['bioshaker'] == (estimated_samples_list[sample_pos])[:3])]
+			
+			#subset to select appropriate species parameteres
+			parameters = df_temp.loc[df_temp['species'] == re.search(r"([A-Z0-9]+$)",estimated_samples_list[sample_pos]).group(1)]
+
+			#estimation
+			estimation = exponential(time, parameters["intercep"].values[0], parameters["slope"].values[0], parameters["n0"].values[0])
+
+			#extract start and end times
+			start = parameters["start"].values[0]
+			end = parameters["end"].values[0]
+
+			if time < start or time > end :
+
+				estimation_range = "outside model range"
+			
+			else :
+
+				estimation_range = "inside model range"
+
+		#output if the time is outside the range of the model
+		
+		
+		
+		estimation_list.append(estimation)
+		range_list.append(estimation_range)
+
+
+	#Append estimation and model range to od_measurements dataframe
+	od_measurements["Estimation"] = estimation_list
+	od_measurements["Estimation range"] = range_list
+
+	#Drop unnamed columns
+	od_measurements = od_measurements.loc[:, ~od_measurements.columns.str.contains('^Unnamed')]
+
+	#Export to excel
+	od_measurements.to_excel(r'estimations.xlsx', header = True,index = False)
+
+	return od_measurements
+		
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

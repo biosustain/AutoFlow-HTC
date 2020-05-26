@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ### Libraries ###
 import sys
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, estimation_writer
+from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, estimation_writter, stats_summary, interpolation
 from croissance.estimation.outliers import remove_outliers
 import croissance
 from croissance import process_curve
@@ -19,6 +19,8 @@ import itertools
 import os
 import shutil
 import path
+import xlsxwriter
+import seaborn as sns
 
 
 import pandas as pd
@@ -48,7 +50,7 @@ def main():
 
 	#Interpretation of the command line arguments
 
-	flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker = argument_parser(argv_list= sys.argv)
+	flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker, flag_interpolation = argument_parser(argv_list= sys.argv)
 	
 	#Data parsing
 
@@ -117,6 +119,8 @@ def main():
 	print ("Successfully created the Results directory")
 	os.chdir("Results")
 
+
+
 	# ----- CORRELATION AND CORRECTION -----
 
 	if flag_volumeloss == True :
@@ -131,60 +135,96 @@ def main():
 		plt.savefig("lm_volume_loss.png", dpi=250)
 		plt.close()
 
+		print("Volume loss correction : DONE")
+	
 	else : 
 
-		pass
+
+		print("Volume loss correction : NOT COMPUTED")
 	
 
 	
 	# ----- DATA RESHAPING FOR CROISSANCE INPUT REQUIREMENTS -----
 
-
 	#Reshape data for croissance input
 	
 	#If only one species one dataframe is returned only
-	
 	if multiple_species_flag == False and flag_bioshaker == False:
 
 		df_gr_final = reshape_dataframe(df_gr, flag_species = multiple_species_flag, flag_bioshaker = False)
 
 	
 	#Split dataframes by species and bioshakers
-
 	elif multiple_species_flag == True and flag_bioshaker == True:
 
 		df_gr_final, df_gr_final_list = reshape_dataframe(df_gr, flag_species = multiple_species_flag, flag_bioshaker = True)
 
 
 	#If more than one species, the dataframe is split by species and returned as a list of dataframes. The unsplit dataframe is also returned, which will be used for the summary and estimations
-	
 	else :
 
 		df_gr_final, df_gr_final_list = reshape_dataframe(df_gr, flag_species = multiple_species_flag, flag_bioshaker = False)
 
+
+
+	# ----- COMPLETE FUNCTIONALITY : ESTIMATIONS, FIGURES AND STATISTICAL SUMMARY -----
+
+
 	
-
-	# ----- COMPLETE FUNCTIONALITY REQUIRED : ESTIMATIONS, FIGURES AND STATISTICAL SUMMARY -----
-
-
-	
-	if flag_all == True or flag_est == True:
+	if flag_all == True or flag_est == True or flag_sum == True:
 
 
 		# ----- ESTIMATIONS -----
 
 		df_data_series, df_annotations, error_list = gr_estimation(df_gr_final)
-		estimation_writer(df_data_series, df_annotations, error_list)
 
+		
+		estimation_writter(df_data_series, df_annotations, error_list)
+		
+		print("Growth rate phases estimation : DONE")
 	
+
 	if flag_all == True or flag_sum == True:
+		
 
-		pass
 		# ----- SUMMARY STATISTICS ----- 
-		#---Here will go the method to output summary statistics---
+		
+		#Compute summary statistics
+		summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
+
+		#Box plots of annotation growth rate parameters by species and bioshaker
+
+		plt.close()
+		sns.boxplot(x="species", y="start", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("start_boxplot",  dpi=250)
+		plt.close()
+
+		plot_end = sns.boxplot(x="species", y="end", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("end_boxplot",  dpi=250)
+		plt.close()
+
+		plot_slope = sns.boxplot(x="species", y="slope", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("slope_boxplot",  dpi=250)
+		plt.close()
+
+		plot_intercep = sns.boxplot(x="species", y="intercep", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("intercept_boxplot",  dpi=250)
+		plt.close()
+
+		plot_n0 = sns.boxplot(x="species", y="n0", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("n0_boxplot",  dpi=250)
+		plt.close()
+
+		plot_SNR = sns.boxplot(x="species", y="SNR", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("SNR_boxplot",  dpi=250)
+		plt.close()
 
 
-	if flag_all == True or flag_fig == True:
+		print("Summary statistics : DONE")
+		
+
+	if flag_all == True or flag_fig == True :
+		
 
 		# ----- FIGURES -----
 
@@ -266,7 +306,7 @@ def main():
 					species_ = last_name[-6:]
 
 					plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
-					plt.savefig(species_+"_GR_curve.png")
+					plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
 				
 				#Plots when more than one species is present
@@ -310,7 +350,7 @@ def main():
 						plt.legend()
 						last_name = colnames[col]
 						species_name = last_name[-6:]
-						plt.savefig(species_name+"_GR_curve.png")
+						plt.savefig(species_name+"_GR_curve.png",  dpi=250)
 
 
 			#Get plots split by species and bioshaker				
@@ -337,14 +377,14 @@ def main():
 						last_name = colnames[col]
 						bioshaker_ = last_name[:3]
 						species_ = last_name[-6:]
-						plt.savefig(bioshaker_+"_"+species_+"_GR_curve.png")
+						plt.savefig(bioshaker_+"_"+species_+"_GR_curve.png",  dpi=250)
 
 
 			#Default plot without bioshaker coloring (combined by species and containing the two bioshakers undiferentiated)
 			
 			else : 
 
-				print("hehe")
+				#print("hehe")
 
 				color_palette = "r"
 
@@ -368,7 +408,7 @@ def main():
 					last_name = colnames[col]
 					bioshaker_ = last_name[:3]
 					species_ = last_name[-6:]
-					plt.savefig(species_+"_GR_curve.png")
+					plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
 				else :
 
@@ -390,4 +430,14 @@ def main():
 						last_name = colnames[col]
 						bioshaker_ = last_name[:3]
 						species_ = last_name[-6:]
-						plt.savefig(species_+"_GR_curve.png")
+						plt.savefig(species_+"_GR_curve.png",  dpi=250)
+
+		print("Plotting growth curves : DONE")
+
+
+	if  flag_interpolation == True :
+
+		od_measurements = interpolation("../od_measurements.tsv",df_annotations, mean_df_bs)
+
+		print("Computing optical density estimations : DONE")
+

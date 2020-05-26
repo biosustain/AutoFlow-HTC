@@ -27,13 +27,13 @@ tecan_od_analyzer can be used from the command-line by executing it in the direc
 
 ### Command line usage
 
-- Standard usage :
+#### Standard usage :
 
 ``tecan_od_analyzer``
 
 This produces growth phase estimation, summary statistics on the estimations and growth rate plots split only by species.
 
-- Options :
+##### Options :
 
 ``tecan_od_analyzer --estimations``     Outputs only estimations for every sample in a text file.
 
@@ -54,7 +54,9 @@ This produces growth phase estimation, summary statistics on the estimations and
 
 When used with the command line the user must execute the program in the data directory. The default outputs the estimations, the figures and the statistics summary.
 
-- Standard required input 
+##Input
+
+### Standard required input 
 
 
 In order to run the program the user has to execute it where the data is. The inputs to the program correspond to the ones required for the autoflow_parser (log file, xlsx file, etc). 
@@ -71,7 +73,7 @@ Furthermore, to classify the samples, a file where the purpose of each sample fi
 
 It is important that the headers of every column must be written as it can be seen in the table. Concerning the Sample_ID, the bioshaker must appear at the beggining of the string.
 
-- Estimation required input 
+### Estimation required input 
 
 To compute the estimations the user must provide a tsv file with the following format :
 

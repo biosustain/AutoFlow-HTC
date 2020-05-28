@@ -17,7 +17,7 @@ The tool parses the individual xlsx files from the plate reader and merges them 
 
 ### Installation from GitHub using pip
 
-``pip install git+https://github.com/felixpacheco/AutoFlow-HTC``
+``pip install git+https://github.com/biosustain/AutoFlow-HTC``
 
 
 ## Usage 

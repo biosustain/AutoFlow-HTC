@@ -6,7 +6,8 @@
 
 tecan_od_analyzer is a Python package for analysing optical density (OD) measurements taken from the Tecan Nano plate reader. 
 
-The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file using the autoflow_parse library. The merged file is read as a dataframe and every sample is labelled according to the calc.tsv file that should be provided by the user. The labelling is used since some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The volume loss throughout the culture is estimated and it's effect is neutralized. The next step concerns the outlier detection and growth phase estimation, which are done by using the croissance package. Subsequently, growth rate plots and summary statistics are also computed. The library also provides the functionality of interpolating OD measurements on processed samples.
+The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file using the autoflow_parse library. The merged file is read as a dataframe and every sample is labelled according to the calc.tsv file, 
+provided by the user. The labelling is used since some samples are used for the growth rate plotting and estimation and some others are used to estimate the volume loss. The volume loss throughout the culture is estimated and its effect is neutralized. The next step concerns the outlier detection and growth phase estimation, which are done by using the croissance package. Subsequently, growth rate plots and summary statistics are also computed. The library also provides the functionality of interpolating OD measurements on processed samples.
 
 
 ## Installation
@@ -17,13 +18,13 @@ The tool parses the individual xlsx files from the plate reader and merges them 
 
 ### Installation from GitHub using pip
 
-``pip install git+https://github.com/felixpacheco/AutoFlow-HTC``
+``pip install git+https://github.com/biosustain/AutoFlow-HTC``
 
 
 ## Usage 
 
 
-tecan_od_analyzer can be used from the command-line by executing it in the directory where the xlsx files are located.
+tecan_od_analyzer can be used from the command-line by executing it in the directory where the xlsx files are located. The outputs will be gathered on a new directory called "results".
 
 ### Command line usage
 
@@ -83,7 +84,9 @@ To compute the estimations the user must provide a tsv file with the following f
 | BS1.A2_<species_id> | 0.02 | mean            |
 | ...                 | ...  | ...             |
 
-It's relevant to remark that the numbers appearing in the Time column must be written with dots and not with commas. The sample_ID must be followed by the species ID.
+For the regression column, two options are possible. On the first hand, the ``well``option corresponds to interpolate a given OD using only the data of the given well/sample. On the second hand, the ``mean``option computes the interpolation using all the samples by common species and bioshaker.
+
+It's relevant to remark, that the numbers appearing in the Time column must be written with dots and not with commas. The unit for the time column corresponds to hours. The sample_ID must be followed by the species ID.
 
 ## Plotting options
 

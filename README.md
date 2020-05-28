@@ -74,9 +74,9 @@ Furthermore, to classify the samples, a file where the purpose of each sample fi
 
 It is important that the headers of every column must be written as it can be seen in the table. Concerning the Sample_ID, the bioshaker must appear at the beggining of the string.
 
-### Estimation required input 
+### OD interpolation required input 
 
-To compute the estimations the user must provide a tsv file with the following format :
+To compute the estimations the user must provide a tsv file named as ``od_measurements.tsv`` with the following format :
 
 | Sample_ID           | Time | Regression_used | 
 |---------------------|------|-----------------|

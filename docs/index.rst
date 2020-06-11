@@ -1,5 +1,15 @@
-tecan\_od\_analyzer
-===================
+.. tecan_od_analyzer documentation master file
+
+tecan_od_analyzer's Documentation
+=============================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+
+General documentation
+=====================
 
 Description
 -----------
@@ -163,3 +173,15 @@ License
 -------
 
 MIT
+
+tecan_od_analyzer methods
+=========================
+.. automodule:: tecan_od_analyzer.tecan_od_analyzer
+    :members:
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -81,9 +81,7 @@ def main():
 
 	# ----- FORMATING TIME VARIABLE TO DIFFERENTIAL HOURS -----
 
-	
-	#Convert time variable to differential hours for both dataframes
-	
+
 	df_gr = time_formater(df_gr)
 	df_vl = time_formater(df_vl)
 
@@ -178,7 +176,12 @@ def main():
 
 		df_data_series, df_annotations, error_list = gr_estimation(df_gr_final)
 
-		
+		print(len(df_data_series.columns.values))
+		print(len(df_annotations.columns.values))
+		print(len(error_list))
+
+		print(set(df_data_series.columns.values).intersection(df_annotations.columns.values, error_list))
+		print(set(df_annotations) & set(error_list))
 		estimation_writter(df_data_series, df_annotations, error_list)
 		
 		print("Growth rate phases estimation : DONE")

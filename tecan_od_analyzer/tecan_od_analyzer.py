@@ -24,6 +24,7 @@ import argparse
 from matplotlib.legend_handler import HandlerLine2D
 import seaborn as sns
 import xlsxwriter
+import datetime
 
 
 
@@ -62,7 +63,7 @@ def argument_parser(argv_list=None):
 
 	#Volume loss related arguments
 	
-	parser.add_argument("-v", "--volumeloss", help="Get one growth rate figure for every individual sample without volume loss compesation", action = "store_false")
+	parser.add_argument("-v", "--volumeloss", help="Volume loss compesation is not computed", action = "store_false")
 	parser.parse_args()
 	args = parser.parse_args(argv_list[1:])
 
@@ -198,49 +199,18 @@ def time_formater(df) :
 		#Subset initial dataframe by bioshaker
 		df_temp = df.loc[df["bioshaker"] == bioshaker]
 		unique_date = df["Sampling_date"].unique()
-		
-		#The counter will indicate if the date corresponds to the first day
-		counter = 0
 
-		for date in unique_date :
+		#Merge date and time variable to datetime format
+		df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
+		df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
 
-			if counter == 0 :
-				#Subset dataframe by date
-				df_temp = df.loc[df["Sampling_date"] == date]
+		#Substracting the time of the first obs to all obs
+		df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
+		df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
 
-				#Merge date and time variable to datetime format
-				df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
-				df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
-
-				#Substracting the time of the first obs to all obs
-				df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
-				df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
-
-				#Append dataframes together
-				df_out = df_out.append(df_temp)
-			
-			else :		#When it is not the same date, we do exactly the same but at the end we add the time of the last observation of the previous day
-
-				#Subset dataframe by date
-				df_temp = df.loc[df["Sampling_date"] == date]
-
-				#Merge date and time variable to datetime format
-				df_temp["date_time"] = df_temp["Sampling_time"]+" "+df_temp["Sampling_date"]
-				df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
-
-				#Substracting the time of the first obs to all obs
-				df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
-				df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
-				
-				#We add the time of the last observation of the previous day
-				df_temp["time_hours"] +=  df_out['time_hours'].iloc[-1]
-
-				#Append dataframes together
-				df_out = df_out.append(df_temp)
-			
-			counter += 1
-		
-
+		#Append dataframes together
+		df_out = df_out.append(df_temp)
+	
 	#Removal of temporary variables
 	df_out = df_out.drop_duplicates()
 	df_out = df_out.drop(columns=["Sampling_date", "Sampling_time"])
@@ -322,8 +292,6 @@ def compensation_lm(cor_df, df_gr) : #done
 		plt.tight_layout()
 
 
-		
-	
 	#Use the linear models to correct the volume loss by bioshaker
 	df_gr_comp = pd.DataFrame()
 	df_gr_comp_out = pd.DataFrame()
@@ -499,7 +467,13 @@ def gr_estimation(df_gr_final) :
 
 		if colnames[col] in errors or len(gr_estimation[2]) == 0 :
 
-			pass
+			if colnames[col] not in errors :
+
+				errors.append(colnames[col])
+			else :
+
+				pass
+
 
 
 		else :
@@ -792,7 +766,7 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
 	od_measurements = od_measurements.loc[:, ~od_measurements.columns.str.contains('^Unnamed')]
 
 	#Export to excel
-	od_measurements.to_excel(r'estimations.xlsx', header = True,index = False)
+	od_measurements.to_excel(r'interpolation_results.xlsx', header = True,index = False)
 
 	return od_measurements
 		

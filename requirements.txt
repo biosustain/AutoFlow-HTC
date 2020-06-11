@@ -1,0 +1,21 @@
+numpy
+matplotlib
+croissance
+pandas
+datetime
+argparse
+itertools
+shutil
+path
+xlsxwriter
+seaborn
+scipy
+subprocess
+
+
+# to check python code style
+pycodestyle
+
+# to build documentation locally
+sphinx
+sphinx_rtd_theme

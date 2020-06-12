@@ -1,0 +1,653 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tecan_od_analyzer’s Documentation &mdash; tecan_od_analyzer 0.0.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> tecan_od_analyzer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">tecan_od_analyzer’s Documentation</a></li>
+<li><a class="reference internal" href="#general-documentation">General documentation</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#installation-using-pip">Installation using pip</a></li>
+<li><a class="reference internal" href="#installation-from-github-using-pip">Installation from GitHub using pip</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#command-line-usage">Command line usage</a><ul>
+<li><a class="reference internal" href="#standard-usage">Standard usage :</a><ul>
+<li><a class="reference internal" href="#options">Options :</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#input">Input</a><ul>
+<li><a class="reference internal" href="#standard-required-input">Standard required input</a></li>
+<li><a class="reference internal" href="#od-interpolation-required-input">OD interpolation required input</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#plotting-options">Plotting options</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-tecan_od_analyzer.tecan_od_analyzer">tecan_od_analyzer methods</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">tecan_od_analyzer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>tecan_od_analyzer’s Documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tecan-od-analyzer-s-documentation">
+<h1>tecan_od_analyzer’s Documentation<a class="headerlink" href="#tecan-od-analyzer-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="general-documentation">
+<h1>General documentation<a class="headerlink" href="#general-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>tecan_od_analyzer is a Python package for analysing optical density
+(OD) measurements taken from the Tecan Nano plate reader.</p>
+<p>The tool parses the individual xlsx files from the plate reader and
+merges them into a single xlsx file using the autoflow_parse library.
+The merged file is read as a dataframe and every sample is labelled
+according to the calc.tsv file, provided by the user. The labelling
+helps to differentiate the sample purpose, indeed, some samples
+correspond to growth rate estimation and plotting while others are used
+to estimate the volume loss.</p>
+<p>Once the samples are labelled according to the experiment, the volume
+loss throughout the culture is estimated and its effect is neutralized
+using a simple regression model. The next step concerns the outlier
+detection and growth phase estimation, which are done by using the
+croissance package. Subsequently, growth rate plots and summary
+statistics are also computed. The library also provides the
+functionality of interpolating OD measurements on processed samples at
+any given time.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="installation-using-pip">
+<h3>Installation using pip<a class="headerlink" href="#installation-using-pip" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tecan_od_analyzer</span></code></p>
+</div>
+<div class="section" id="installation-from-github-using-pip">
+<h3>Installation from GitHub using pip<a class="headerlink" href="#installation-from-github-using-pip" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">git+https://github.com/biosustain/AutoFlow-HTC</span></code></p>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>tecan_od_analyzer can be used from the command-line by executing it in
+the directory where the xlsx files are located. The outputs will be
+gathered on a new directory called “results”.</p>
+<div class="section" id="command-line-usage">
+<h3>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="standard-usage">
+<h4>Standard usage :<a class="headerlink" href="#standard-usage" title="Permalink to this headline">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span></code></p>
+<p>The default command produces growth phase estimation, summary statistics
+on the estimations and growth rate plots split only by species. By
+default the volumess loss correction is computed.</p>
+<div class="section" id="options">
+<h5>Options :<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h5>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--estimations</span></code> Outputs only estimations for every
+sample in a text file.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--figures</span></code> Outputs only the growth curves.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--summary</span></code> Outputs only the estimations for every
+species and bioshaker as well as boxplots of the growth rare annotation
+parameters.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--individual</span></code> Outputs the growth curves for every
+sample individually.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--bioshaker</span></code> Splits the visualization of the growth
+rate plots according to the bioshaker and species.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyser</span> <span class="pre">--bioshakercolor</span></code> Splits the visualization of the
+growth rate plots according to species and colors by bioshaker.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyser</span> <span class="pre">--interpolation</span></code> Computes interpolation of samples
+given the measure time and outputs an xlsx file with the estimations.</p>
+<p><code class="docutils literal notranslate"><span class="pre">tecan_od_analyser</span> <span class="pre">--volumeloss</span></code> This option allows the user to not
+compute the volume loss correction. By default, the volume loss
+correction is always computed.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="input">
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="standard-required-input">
+<h3>Standard required input<a class="headerlink" href="#standard-required-input" title="Permalink to this headline">¶</a></h3>
+<p>In order to run the program the user has to execute it where the data
+is. The inputs to the program correspond to the ones required for the
+autoflow_parser (log file, xlsx file, etc).</p>
+<p>Furthermore, to classify the samples, a file where the purpose of each
+sample figures is needed. This file must be a tab-separated file (.tsv)
+with the following format :</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 19%" />
+<col style="width: 19%" />
+<col style="width: 18%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Sample_ID</p></th>
+<th class="head"><p>gr_calc</p></th>
+<th class="head"><p>vl_calc</p></th>
+<th class="head"><p>Species</p></th>
+<th class="head"><p>Drop_out</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BS1.A1</p></td>
+<td><p>TRUE</p></td>
+<td><p>FALSE</p></td>
+<td></td>
+<td><p>TRUE</p></td>
+</tr>
+<tr class="row-odd"><td><p>BS1.A2</p></td>
+<td><p>FALSE</p></td>
+<td><p>TRUE</p></td>
+<td></td>
+<td><p>FALSE</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+<p>It is important that the headers of every column must be written as it
+can be seen in the table. Concerning the Sample_ID, the bioshaker must
+appear at the beggining of the string.</p>
+</div>
+<div class="section" id="od-interpolation-required-input">
+<h3>OD interpolation required input<a class="headerlink" href="#od-interpolation-required-input" title="Permalink to this headline">¶</a></h3>
+<p>To compute the estimations the user must provide a tsv file named as
+<code class="docutils literal notranslate"><span class="pre">od_measurements.tsv</span></code> with the following format :</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 19%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Sample_ID</p></th>
+<th class="head"><p>Time</p></th>
+<th class="head"><p>Regression_used</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>BS1.A1_</p></td>
+<td><p>0.9</p></td>
+<td><p>well</p></td>
+</tr>
+<tr class="row-odd"><td><p>BS1.A2_</p></td>
+<td><p>0.02</p></td>
+<td><p>mean</p></td>
+</tr>
+<tr class="row-even"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+<p>For the regression column, two options are possible. On the first hand,
+the <code class="docutils literal notranslate"><span class="pre">well</span></code>option corresponds to interpolate a given OD using only
+the data of the corresponding well/sample. On the second hand, the
+<code class="docutils literal notranslate"><span class="pre">mean</span></code>option computes the interpolation using all the samples that
+share the same species and bioshaker.</p>
+<p>It’s relevant to remark, that the numbers appearing in the time column
+must be written with dots and not with commas. The unit for the time
+column corresponds to hours. The sample_ID must be followed by the
+species ID.</p>
+</div>
+</div>
+<div class="section" id="plotting-options">
+<h2>Plotting options<a class="headerlink" href="#plotting-options" title="Permalink to this headline">¶</a></h2>
+<p>The plots can be customized by selecting how to group the samples and
+combine them on a single plot. By default, the generated plot will
+contain all the samples within the same species in one plot. The plots
+can also be generated separately and split or color labelled by
+bioshaker.</p>
+<p>The different options can be consulted by typing :
+<code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">--help</span></code> or <code class="docutils literal notranslate"><span class="pre">tecan_od_analyzer</span> <span class="pre">-h</span></code></p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.</p>
+<p>Please make sure to update tests as appropriate.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>MIT</p>
+</div>
+</div>
+<div class="section" id="module-tecan_od_analyzer.tecan_od_analyzer">
+<span id="tecan-od-analyzer-methods"></span><h1>tecan_od_analyzer methods<a class="headerlink" href="#module-tecan_od_analyzer.tecan_od_analyzer" title="Permalink to this headline">¶</a></h1>
+<p>Main module.</p>
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.argument_parser">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">argument_parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">argv_list</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.argument_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asesses the input arguments and outputs flags to run the different functions according to the user needs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>argv_list</strong> – List of arguments provided by the user when running the program.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>flags</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.compensation_lm">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">compensation_lm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cor_df</span></em>, <em class="sig-param"><span class="n">df_gr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.compensation_lm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the correlation between volume and time, a linear model is built and plotted, the correction is applied to the growth measurements using the linear model, returns a figure with the LM and a dataframe with the corrected growth rate measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_gr</strong> – dataframe containing only growth rate measurements and differential time in hours.</p></li>
+<li><p><strong>cor_df</strong> – dataframe containing correlation measures between volume loss and time for different bioshakers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>figure representing the linear model between the correlation and the time for every bioshaker.
+df_gr_comp_out: dataframe containing corrected growth rate measurements and differential time in hours.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.estimation_writter">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">estimation_writter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_data_series</span></em>, <em class="sig-param"><span class="n">df_annotations</span></em>, <em class="sig-param"><span class="n">error_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.estimation_writter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a xlsx file with the estimations for every sample and outputs the errors on a log file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_data_series</strong> – dataframe containing the time series without outliers.</p></li>
+<li><p><strong>df_annotations</strong> – dataframe containing the annotations of the linear phase.</p></li>
+<li><p><strong>error_list</strong> – list containing the non-estimated samples by croissance due to noisy data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>file containing the estimations and IDs
+annotations_xlsx_file: file containing the data series and IDs without outliers of the non-estimated samples
+log_file: file containing the non estimated samples</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>series_xlsx_file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.exponential">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">exponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">intercep</span></em>, <em class="sig-param"><span class="n">slope</span></em>, <em class="sig-param"><span class="n">n0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.exponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the od for a given time with the parameters estimated with the croissance package</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.gr_estimation">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">gr_estimation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_gr_final</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.gr_estimation" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes outliers for every sample and outputs growth rate estimates for every given sample ID as a text file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_gr_final</strong> – dataframe containing growth rate measurements and differential time in hours.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of growth rate estimations for every sample in df_gr_final
+errors: due to croissance noise handling some samples can not be estimated and list of series is returned for every non-estimated sample</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>estimations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.gr_plots">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">gr_plots</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">sample</span></em>, <em class="sig-param"><span class="n">color_</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ind</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">legend_</span><span class="o">=</span><span class="default_value">'bioshaker'</span></em>, <em class="sig-param"><span class="n">title_</span><span class="o">=</span><span class="default_value">'species'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.gr_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a growth curve plot for a given series for common species, returns the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – dataframe containing differential times and OD measurements</p></li>
+<li><p><strong>sample</strong> – sample used</p></li>
+<li><p><strong>ind</strong> – flag that indicates to output individual plots if True or merged plots by sample species if False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>object containing the figure
+plt.savefig: saving the figure as a png file</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>fig</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.interpolation">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">interpolation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">od_measurements</span></em>, <em class="sig-param"><span class="n">df_annotations</span></em>, <em class="sig-param"><span class="n">mean_df_bs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates the values of given od readings and returns growth rate measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>od_measurements</strong> – Dataframe containing the desired samples to estimate</p></li>
+<li><p><strong>df_annotations</strong> – Dataframe containing growth rate annotations of every sample</p></li>
+<li><p><strong>mean_df_bs</strong> – Dataframe containing the growth rate annotations grouped by common species and bioshaker</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returned estimated od measurements and if the prediction lies in the model’s range</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>od_measurements</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.parse_data">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">parse_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.parse_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the autoflow_parser and returns a merged xlsx document with all the OD readings combined</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.read_xlsx">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">read_xlsx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'results.xlsx'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.read_xlsx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads .xlsx file, returns a dataframe with relevant variables. The output of the parser is set to be “results.xlsx”, the default reads the mentioned file without any additional argument</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.reshape_dataframe">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">reshape_dataframe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_gr</span></em>, <em class="sig-param"><span class="n">flag_species</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">flag_bioshaker</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.reshape_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collects the times belonging to every sample and creates a time column relative to a specific sample, returns the modified dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_gr</strong> – dataframe containing growth rate measurements and differential time in hours.</p></li>
+<li><p><strong>species_flag</strong> – flag that corresponds to the presence of more than one species (True), False if only one species</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>if species_flag is False</p>
+<blockquote>
+<div><p>df_gr: dataframe with differential time measurements in hours displayed horizontally (one column containing the time measurements and one column contaning the OD measurements PER SAMPLE).</p>
+</div></blockquote>
+<p>if flag is True :</p>
+<blockquote>
+<div><p>df_gr_final:  dataframe with differential time measurements in hours displayed horizontally (one column containing the time measurements and one column contaning the OD measurements PER SAMPLE).
+df_gr_final_list: list of dataframes originated from df_gr_final and split by common sample species</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.sample_outcome">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">sample_outcome</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sample_file</span></em>, <em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.sample_outcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses an external file containing individual sample purposes, returns two classifed dataframes based on sample purposes and labelled by bioshaker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_file</strong> – variable or string containing the name of the file and its extension.</p></li>
+<li><p><strong>df</strong> – dataframe obtained by using the read_xlsx method on the merged xlsx file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe containing observations related to the microbial growth rate, labelled by bioshaker.
+df_vl: dataframe containing observations related to the volume loss estimation, labelled by bioshaker.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>df_gr</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.stats_summary">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">stats_summary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_annotations</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.stats_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a statistics summary of the growth rate annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_annotations</strong> – dataframe containing growth rate annotations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe containing the summary statistics</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>summary_df</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.time_formater">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">time_formater</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.time_formater" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a dataframe and turns date and time variables into differential time in hours for every bioshaker, returns modified dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> – dataframe with containing date and time measurements.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe with differential time measurements in hours.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>df_out</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="tecan_od_analyzer.tecan_od_analyzer.vol_correlation">
+<code class="sig-prename descclassname">tecan_od_analyzer.tecan_od_analyzer.</code><code class="sig-name descname">vol_correlation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_vl</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tecan_od_analyzer.tecan_od_analyzer.vol_correlation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assess the volume loss with OD450 measurements and correlates the OD450 readings to time for every different bioshaker, returns a correlation dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df_vl</strong> – dataframe containing only volume loss measurements.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dataframe containing correlation values of the volume loss according to time measurements.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>cor_df</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Felix Pacheco Pastor
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

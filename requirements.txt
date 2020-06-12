@@ -12,4 +12,3 @@ pycodestyle
 sphinx
 sphinx_rtd_theme
 pytest
-unittest

@@ -4,13 +4,10 @@ croissance
 pandas
 datetime
 argparse
-itertools
-shutil
 path
 xlsxwriter
 seaborn
 scipy
-subprocess
 pycodestyle
 sphinx
 sphinx_rtd_theme

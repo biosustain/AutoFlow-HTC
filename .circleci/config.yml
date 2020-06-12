@@ -8,12 +8,8 @@ jobs:
     executor: python/default
     steps:
       - checkout
-<<<<<<< HEAD
       - run:
         name: Intall Python Dependencies
-        command: |
-=======
-      - run :
         command : |
           python3 -m venv venv
           . venv/bin/activate

@@ -15,7 +15,6 @@ jobs:
 =======
       - run :
         command : |
->>>>>>> 213f328a794fedd25cb51c2f85ecd4af7f58991f
           python3 -m venv venv
           . venv/bin/activate
           pip install -r requirements.txt

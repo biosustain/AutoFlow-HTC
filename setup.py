@@ -9,12 +9,12 @@ with open("README.md", "r") as doc:
 
 version = re.search(
     '^__version__\s*=\s*"(.*)"',
-    open('OD_handler/OD_handler.py').read(),
+    open('tecan_od_analyzer/tecan_od_analyzer.py').read(),
     re.M
     ).group(1)
 
 setup(
-    name = "OD_handler",
+    name = "tecan_od_analyzer",
     version = version,
     author = "Felix Pacheco Pastor",
     author_email = "fepac@biosustain.com",
@@ -24,7 +24,7 @@ setup(
     url = "https://github.com/felixpacheco/AutoFlow-HTC/tree/felix_HTC",
     packages=setuptools.find_packages(),
     entry_points = {
-        "console_scripts": ["OD_handler = OD_handler.__main__:main"]
+        "console_scripts": ["tecan_od_analyzer = tecan_od_analyzer.__main__:main"]
         },
     license = "MIT",
     classifiers=[
@@ -32,7 +32,7 @@ setup(
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
     ],
-    install_requires=[],
+    install_requires=['numpy','matplotlib','croissance','pandas','datetime','argparse','shutil','path','xlsxwriter', 'seaborn', 'scipy', 'subprocess', 'pycodestyle','sphinx','sphinx_rtd_theme'],
     include_package_data = True,
 
 )

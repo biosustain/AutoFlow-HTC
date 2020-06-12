@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - run :
-        command : | 
+        command : |
           python3 -m venv venv
           . venv/bin/activate
           pip install -r requirements.txt

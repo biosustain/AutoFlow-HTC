@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Intall Python Dependencies
+        name: Install Python Dependencies
         command : |
           python3 -m venv venv
           . venv/bin/activate

@@ -1,0 +1,14 @@
+numpy
+matplotlib
+croissance
+pandas
+datetime
+argparse
+path
+xlsxwriter
+seaborn
+scipy
+subprocess
+pycodestyle
+sphinx
+sphinx_rtd_theme

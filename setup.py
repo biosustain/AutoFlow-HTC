@@ -32,7 +32,7 @@ setup(
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
     ],
-    install_requires=['numpy','matplotlib','croissance','pandas','datetime','argparse','shutil','path','xlsxwriter', 'seaborn', 'scipy', 'subprocess', 'pycodestyle','sphinx','sphinx_rtd_theme'],
+    install_requires=['numpy','matplotlib','croissance','pandas','datetime','argparse','path','xlsxwriter', 'seaborn', 'scipy', 'subprocess', 'pycodestyle','sphinx','sphinx_rtd_theme'],
     include_package_data = True,
 
 )

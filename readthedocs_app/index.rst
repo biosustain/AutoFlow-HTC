@@ -4,6 +4,7 @@ tecan_od_analyzer's Documentation
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
 
 General documentation

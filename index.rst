@@ -176,7 +176,7 @@ MIT
 tecan_od_analyzer methods
 =========================
 .. automodule:: tecan_od_analyzer.tecan_od_analyzer
-    :members:
+	:members:
 
 Indices and tables
 ==================

@@ -1,5 +1,4 @@
 .. tecan_od_analyzer documentation master file
-
 tecan_od_analyzer's Documentation
 =============================================
 

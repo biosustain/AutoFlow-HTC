@@ -8,14 +8,11 @@ path
 xlsxwriter
 seaborn
 scipy
-<<<<<<< HEAD
-subprocess
 pycodestyle
 sphinx
 sphinx_rtd_theme
-=======
 pycodestyle
 sphinx
 sphinx_rtd_theme
 pytest
->>>>>>> 9ab0b4120e11d35b755356acfd54d5d606249ef6
+

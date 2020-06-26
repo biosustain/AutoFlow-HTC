@@ -20,6 +20,7 @@ jobs:
       - run:
           name : Run Unit Tests
           command: |
+            cd tests
             python3 tests/test_tecan_od_analyzer.py
 
 

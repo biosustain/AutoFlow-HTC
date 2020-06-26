@@ -1,6 +1,6 @@
 numpy
 matplotlib
-pandas
+pandas==1.0.3
 datetime
 argparse
 path

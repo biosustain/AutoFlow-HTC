@@ -42,7 +42,7 @@ Usage
 
 tecan\_od\_analyzer can be used from the command-line by executing it in
 the directory where the xlsx files are located. The outputs will be
-gathered on a new directory called "results".
+gathered on a new directory called "results"..
 
 Command line usage
 ~~~~~~~~~~~~~~~~~~

@@ -58,3 +58,4 @@ workflows:
   main:
     jobs:
       - build-in-python
+      - build-on-windows

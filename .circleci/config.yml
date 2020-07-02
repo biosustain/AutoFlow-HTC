@@ -51,7 +51,7 @@ jobs:
           name : Run Unit Tests
           command: |
             cd tests
-            python3 test_tecan_od_analyzer.py
+            python test_tecan_od_analyzer.py
 
 
 workflows:

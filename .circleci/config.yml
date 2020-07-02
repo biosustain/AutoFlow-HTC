@@ -36,7 +36,7 @@ jobs:
           name: Install python3
           command : |
             choco install python3 --pre
-            python3 -m pip install -U pip
+            python -m pip install -U pip
       - run:
           name: Install Python Dependencies
           command : |

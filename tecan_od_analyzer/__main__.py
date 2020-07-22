@@ -166,8 +166,9 @@ def main():
 
 
 	# ----- COMPLETE FUNCTIONALITY : ESTIMATIONS, FIGURES AND STATISTICAL SUMMARY -----
+	print((df_gr_final.columns.values))
 
-
+	print("Reshaping done")
 	
 	if flag_all == True or flag_est == True or flag_sum == True:
 
@@ -175,17 +176,20 @@ def main():
 		# ----- ESTIMATIONS -----
 
 		df_data_series, df_annotations, error_list = gr_estimation(df_gr_final)
-
+		#a = gr_estimation(df_gr_final)
+		#rint(a)
+		"""
 		print(len(df_data_series.columns.values))
 		print(len(df_annotations.columns.values))
 		print(len(error_list))
 
 		print(set(df_data_series.columns.values).intersection(df_annotations.columns.values, error_list))
 		print(set(df_annotations) & set(error_list))
+		"""
 		estimation_writter(df_data_series, df_annotations, error_list)
 		
 		print("Growth rate phases estimation : DONE")
-	
+		
 
 	if flag_all == True or flag_sum == True:
 		
@@ -194,7 +198,9 @@ def main():
 		
 		#Compute summary statistics
 		summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
-
+		print(summary_df)
+		print(summary_df["species"])
+		
 		#Box plots of annotation growth rate parameters by species and bioshaker
 
 		plt.close()

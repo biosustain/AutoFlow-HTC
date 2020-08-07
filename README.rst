@@ -1,5 +1,3 @@
-tecan\_od\_analyzer
-===================
 
 Description
 -----------

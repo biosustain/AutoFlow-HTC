@@ -25,10 +25,10 @@ from matplotlib.legend_handler import HandlerLine2D
 import seaborn as sns
 import xlsxwriter
 import datetime
+#TEST
 
 
-
-__version__ = "0.0.8"
+__version__ = "0.1.1"
 
 
 
@@ -207,15 +207,20 @@ def time_formater(df) :
 
 		#Substracting the time of the first obs to all obs
 		df_temp['time_hours'] = df_temp["date_time"] - df_temp.loc[df_temp.index[0], 'date_time']
-		df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
+		df_temp['h'] = df_temp['time_hours'].dt.components['hours']
+		df_temp['m'] = df_temp['time_hours'].dt.components['minutes']
+		df_temp['s'] = df_temp['time_hours'].dt.components['seconds']
+		df_temp["time_hours"] = df_temp['h']+df_temp['m']/60+df_temp['s']/360
+
+		#df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
 
 		#Append dataframes together
 		df_out = df_out.append(df_temp)
 	
 	#Removal of temporary variables
 	df_out = df_out.drop_duplicates()
-	df_out = df_out.drop(columns=["Sampling_date", "Sampling_time"])
-	df_out = df_out.drop(columns=["date_time"])
+	#df_out = df_out.drop(columns=["Sampling_date", "Sampling_time"])
+	#df_out = df_out.drop(columns=["date_time"])
 	
 	return df_out
 
@@ -447,7 +452,7 @@ def gr_estimation(df_gr_final) :
 
 	df_annotations["Parameter"] = ["Start", "End", "Slope", "Intercept", "n0", "SNR", "rank"]
 
-
+	print("a")
 	for col in range(len(colnames)):
 
 		#Series format for process_curve input
@@ -458,7 +463,7 @@ def gr_estimation(df_gr_final) :
 
 			#Some samples are too noise to handle by the croissance library and raise an error
 			gr_estimation = process_curve(my_series)
-
+			print("est")
 		except :
 
 			#For those samples that raise errors, the outliers are removed and a series is returned
@@ -470,7 +475,7 @@ def gr_estimation(df_gr_final) :
 		#Dataframe generation with outlier free data
 		df_temp = pd.DataFrame({colnames[col]+'_data':est_series.index, colnames[col]+"_time":est_series.values})
 		df_data_series = pd.concat([df_data_series,df_temp], ignore_index=False, axis=1)
-
+		print("b")
 		#--Annotated growth curve--
 
 		if colnames[col] in errors or len(gr_estimation[2]) == 0 :
@@ -481,8 +486,6 @@ def gr_estimation(df_gr_final) :
 			else :
 
 				pass
-
-
 
 		else :
 			
@@ -511,7 +514,8 @@ def gr_estimation(df_gr_final) :
 			#Append Annotations to returned dataframe
 			df_temp_annotations[colnames[col]] = list_annotations
 			df_annotations = pd.concat([df_annotations , df_temp_annotations], ignore_index=False, axis=1)
-			
+			print(col)
+
 	return df_data_series, df_annotations, errors
 
 
@@ -650,7 +654,7 @@ def stats_summary(df_annotations) :
 	summary_df =  pd.DataFrame()
 
 	#Species and bioshaker labels
-	species_list= [re.sub(r'\S+[.]\S+[_](\S+)', r'\1', i) for i in (df_annotations.columns.values[1:])]
+	species_list= [re.sub(r'\S+[.]?\S+[_](\S+)', r'\1', i) for i in (df_annotations.columns.values[1:])]
 	x = slice(0, 3) 
 	bioshaker_list = [i[x] for i in (df_annotations.columns.values[1:])]
 	summary_df["species"] =  species_list

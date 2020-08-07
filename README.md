@@ -1,5 +1,3 @@
-# tecan_od_analyzer
-
 
 ## Description
 

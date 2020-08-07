@@ -1,0 +1,17 @@
+numpy
+matplotlib
+pandas==1.0.3
+datetime
+argparse
+path
+xlsxwriter
+seaborn
+scipy
+pycodestyle
+sphinx
+sphinx_rtd_theme
+pycodestyle
+sphinx
+sphinx_rtd_theme
+pytest
+xlrd

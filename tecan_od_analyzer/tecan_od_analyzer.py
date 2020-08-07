@@ -27,7 +27,6 @@ import xlsxwriter
 import datetime
 #TEST
 
-
 __version__ = "0.1.1"
 
 
@@ -150,8 +149,7 @@ def sample_outcome(sample_file, df) : #done
 
 	#Open the file containing sample purposes
 	df_calc = pd.read_csv(sample_file, sep="\t")  #Info about the purpose of the sample (growth rate, volume loss compensation, species and drop-out samples)
-	df_calc = df_calc[df_calc.Drop_out == False]
-	
+	df_calc = df_calc.loc[df_calc["Drop_out"] == False]
 	#Add species and bioshaker labels to every observation
 	cols=["Sample_ID", "Species"]
 	temp_df = df_calc[cols]
@@ -276,7 +274,7 @@ def compensation_lm(cor_df, df_gr) : #done
 	linear = lambda x, a, b: a * x + b
 	sns.set(style="white", palette="muted", color_codes=True)
 	fig = plt.figure()
-	fig.suptitle('Linear models of volume loss correlation to time for different plates', fontweight="bold")
+	fig.suptitle('Volume loss correlation over time', fontweight="bold")
 	#sns.despine(left=True)
 	lm_eq = []
 
@@ -289,15 +287,13 @@ def compensation_lm(cor_df, df_gr) : #done
 		lm_eq.append(popt)
 		
 		ax = fig.add_subplot(math.ceil(len(unique_bioshaker)), math.ceil(len(unique_bioshaker)/2), shaker+1)
-		#ax.get_xaxis().set_visible(True)
-		#ax.get_yaxis().set_visible(True)
 		ax.plot(sub_cor_df["time_hours"], sub_cor_df["Correlation"], "o", label="Empirical data", markerfacecolor='skyblue', markeredgecolor="dodgerblue", alpha= 0.5)
 		ax.plot(sub_cor_df["time_hours"], linear(sub_cor_df ["time_hours"], *popt), "b-", label="Linear model", color = "darkred")
-		ax.set_ylabel('Volume loss correlation', labelpad=10)
+		ax.set_ylabel('Correlation', labelpad=10)
 		ax.set_xlabel('Time (h)', labelpad=10)
-		ax.set_title("\n"+unique_bioshaker[shaker])
-		plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+		ax.set_title("\n"+str(unique_bioshaker[shaker]))
 		plt.tight_layout()
+	plt.legend(bbox_to_anchor=(1.2, 1.1))
 
 
 	#Use the linear models to correct the volume loss by bioshaker
@@ -452,7 +448,6 @@ def gr_estimation(df_gr_final) :
 
 	df_annotations["Parameter"] = ["Start", "End", "Slope", "Intercept", "n0", "SNR", "rank"]
 
-	print("a")
 	for col in range(len(colnames)):
 
 		#Series format for process_curve input
@@ -463,7 +458,6 @@ def gr_estimation(df_gr_final) :
 
 			#Some samples are too noise to handle by the croissance library and raise an error
 			gr_estimation = process_curve(my_series)
-			print("est")
 		except :
 
 			#For those samples that raise errors, the outliers are removed and a series is returned
@@ -475,7 +469,7 @@ def gr_estimation(df_gr_final) :
 		#Dataframe generation with outlier free data
 		df_temp = pd.DataFrame({colnames[col]+'_data':est_series.index, colnames[col]+"_time":est_series.values})
 		df_data_series = pd.concat([df_data_series,df_temp], ignore_index=False, axis=1)
-		print("b")
+		
 		#--Annotated growth curve--
 
 		if colnames[col] in errors or len(gr_estimation[2]) == 0 :
@@ -514,7 +508,6 @@ def gr_estimation(df_gr_final) :
 			#Append Annotations to returned dataframe
 			df_temp_annotations[colnames[col]] = list_annotations
 			df_annotations = pd.concat([df_annotations , df_temp_annotations], ignore_index=False, axis=1)
-			print(col)
 
 	return df_data_series, df_annotations, errors
 

@@ -1,48 +1,24 @@
 # -*- coding: utf-8 -*-
-### Libraries ###
+# Libraries
 import sys
 from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, estimation_writter, stats_summary, interpolation
 from croissance.estimation.outliers import remove_outliers
-import croissance
-from croissance import process_curve
-import numpy as np
 import pandas as pd
-from datetime import datetime
 import re
 import os
 import matplotlib.pyplot as plt 
-import matplotlib
 from pandas import Series
 from matplotlib.pyplot import cm
-import argparse
 import itertools
-import os
 import shutil
 import path
-import xlsxwriter
 import seaborn as sns
-
-
-import pandas as pd
-from datetime import datetime
-import croissance
-from croissance import process_curve
-from croissance.estimation.outliers import remove_outliers
-import re
-import os
-import matplotlib.pyplot as plt 
-import matplotlib
-import numpy as np
 from scipy.optimize import curve_fit
-from croissance.estimation.util import with_overhangs
-from croissance.estimation import regression
 from pandas import Series
-import subprocess
-import sys
-from scipy import interpolate
-from matplotlib.pyplot import cm
+from platform import platform
 
 def main():
+
 
 	pd.set_option('mode.chained_assignment', None)
 
@@ -65,6 +41,7 @@ def main():
 	except FileNotFoundError :
 		sys.exit("Error!\n parsed file not found")
 
+	print(df_raw)
 
 	# ----- LABELLING ACCORDING TO SAMPLE PURPOSE -----
 	
@@ -79,16 +56,19 @@ def main():
 
 
 
+
 	# ----- FORMATING TIME VARIABLE TO DIFFERENTIAL HOURS -----
 
 
 	df_gr = time_formater(df_gr)
 	df_vl = time_formater(df_vl)
 
+	print(df_gr["h"].unique())
+	print(df_vl["h"].unique())
 
 	#Assess different species, this will be used as an argument in the reshape method
 	
-	multiple_species_flag = False
+
 	
 	if len(df_gr["Species"].unique()) > 1 :
 
@@ -97,7 +77,7 @@ def main():
 	else :
 
 		pass
-
+	
 	if os.path.exists("Results") == True :
 
 		shutil.rmtree('Results', ignore_errors=True)
@@ -166,9 +146,7 @@ def main():
 
 
 	# ----- COMPLETE FUNCTIONALITY : ESTIMATIONS, FIGURES AND STATISTICAL SUMMARY -----
-	print((df_gr_final.columns.values))
 
-	print("Reshaping done")
 	
 	if flag_all == True or flag_est == True or flag_sum == True:
 
@@ -176,16 +154,7 @@ def main():
 		# ----- ESTIMATIONS -----
 
 		df_data_series, df_annotations, error_list = gr_estimation(df_gr_final)
-		#a = gr_estimation(df_gr_final)
-		#rint(a)
-		"""
-		print(len(df_data_series.columns.values))
-		print(len(df_annotations.columns.values))
-		print(len(error_list))
 
-		print(set(df_data_series.columns.values).intersection(df_annotations.columns.values, error_list))
-		print(set(df_annotations) & set(error_list))
-		"""
 		estimation_writter(df_data_series, df_annotations, error_list)
 		
 		print("Growth rate phases estimation : DONE")
@@ -195,12 +164,10 @@ def main():
 		
 
 		# ----- SUMMARY STATISTICS ----- 
-		
+
 		#Compute summary statistics
 		summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
-		print(summary_df)
-		print(summary_df["species"])
-		
+
 		#Box plots of annotation growth rate parameters by species and bioshaker
 
 		plt.close()
@@ -393,8 +360,6 @@ def main():
 			
 			else : 
 
-				#print("hehe")
-
 				color_palette = "r"
 
 				if multiple_species_flag == False :
@@ -449,4 +414,3 @@ def main():
 		od_measurements = interpolation("../od_measurements.tsv",df_annotations, mean_df_bs)
 
 		print("Computing optical density estimations : DONE")
-

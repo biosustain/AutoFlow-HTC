@@ -1,7 +1,3 @@
-'''
-test.py
-'''
-
 import pytest
 import unittest
 import pandas as pd
@@ -24,6 +20,8 @@ summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
 od_measurements = interpolation("od_measurements.tsv",df_annotations, mean_df_bs)
 pd.set_option('mode.chained_assignment', None)
 pd.options.mode.chained_assignment = None
+
+
 class test_methods(unittest.TestCase) :
 
 	pd.set_option('mode.chained_assignment', None)
@@ -191,8 +189,6 @@ class test_methods(unittest.TestCase) :
 		"""test the compensation_lm method does not loose samples"""
 		result1, result2 = compensation_lm(cor_df, df_gr_time)
 		self.assertEqual(len(result2), len(df_gr_time))
-		#####Add test for values
-
 
 
 	#----- TEST reshape_gr METHOD -----
@@ -219,7 +215,7 @@ class test_methods(unittest.TestCase) :
 		self.assertIsInstance(result2, pd.DataFrame)
 		self.assertIsInstance(result3, list)
 
-		#Length of outputs
+		# Test not lost samples
 		self.assertGreater(len(result1.columns.names), 0)
 		self.assertEqual(len(set(result1.columns.values).intersection(result2.columns.values, result3)), 0)
 		self.assertEqual(len(set(result2.columns.values) & set(result3)), 0)
@@ -246,10 +242,17 @@ class test_methods(unittest.TestCase) :
 		result = interpolation("od_measurements.tsv", df_annotations, mean_df_bs)
 		expected_result = pd.read_excel("expected_interpolation_results.xlsx")
 		result = pd.read_excel("interpolation_results.xlsx")
+		
 		#output type
 		self.assertIsInstance(result, pd.DataFrame)
-		#Comparison to expected output
-		#self.assertTrue(expected_result["Estimation"].tolist()-0.01<=result["Estimation"].tolist()<= expected_result["Estimation"].tolist()+0.01)
+
+		expected_result = expected_result["Estimation"].tolist()
+		result = result["Estimation"].tolist()
+
+		for i in range(len(result)):
+			
+			#Comparison to expected output
+			self.assertTrue(result[i]-0.5<= expected_result[i]<= result[i]+0.5)
 
 
 

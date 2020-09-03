@@ -215,7 +215,7 @@ class test_methods(unittest.TestCase) :
 		self.assertIsInstance(result2, pd.DataFrame)
 		self.assertIsInstance(result3, list)
 
-		# Test not lost samples
+		# Test all samples are appended either error file or in the annotations file
 		self.assertGreater(len(result1.columns.names), 0)
 		self.assertEqual(len(set(result1.columns.values).intersection(result2.columns.values, result3)), 0)
 		self.assertEqual(len(set(result2.columns.values) & set(result3)), 0)

@@ -25,6 +25,7 @@ from matplotlib.legend_handler import HandlerLine2D
 import seaborn as sns
 import xlsxwriter
 import datetime
+import shutil
 #TEST
 
 __version__ = "0.1.1"
@@ -51,6 +52,8 @@ def argument_parser(argv_list=None):
 	parser.add_argument("-f", "--figures", help="Get only the growth curve figures", action = "store_true")
 	parser.add_argument("-s", "--summary", help="Get only the summary of growth rate estimations",action = "store_true")
 	parser.add_argument("-it", "--interpolation", help="Get interpolation of growth rate measurements with given od", action = "store_true")
+	parser.add_argument("-r", "--resultsdir", help="Name results directory",action='store')
+	parser.add_argument("-p", "--path", help="Path to data",action='store')
 
 	#Visualization arguments
 	
@@ -79,6 +82,8 @@ def argument_parser(argv_list=None):
 		flag_volume_loss = args.volumeloss
 		flag_bioshaker = args.bioshaker
 		flag_interpolation = args.interpolation
+		cmd_dir = args.resultsdir
+		path = args.path
 
 	
 	elif args.estimations == True or args.figures == True or args.summary == True :
@@ -92,12 +97,71 @@ def argument_parser(argv_list=None):
 		flag_volume_loss = args.volumeloss
 		flag_bioshaker = args.bioshaker
 		flag_interpolation = args.interpolation
+		cmd_dir = args.resultsdir
+		path = args.path
+
+	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path
+
+# ------ INTERPRET INPUT ARGUMENTS AND CREATE OUTPUT DIR 
+
+def input_output(cmd_dir, path):
+	'''Interprets input arguments related to the path to the data and output directory
+	Args:
+	cmd_dir : Name of directory where output will be sent
+	path : path where the data is
+	'''
+
+	# Interpret path input
+	if path is None :
+		pass
+
+	else :
+
+		try :
+			os.chdir(str(path))
+
+		except :
+			sys.exit("Entered path does not exist: "+str(path))
 
 
+	# Output directory naming
 
+	if cmd_dir is None :
 
-	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker, flag_interpolation
+		if os.path.exists("Results") == True :
+			shutil.rmtree('Results', ignore_errors=True)
 
+		else :
+			pass
+
+		try:
+			os.mkdir("Results")
+			print ("Successfully created the Results directory")
+			
+
+		except OSError:
+			sys.exit("Error! Creation of the directory failed")
+
+		dir_ = "Results"
+
+	else :
+
+		if os.path.exists(cmd_dir) == True :
+			shutil.rmtree(cmd_dir, ignore_errors=True)
+
+		else :
+			pass
+
+		try:
+			os.mkdir(str(cmd_dir))
+			print (f"Successfully created the {cmd_dir} directory")
+
+		except OSError:
+			sys.exit("Error! Creation of the directory failed")
+
+		dir_ = str(cmd_dir)
+
+	return dir_
 
 
 # ------ PARSE THE DATA USING THE autoflow_parser LIBRARY ------
@@ -149,12 +213,29 @@ def sample_outcome(sample_file, df) : #done
 
 	#Open the file containing sample purposes
 	df_calc = pd.read_csv(sample_file, sep="\t")  #Info about the purpose of the sample (growth rate, volume loss compensation, species and drop-out samples)
+	
+	# Check format consistency across files
+	IDs_parsed = df["Sample_ID"].tolist()
+	IDs_calc = df_calc["Sample_ID"].tolist()
+
+	# Check that two random identifiers are in the calc file
+	if IDs_parsed[0] not in IDs_calc and IDs_parsed[10] not in IDs_calc:
+
+		sys.exit(f"""ERROR : \nThe format of the Sample IDs is not matching across the input files:
+					\n
+					results.xlsx : {IDs_parsed[0]}
+					calc.tsv : {IDs_calc[0]}
+					""")
+
+	# Remove wells to drop
 	df_calc = df_calc.loc[df_calc["Drop_out"] == False]
+
 	#Add species and bioshaker labels to every observation
-	cols=["Sample_ID", "Species"]
+	cols=["Sample_ID", "Species", "Dilution"]
 	temp_df = df_calc[cols]
 	df = pd.merge(df, temp_df, how="left", on="Sample_ID")
 	df["bioshaker"] = df["Sample_ID"].str[0:3]
+	df["Measurement"] = df["Measurement"] * df["Dilution"]
 
 	#Separate samples for growth rate or volume loss according to calc.tsv
 	gr_samples = df_calc.loc[df_calc["calc_gr"] == True]
@@ -249,6 +330,7 @@ def vol_correlation(df_vl): #done
 		df_vl_ID["Correlation"] = df_vl_ID["Measurement"]/init_val
 		cor_df = cor_df.append(df_vl_ID)
 		df_vl_ID = pd.DataFrame()
+
 	
 	return cor_df
 
@@ -275,7 +357,6 @@ def compensation_lm(cor_df, df_gr) : #done
 	sns.set(style="white", palette="muted", color_codes=True)
 	fig = plt.figure()
 	fig.suptitle('Volume loss correlation over time', fontweight="bold")
-	#sns.despine(left=True)
 	lm_eq = []
 
 	
@@ -304,6 +385,11 @@ def compensation_lm(cor_df, df_gr) : #done
 		df_gr_comp["Correlation"] = lm_eq[pos][0]*df_gr_comp["time_hours"]+lm_eq[pos][1]
 		df_gr_comp["Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"]
 		df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
+
+	plt.savefig("lm_volume_loss.png", dpi=250)
+	plt.close()
+	print("Volume loss correction : DONE")
+
 	return fig, df_gr_comp_out
 
 
@@ -568,18 +654,25 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 	
 	#Individual plots
 	if ind == True :
-		x_new = np.linspace(df["time"].min(),df["time"].max(),500)
-		a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
-		y_new = a_BSpline(x_new)
-		plt.figure()
-		plt.plot(x_new,y_new)
+
+		try :
+			x_new = np.linspace(df["time"].min(),df["time"].max(),500)
+			a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
+			y_new = a_BSpline(x_new)
+			plt.figure()
+			plt.plot(x_new,y_new)
+
+		except ValueError:
+			pass
+
 		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31))
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
 		#plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 		plt.tight_layout()
-		return fig, plt.savefig(sample+"_GR_curve.png")
+
+		return fig, plt.savefig(str(sample)+"_GR_curve.png")
 
 	#Create plots by combined by species
 	elif ind == False :
@@ -591,7 +684,7 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 
 		elif legend_ == "species" :
 
-			legend_label = sample[-6:]
+			legend_label = re.search(r"^\S{3}.\d?_?\S{2,3}_(\S+)", sample).group(1)
 
 		else :
 
@@ -604,22 +697,25 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 
 		elif title_ == "species" :
 
-			title_label = sample[-6:]
+			title_label = re.search(r"^\S{3}.\d?_?\S{2,3}_(\S+)", sample).group(1)
 
 		elif title_ == "species_bioshaker" :
 
-			title_label = sample[:3]+"_"+sample[-6:]
+			title_label = sample[:3]+"_"+re.search(r"^\S{3}.\d?_?\S{2,3}_(\S+)", sample).group(1)
 		
 		else :
-			
 			pass
 
+		try :
+			x_new = np.linspace(df["time"].min(),df["time"].max(),500)
+			a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
+			y_new = a_BSpline(x_new)
+			plt.plot(x_new,y_new , color = color_, label=legend_label)
 
-		x_new = np.linspace(df["time"].min(),df["time"].max(),500)
-		a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
-		y_new = a_BSpline(x_new)
-		plt.plot(x_new,y_new , color = color_, label=legend_label)
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31))
+		except ValueError:
+			pass
+
+		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_)
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(title_label), fontname="Arial", fontsize=12)
@@ -684,6 +780,48 @@ def stats_summary(df_annotations) :
 	writer.save()
 
 	return summary_df, mean_df_species, mean_df_bs
+
+def stats_plot(summary_df):
+	'''Box plots of annotation growth rate parameters by species and bioshaker
+	Args: 
+	summary_df : dataframe containing the annotation parameters
+	Return:
+	call: string with status of plots creation
+	'''
+
+	if len(summary_df.index) == 0:
+		call = "Summary statistics plots not computed: No parameters were estimated and thus no plots can be shown"
+		return call
+
+	else :
+		plt.close()
+		sns.boxplot(x="species", y="start", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("start_boxplot",  dpi=250)
+		plt.close()
+
+		plot_end = sns.boxplot(x="species", y="end", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("end_boxplot",  dpi=250)
+		plt.close()
+
+		plot_slope = sns.boxplot(x="species", y="slope", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("slope_boxplot",  dpi=250)
+		plt.close()
+
+		plot_intercep = sns.boxplot(x="species", y="intercep", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("intercept_boxplot",  dpi=250)
+		plt.close()
+
+		plot_n0 = sns.boxplot(x="species", y="n0", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("n0_boxplot",  dpi=250)
+		plt.close()
+
+		plot_SNR = sns.boxplot(x="species", y="SNR", hue="bioshaker", data=summary_df, palette="Pastel1")
+		plt.savefig("SNR_boxplot",  dpi=250)
+		plt.close()
+
+		call = "Summary statistics : DONE"
+
+		return call
 
 
 

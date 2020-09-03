@@ -4,7 +4,6 @@ tecan_od_analyzer's Documentation
 
 .. toctree::
    :maxdepth: 2
-   General documentation <README.rst>
 
 General Documentation
 =====================
@@ -13,7 +12,7 @@ General Documentation
 
 tecan_od_analyzer methods
 =========================
-.. automodule:: tecan_od_analyzer.tecan_od_analyzer
+.. automodule:: tecan_od_analyzer
 	:members:
 
 Indices and tables

@@ -26,6 +26,7 @@ import seaborn as sns
 import xlsxwriter
 import datetime
 import shutil
+from scipy import stats
 #TEST
 
 __version__ = "0.1.1"
@@ -55,16 +56,17 @@ def argument_parser(argv_list=None):
 	parser.add_argument("-r", "--resultsdir", help="Name results directory",action='store')
 	parser.add_argument("-p", "--path", help="Path to data",action='store')
 
+
 	#Visualization arguments
 	
 	parser.add_argument("-b", "--bioshaker", help="Get one growth rate figure for every individual bioshaker", action = "store_true")
 	parser.add_argument("-i", "--individual", help="Get one growth rate figure for every individual sample", action = "store_true")
 	parser.add_argument("-bc", "--bioshakercolor", help="Get one growth rate figure for every species colored by bioshaker", action = "store_true")
-
+	parser.add_argument("-ip", "--interpolationplot", help="Shows interpolation between points on growth rate curves",action='store_true')
 
 	#Volume loss related arguments
 	
-	parser.add_argument("-v", "--volumeloss", help="Volume loss compesation is not computed", action = "store_false")
+	parser.add_argument("-v", "--novolumeloss", help="Volume loss compesation is not computed", action = "store_false")
 	parser.parse_args()
 	args = parser.parse_args(argv_list[1:])
 
@@ -79,11 +81,12 @@ def argument_parser(argv_list=None):
 		flag_fig = False
 		flag_ind = args.individual
 		flag_bioshakercolor = args.bioshakercolor
-		flag_volume_loss = args.volumeloss
+		flag_volume_loss = args.novolumeloss
 		flag_bioshaker = args.bioshaker
 		flag_interpolation = args.interpolation
 		cmd_dir = args.resultsdir
 		path = args.path
+		interpolationplot = args.interpolationplot
 
 	
 	elif args.estimations == True or args.figures == True or args.summary == True :
@@ -94,13 +97,15 @@ def argument_parser(argv_list=None):
 		flag_fig = args.figures
 		flag_ind = args.individual
 		flag_bioshakercolor = args.bioshakercolor
-		flag_volume_loss = args.volumeloss
+		flag_volume_loss = args.novolumeloss
 		flag_bioshaker = args.bioshaker
 		flag_interpolation = args.interpolation
 		cmd_dir = args.resultsdir
 		path = args.path
+		interpolationplot = args.interpolationplot
 
-	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.volumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path
+
+	return flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, args.novolumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path, interpolationplot
 
 # ------ INTERPRET INPUT ARGUMENTS AND CREATE OUTPUT DIR 
 
@@ -221,11 +226,21 @@ def sample_outcome(sample_file, df) : #done
 	# Check that two random identifiers are in the calc file
 	if IDs_parsed[0] not in IDs_calc and IDs_parsed[10] not in IDs_calc:
 
-		sys.exit(f"""ERROR : \nThe format of the Sample IDs is not matching across the input files:
-					\n
-					results.xlsx : {IDs_parsed[0]}
-					calc.tsv : {IDs_calc[0]}
-					""")
+		print(f"""Warning: The format of the Sample IDs is not matching across the input files:
+			\n
+			results.xlsx : {IDs_parsed[0]}
+			calc.tsv : {IDs_calc[0]}\n
+			""")
+		print("The ID format will be redefined to match the results file.")
+		
+		if re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is not None :
+			df_calc["Sample_ID"] = df_calc["Sample_ID"].str.replace(".0_", "_")
+			print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
+
+		elif re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is None:
+			df_calc["Sample_ID"] = df_calc["Sample_ID"].str.replace("_", ".0_")
+			print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
+
 
 	# Remove wells to drop
 	df_calc = df_calc.loc[df_calc["Drop_out"] == False]
@@ -376,7 +391,6 @@ def compensation_lm(cor_df, df_gr) : #done
 		plt.tight_layout()
 	plt.legend(bbox_to_anchor=(1.2, 1.1))
 
-
 	#Use the linear models to correct the volume loss by bioshaker
 	df_gr_comp = pd.DataFrame()
 	df_gr_comp_out = pd.DataFrame()
@@ -441,9 +455,49 @@ def reshape_dataframe(df_gr, flag_species = False, flag_bioshaker = False) :
 		df_gr_final = pd.concat([df_gr_final,column2], ignore_index=False, axis=1)
 
 
-	if flag_species == False :
-
+	if flag_species == False and flag_bioshaker == False:
 		return df_gr_final
+
+	elif flag_species == False and flag_bioshaker == True:
+
+		df_gr_temp["Sample_ID"] = df_gr_temp["Sample_ID"]+"_"+df_gr_temp["Species"]
+		unique_species = df_gr_temp["Species"].unique()
+		unique_bioshaker = (df_gr_temp["Sample_ID"].str[0:3]).unique()
+		cols = ["Sample_ID", "Measurement", "time_hours", "Species"]	#relevant variables
+		df_gr = df_gr_temp[cols]
+
+		list_df_species = []
+		df_gr_final_list = []
+		df_temp = pd.DataFrame()
+
+		for pos in range(len(unique_bioshaker)) :
+
+			df_temp = df_gr[df_gr_temp.Sample_ID.str.contains(unique_bioshaker[pos])]
+			list_df_species.append(df_temp)
+
+			for df in list_df_species :
+
+				unique_IDs = df["Sample_ID"].unique()
+				unique_times = df["time_hours"].unique()
+				df_fin = pd.DataFrame()
+				#Initialize new dataframe
+				#An ID column is created for the measurement of every sample and another column timeID is created to relate it to the times
+				
+				for i in range(len(unique_IDs)) :
+
+					m_list = df.loc[df["Sample_ID"] == unique_IDs[i], "Measurement"].tolist()
+					column1 = pd.DataFrame({unique_IDs[i] : m_list})
+					t_list = df.loc[df["Sample_ID"] == unique_IDs[i], "time_hours"].tolist()
+					column2 = pd.DataFrame({"time_"+unique_IDs[i] : t_list})
+					df_fin = pd.concat([df_fin,column1], ignore_index=False, axis=1)
+					df_fin = pd.concat([df_fin,column2], ignore_index=False, axis=1)
+					column1 = pd.DataFrame()
+					column2 = pd.DataFrame()
+
+				df_gr_final_list.append(df_fin)
+
+		return df_gr_final, df_gr_final_list
+
 
 	else :
 	
@@ -467,7 +521,6 @@ def reshape_dataframe(df_gr, flag_species = False, flag_bioshaker = False) :
 					df_temp = df_gr[df_gr.Species.str.contains(unique_species[pos1])]
 					df_temp = df_temp[df_temp.Sample_ID.str.contains(unique_bioshaker[pos2])]
 					df_temp = df_temp.drop(columns=["Species"])
-
 					list_df_species.append(df_temp)
 
 		elif flag_bioshaker == False :
@@ -636,7 +689,7 @@ def estimation_writter(df_data_series, df_annotations, error_list) :
 # ----- PLOTTING GROWTH RATE CURVE -----
 
 
-def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", title_ = "species" ) :
+def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ = "bioshaker", title_ = "species") :
 	'''Generates a growth curve plot for a given series for common species, returns the plot.
 	
 	Args:
@@ -655,21 +708,22 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 	#Individual plots
 	if ind == True :
 
-		try :
-			x_new = np.linspace(df["time"].min(),df["time"].max(),500)
-			a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
-			y_new = a_BSpline(x_new)
-			plt.figure()
-			plt.plot(x_new,y_new)
+		if interpolationplot == True :
+			try :
+				x_new = np.linspace(df["time"].min(),df["time"].max(),500)
+				a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
+				y_new = a_BSpline(x_new)
+				plt.figure()
+				plt.plot(x_new,y_new)
 
-		except ValueError:
-			pass
+			except ValueError:
+				pass
 
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31))
+		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), label=legend_label)
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
-		#plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
+		plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 		plt.tight_layout()
 
 		return fig, plt.savefig(str(sample)+"_GR_curve.png")
@@ -706,16 +760,17 @@ def gr_plots(df, sample, color_ = None, ind = False, legend_ = "bioshaker", titl
 		else :
 			pass
 
-		try :
-			x_new = np.linspace(df["time"].min(),df["time"].max(),500)
-			a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
-			y_new = a_BSpline(x_new)
-			plt.plot(x_new,y_new , color = color_, label=legend_label)
+		if interpolationplot == True :
+			try:
+				x_new = np.linspace(df["time"].min(),df["time"].max(),500)
+				a_BSpline = interpolate.make_interp_spline(df["time"], df[sample])
+				y_new = a_BSpline(x_new)
+				plt.plot(x_new,y_new , color = color_, label=legend_label)
 
-		except ValueError:
-			pass
-
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_)
+			except ValueError:
+				pass
+		
+		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label)
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(title_label), fontname="Arial", fontsize=12)

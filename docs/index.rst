@@ -4,11 +4,11 @@ tecan_od_analyzer's Documentation
 
 .. toctree::
    :maxdepth: 2
-   General documentation <../README.rst>
+   General documentation <README.rst>
 
 General Documentation
 =====================
-.. include::  ../README.rst
+.. include::  README.rst
 
 
 tecan_od_analyzer methods

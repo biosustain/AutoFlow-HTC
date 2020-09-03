@@ -13,7 +13,7 @@ General Documentation
 
 tecan_od_analyzer methods
 =========================
-.. automodule:: tecan_od_analyzer.tecan_od_analyzer
+.. automodule:: ..tecan_od_analyzer.tecan_od_analyzer
 	:members:
 
 Indices and tables

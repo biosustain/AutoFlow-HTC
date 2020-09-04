@@ -75,8 +75,8 @@ Furthermore, to classify the samples, a file where the purpose of each sample fi
 
 | Sample_ID | gr_calc | vl_calc | Species      | Drop_out | Dilution |
 |-----------|---------|---------|--------------|----------|----------|
-| BS1.A1    | TRUE    | FALSE   | <species_id1> | TRUE     | integer  |
-| BS1.A2    | FALSE   | TRUE    | <species_id2>          | FALSE    | integer |
+| BS1.A1    | TRUE    | FALSE   | <species_id1> | TRUE     | float  |
+| BS1.A2    | FALSE   | TRUE    | <species_id2>          | FALSE    | float |
 | ...       | ...     | ...     | ...          | ...      | ...      |
 
 
@@ -105,7 +105,7 @@ The different options can be consulted by typing : ``tecan_od_analyzer --help`` 
 
 ## Results
 
-It must be noted that all the time units will appear in hours. 
+It must be noted that all the time units will appear in hours. The Results directory contains an example of the data obtained by running the program with the following command : ``tecan_od_analyzer -bc``
 
 ### Figures : 
 

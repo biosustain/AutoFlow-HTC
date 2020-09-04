@@ -36,6 +36,10 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ##### Options :
 
+``tecan_od_analyzer --resultsdir RESULTSDIR`` specifies where the result will be redirected can be a directory name or a path.
+
+``tecan_od_analyzer --path PATH`` specifies where the data is, without the option the program runs in the path where it is executed.
+
 ``tecan_od_analyzer --estimations``     Outputs only estimations for every sample in a text file.
 
 ``tecan_od_analyzer --figures``         Outputs only the growth curves.
@@ -47,6 +51,8 @@ The default command produces growth phase estimation, summary statistics on the 
 ``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and species.
 
 ``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and colors by bioshaker.
+
+``tecan_od_analyser --interpolationplot``  Outputs Growth rate curves instead of scatter plots.
 
 ``tecan_od_analyser --interpolation``   Computes interpolation of samples given the measure time and outputs an xlsx file with the estimations.
 
@@ -63,11 +69,11 @@ In order to run the program the user has to execute it where the data is. The in
 Furthermore, to classify the samples, a file where the purpose of each sample figures is needed. This file must be a tab-separated file (.tsv) with the following format :
 
 
-| Sample_ID | gr_calc | vl_calc | Species      | Drop_out |
-|-----------|---------|---------|--------------|----------|
-| BS1.A1    | TRUE    | FALSE   | <species_id1> | TRUE     |
-| BS1.A2    | FALSE   | TRUE    | <species_id2>          | FALSE    |
-| ...       | ...     | ...     | ...          | ...      |
+| Sample_ID | gr_calc | vl_calc | Species      | Drop_out | Dilution |
+|-----------|---------|---------|--------------|----------|----------|
+| BS1.A1    | TRUE    | FALSE   | <species_id1> | TRUE     | integer  |
+| BS1.A2    | FALSE   | TRUE    | <species_id2>          | FALSE    | integer |
+| ...       | ...     | ...     | ...          | ...      | ...      |
 
 
 It is important that the headers of every column must be written as it can be seen in the table. Concerning the Sample_ID, the bioshaker must appear at the beggining of the string.
@@ -92,6 +98,30 @@ The plots can be customized by selecting how to group the samples and combine th
 
 
 The different options can be consulted by typing : ``tecan_od_analyzer --help`` or ``tecan_od_analyzer -h``
+
+## Results
+
+It must be noted that all the time units will appear in hours. 
+
+### Figures : 
+
+- Plot of volume loss correlation against the time. ``lm_volume_loss.png``
+
+- Growth rate measurements according to the specified options. The name will change depending on the plotting option. It usually contains the sample ID and the bioshaker.
+
+- Boxplots of the linear phase parameters for splitted by species and bioshakers. Some of the parameters are the intercept, the beggining and end of the linear phase, slope, etc.
+
+
+### Estimations / Linear phase estimations:
+
+- Linear phase annotations `` annotations.xlsx`` file containing the linear phase estimated parameters for all samples.
+- errors.txt  file containing the list of samples for which the linear phase estimation resulted in an error.
+- Data_series.xlsx   file containing all the data points after dilution and volume loss correction. The outliers have also been removed.
+
+
+### Summary statistics:
+
+- summary_stats.xlsx file containing summary statistics of the estimated parameters grouping by species, by bioshaker and both.
 
 ## Contributing
 

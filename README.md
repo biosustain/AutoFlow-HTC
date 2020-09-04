@@ -9,7 +9,9 @@ provided by the user. The labelling helps to differentiate the sample purpose, i
 
 Once the samples are labelled according to the experiment, the volume loss throughout the culture is estimated and its effect is neutralized using a simple regression model. The next step concerns the outlier detection and growth phase estimation, which are done by using the croissance package. Subsequently, growth rate plots and summary statistics are also computed. The library also provides the functionality of interpolating OD measurements on processed samples at any given time.
 
-A web page with a method docstrings can be found here : https://autoflow-htc.readthedocs.io/en/latest/
+### Documentation 
+
+Additional documentation can be found following this url link : https://autoflow-htc.readthedocs.io/en/latest/
 
 
 ## Installation

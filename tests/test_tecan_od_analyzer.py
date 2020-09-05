@@ -4,28 +4,45 @@ import pandas as pd
 import pandas.api.types as ptypes
 import pandas.testing 
 import re
+import pickle
 
 from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation
-
-"""The tests must run on some data, please provide an xlsx file as a result of the parsing and a file with the sample purpose named as 'calc.tsv' in the directory where the test is"""
-df_gr, df_vl = sample_outcome("calc.tsv",read_xlsx())
-df_gr_time = time_formater(df_gr)
-df_vl_time = time_formater(df_vl)
-cor_df = vol_correlation(df_vl_time)
-
-fig, df_gr_comp = compensation_lm(cor_df, df_gr_time)
-df_gr_final = reshape_dataframe(df_gr_comp)
-df_data_series, df_annotations, errors = gr_estimation(df_gr_final)
-summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
-od_measurements = interpolation("od_measurements.tsv",df_annotations, mean_df_bs)
-pd.set_option('mode.chained_assignment', None)
-pd.options.mode.chained_assignment = None
 
 
 class test_methods(unittest.TestCase) :
 
-	pd.set_option('mode.chained_assignment', None)
-	pd.options.mode.chained_assignment = None
+
+	# Create method to compare dataframes
+	def assertDataframeEqual(self, a, b, msg):
+		try:
+			pd.testing.assert_frame_equal(a, b)
+		except AssertionError as e:
+			raise self.failureException(msg) from e
+
+	def setUp(self):
+		file_obj = open('test_data.obj', 'rb') 
+		df_gr, df_vl, df_gr_time, df_vl_time, cor_df, fig, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation = pickle.load(file_obj)
+		file_obj.close()
+
+		self.df_gr = df_gr
+		self.df_vl = df_vl
+		self.df_gr_time = df_gr_time
+		self.df_vl_time = df_vl_time
+		self.cor_df = cor_df
+		self.fig = fig
+		self.df_gr_comp = df_gr_comp
+		self.df_gr_final = df_gr_final
+		self.df_data_series = df_data_series
+		self.df_annotations = df_annotations
+		self.errors = errors
+		self.summary_df = summary_df
+		self.mean_df_species = mean_df_species
+		self.mean_df_bs = mean_df_bs
+		self.od_measurements = od_measurements
+		self.estimation = estimation
+
+		# Add the method to compare dataframes in the class
+		self.addTypeEqualityFunc(pd.DataFrame, self.assertDataframeEqual)
 
 	#----- TEST ARGUMENT PARSER METHOD -----
 	
@@ -36,7 +53,7 @@ class test_methods(unittest.TestCase) :
 		#Check default input (no optional arguments)
 		argv_list = []
 		argv_list.append("tecan_od_analyzer")
-		flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker, flag_interpolation  = argument_parser(argv_list)
+		flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path, flag_interpolationplot = argument_parser(argv_list)
 		self.assertTrue(flag_all)
 		self.assertFalse(flag_est)
 		self.assertFalse(flag_sum)
@@ -46,6 +63,7 @@ class test_methods(unittest.TestCase) :
 		self.assertFalse(flag_bioshakercolor)
 		self.assertTrue(flag_volumeloss)
 		self.assertFalse(flag_interpolation)
+		self.assertFalse(flag_interpolationplot)
 
 	
 	def test_argument_parser_non_default(self) :
@@ -55,7 +73,7 @@ class test_methods(unittest.TestCase) :
 		arg_2 = "-s"
 		argv_list.append(arg_1)
 		argv_list.append(arg_2)
-		flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker, flag_interpolation  = argument_parser(argv_list)
+		flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, flag_volumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path, flag_interpolationplot = argument_parser(argv_list)
 		self.assertFalse(flag_all)
 		self.assertFalse(flag_est)
 		self.assertTrue(flag_sum)
@@ -65,6 +83,7 @@ class test_methods(unittest.TestCase) :
 		self.assertFalse(flag_bioshakercolor)
 		self.assertTrue(flag_volumeloss)
 		self.assertFalse(flag_interpolation)
+		self.assertFalse(flag_interpolationplot)
 
 
 
@@ -87,9 +106,17 @@ class test_methods(unittest.TestCase) :
 		"""test that 2 dataframes are returned and correspond to unique OD measurements"""
 		file = read_xlsx()
 		result1, result2 = sample_outcome("calc.tsv", file)
+		result_1, result_2 = self.df_gr, self.df_vl
+
+		# Output type
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertIsInstance(result2, pd.DataFrame)
 
+		# Consistency of the method
+		self.assertEqual(result1, result_1)
+		self.assertEqual(result2, result_2)
+
+	
 	
 	def test_sample_outcome_output_contains_unique_OD_measurement(self):
 		"""test that the 2 dataframes returned contain only one type of measurement and that the measurement corresponds to the sample purpose"""
@@ -97,6 +124,7 @@ class test_methods(unittest.TestCase) :
 		result1, result2 = sample_outcome("calc.tsv", file)
 		unique_OD_1 = result1["Measurement_type"].unique()
 		unique_OD_2 = result2["Measurement_type"].unique()
+		
 		self.assertEqual(len(unique_OD_1), 1)
 		self.assertEqual(len(unique_OD_1), 1)
 		self.assertEqual(unique_OD_1, "OD600")
@@ -120,17 +148,19 @@ class test_methods(unittest.TestCase) :
 
 	def test_time_formater_is_float(self):
 		"""test that the expected time format is created on a given dataframe as a float variable"""
-		result1 = time_formater(df_gr)
+		result1 = time_formater(self.df_gr)
+		result_1 = self.df_gr_time
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertTrue(ptypes.is_float_dtype(result1["time_hours"]))
+		self.assertEqual(result1, result_1)
 	
 
 	def test_gr_time_format_equal_row_length(self): 
 		"""test that the row length of the input and output dataframe is the same"""
-		result1 = time_formater(df_gr)
+		result1 = self.df_gr_time
 		#Add test for numbers
 		#Add test for different days
-		self.assertEqual(len(result1["Sample_ID"]),len(df_gr["Sample_ID"]))
+		self.assertEqual(len(result1["Sample_ID"]),len(self.df_gr["Sample_ID"]))
 
 	def test_time_formater_numeric(self):
 		"""test function by comparing with a known output given different times, dates, samples and bioshakers"""
@@ -144,27 +174,30 @@ class test_methods(unittest.TestCase) :
 
 	def test_volume_loss_correlation_returned_variable(self):
 		"""test that the returned variables are dataframes with correlation column containing floats"""
-		result1 = vol_correlation(df_vl_time)
+		result1 = vol_correlation(self.df_vl_time)
+		result_1 = self.cor_df
 		colnames1 = (result1.columns.values)
+
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertIn("Correlation", colnames1)
 		self.assertTrue(ptypes.is_float_dtype(result1["Correlation"]))
+		self.assertEqual(result1, result_1)
 
 
 	def test_volume_loss_correlation_correctness(self):
 		"""test that the correlation is computed by dividing the first OD time point on every other value belonging to the same bioshaker"""
-		result1 = vol_correlation(df_vl_time)
+		result1 = vol_correlation(self.df_vl_time)
 		
 		#Assess manually the row containing the first OD time point and bioshaker
-		t0_value_row = df_vl_time.iloc[0]
+		t0_value_row = self.df_vl_time.iloc[0]
 		t0_sample = t0_value_row["Sample_ID"]
 
 		#Subset the df_time to 20 rows to compute the correlation with less data and we make sure they only contain the same bioshaker as in t0
-		df_vl_temp = df_vl_time[df_vl_time["Sample_ID"] == t0_sample]
+		df_vl_temp = self.df_vl_time[self.df_vl_time["Sample_ID"] == t0_sample]
 		
 		#Compute the correlation manually and with the method we are testing
 		man_result = df_vl_temp["Measurement"] / t0_value_row["Measurement"]
-		method_result = vol_correlation(df_vl_time)
+		method_result = vol_correlation(self.df_vl_time)
 		method_result = method_result[method_result["Sample_ID"] == t0_sample]
 		method_result = method_result["Correlation"]
 		
@@ -176,19 +209,20 @@ class test_methods(unittest.TestCase) :
 
 	def test_compensation_lm(self):
 		"""test the compensation_lm method outputs"""
-
-		result1, result2 = compensation_lm(cor_df, df_gr_time)
+		result1, result2 = compensation_lm(self.cor_df, self.df_gr_time)
+		result_1, result_2 = self.fig, self.df_gr_comp
 		colnames = (result2.columns.values)
+
 		self.assertIsNotNone(result1)
 		self.assertIsInstance(result2, pd.DataFrame)
 		self.assertIn("Measurement", colnames)
 		self.assertTrue(ptypes.is_float_dtype(result2["Measurement"]))
-
+		self.assertEqual(result2, result_2)
 
 	def test_compensation_lm_check_not_loosen_samples(self):
 		"""test the compensation_lm method does not loose samples"""
-		result1, result2 = compensation_lm(cor_df, df_gr_time)
-		self.assertEqual(len(result2), len(df_gr_time))
+		result1, result2 = self.fig, self.df_gr_comp
+		self.assertEqual(len(result2), len(self.df_gr_time))
 
 
 	#----- TEST reshape_gr METHOD -----
@@ -196,10 +230,12 @@ class test_methods(unittest.TestCase) :
 
 	def test_reshape_dataframe(self):
 		"""test the reshape method, checks that output is a dataframe and that all the Sample_IDs are contained and no variables are lost"""
-		result = reshape_dataframe(df_gr_comp)
-		original_IDs = df_gr_comp["Sample_ID"].unique()
+		result = reshape_dataframe(self.df_gr_comp)
+		result_ = self.df_gr_final
+		original_IDs = self.df_gr_comp["Sample_ID"].unique()
 		colnames = (result.columns.values)
 		self.assertIsInstance(result, pd.DataFrame)
+		self.assertEqual(result, result_)
 
 
 
@@ -208,8 +244,9 @@ class test_methods(unittest.TestCase) :
 	
 	def test_gr_estimation(self):
 		"""test the estimation method, checks that that the ouputs consists of two df"""
-		result1, result2, result3 = gr_estimation(df_gr_final)
-		
+		result1, result2, result3 = self.df_data_series, self.df_annotations, self.errors 
+		result_1, result_2, result_3 = gr_estimation(self.df_gr_final)
+
 		#data type assertion
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertIsInstance(result2, pd.DataFrame)
@@ -221,28 +258,27 @@ class test_methods(unittest.TestCase) :
 		self.assertEqual(len(set(result2.columns.values) & set(result3)), 0)
 
 
-
 	#----- TEST stats_summary METHOD -----
 
 	def test_stats_summary(self):
 		"""test the stats summary method"""
-		result1, result2, result3 = stats_summary(df_annotations)
+		result1, result2, result3 = stats_summary(self.df_annotations)
+		result_1, result_2, result_3 = self.summary_df, self.mean_df_species, self.mean_df_bs
+
 		#output type
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertIsInstance(result2, pd.DataFrame)
 		self.assertIsInstance(result3, pd.DataFrame)
 		
-		expected_result = pd.read_excel("expected_summary_stats.xlsx")
-		result = pd.read_excel("summary_stats.xlsx")
 		#Comparison to expected output
-		pd.testing.assert_frame_equal(result, expected_result)
+
+
 
 	def test_interpolation(self):
 		"""test the interpolation method"""
-		result = interpolation("od_measurements.tsv", df_annotations, mean_df_bs)
-		expected_result = pd.read_excel("expected_interpolation_results.xlsx")
-		result = pd.read_excel("interpolation_results.xlsx")
-		
+		result = interpolation("od_measurements.tsv", self.df_annotations, self.mean_df_bs)
+		expected_result = self.od_measurements
+
 		#output type
 		self.assertIsInstance(result, pd.DataFrame)
 
@@ -252,8 +288,13 @@ class test_methods(unittest.TestCase) :
 		for i in range(len(result)):
 			
 			#Comparison to expected output
-			self.assertTrue(result[i]-0.5<= expected_result[i]<= result[i]+0.5)
+			self.assertTrue(result[i] == expected_result[i])
 
+	def test_exponential(self):
+		"""test the exponential method"""
+		result = exponential(1, 2, 3, 0)
+		result_ = self.estimation
+		self.assertEqual(result, result_)
 
 
 if __name__ == '__main__':

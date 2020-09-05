@@ -29,7 +29,7 @@ import shutil
 from scipy import stats
 #TEST
 
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 
 
@@ -231,15 +231,19 @@ def sample_outcome(sample_file, df) : #done
 			results.xlsx : {IDs_parsed[0]}
 			calc.tsv : {IDs_calc[0]}\n
 			""")
-		print("The ID format will be redefined to match the results file.")
 		
 		if re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is not None :
 			df_calc["Sample_ID"] = df_calc["Sample_ID"].str.replace(".0_", "_")
+			print("The ID format will be redefined to match the results file.")
 			print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
 
 		elif re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is None:
 			df_calc["Sample_ID"] = df_calc["Sample_ID"].str.replace("_", ".0_")
+			print("The ID format will be redefined to match the results file.")
 			print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
+
+		else :
+			sys.exit("The ID format of the calc.tsv file could not be converted to match the results.xlsx file")
 
 
 	# Remove wells to drop
@@ -648,6 +652,14 @@ def gr_estimation(df_gr_final) :
 			df_temp_annotations[colnames[col]] = list_annotations
 			df_annotations = pd.concat([df_annotations , df_temp_annotations], ignore_index=False, axis=1)
 
+	if len(errors) > 0 and len(list_annotations) != 0:
+
+		print("\nSome samples linear phase could not be estimated, the list of non estimated samples can be seen in the estimation_logfile.txt\n")
+
+	elif len(errors) > 0 and len(list_annotations) == 0:
+
+		print("\nNone of the samples linear phase could be estimated due to noisy data\n")
+
 	return df_data_series, df_annotations, errors
 
 
@@ -671,11 +683,10 @@ def estimation_writter(df_data_series, df_annotations, error_list) :
 	df_data_series.to_excel(r'Data_series.xlsx', header = True,index = False)
 	df_annotations.to_excel(r'Annotations.xlsx', header = True, index = False)
 
-	outfile = open('errors.txt', 'w')
-	
-
+	outfile = open('estimations_logfile.txt', 'w')
 
 	outfile.write("List of non estimated samples :\n")
+	
 	for error in error_list :
 
 		outfile.write(error+"\n")
@@ -886,8 +897,6 @@ def exponential(x, intercep, slope, n0):
 	return estimation
 
 
-
-
 def interpolation(od_measurements, df_annotations, mean_df_bs):
 	'''Interpolates the values of given od readings and returns growth rate measurements.
 	
@@ -972,25 +981,3 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
 	od_measurements.to_excel(r'interpolation_results.xlsx', header = True,index = False)
 
 	return od_measurements
-		
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -352,5 +352,4 @@ def main():
 		od_measurements = interpolation("../od_measurements.tsv",df_annotations, mean_df_bs)
 
 		print("Computing optical density estimations : DONE")
-
-		
+	

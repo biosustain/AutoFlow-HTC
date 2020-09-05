@@ -4,7 +4,7 @@
 # This script is intended to generate sample data and save them into the test_data file. The saved objects will then be used to test the tecan_od_analyzer using unit testing.
 import pickle
 import pandas as pd
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation
+from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation, exponential
 
 pd.set_option('mode.chained_assignment', None)
 # Use pickle to save python variables

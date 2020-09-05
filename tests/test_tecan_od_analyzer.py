@@ -6,7 +6,7 @@ import pandas.testing
 import re
 import pickle
 
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation
+from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation, exponential
 
 
 class test_methods(unittest.TestCase) :

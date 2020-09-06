@@ -21,7 +21,7 @@ class test_methods(unittest.TestCase) :
 
 	def setUp(self):
 		file_obj = open('test_data.obj', 'rb') 
-		df_gr, df_vl, df_gr_time, df_vl_time, cor_df, fig, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation = pickle.load(file_obj)
+		df_gr, df_vl, df_gr_time, df_vl_time, cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation = pickle.load(file_obj)
 		file_obj.close()
 
 		self.df_gr = df_gr
@@ -29,7 +29,6 @@ class test_methods(unittest.TestCase) :
 		self.df_gr_time = df_gr_time
 		self.df_vl_time = df_vl_time
 		self.cor_df = cor_df
-		self.fig = fig
 		self.df_gr_comp = df_gr_comp
 		self.df_gr_final = df_gr_final
 		self.df_data_series = df_data_series
@@ -210,7 +209,7 @@ class test_methods(unittest.TestCase) :
 	def test_compensation_lm(self):
 		"""test the compensation_lm method outputs"""
 		result1, result2 = compensation_lm(self.cor_df, self.df_gr_time)
-		result_1, result_2 = self.fig, self.df_gr_comp
+		result_2 = self.df_gr_comp
 		colnames = (result2.columns.values)
 
 		self.assertIsNotNone(result1)
@@ -221,7 +220,7 @@ class test_methods(unittest.TestCase) :
 
 	def test_compensation_lm_check_not_loosen_samples(self):
 		"""test the compensation_lm method does not loose samples"""
-		result1, result2 = self.fig, self.df_gr_comp
+		result2 = self.df_gr_comp
 		self.assertEqual(len(result2), len(self.df_gr_time))
 
 

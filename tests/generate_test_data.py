@@ -22,6 +22,6 @@ summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
 od_measurements = interpolation("od_measurements.tsv",df_annotations, mean_df_bs)
 estimation = exponential(1, 2, 3, 0)
 
-pickle.dump([df_gr, df_vl, df_gr_time, df_vl_time, cor_df, fig, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation], filehandler)
+pickle.dump([df_gr, df_vl, df_gr_time, df_vl_time, cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation], filehandler)
 
 filehandler.close()

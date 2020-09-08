@@ -88,7 +88,7 @@ def main():
 	# Reshape data for croissance input
 	
 	#If only one species one dataframe is returned only
-	if multiple_species_flag == False and flag_bioshaker == False:
+	if multiple_species_flag == False and flag_bioshaker == False and flag_bioshakercolor == False:
 		df_gr_final = reshape_dataframe(df_gr, flag_species = multiple_species_flag, flag_bioshaker = False)
 
 	

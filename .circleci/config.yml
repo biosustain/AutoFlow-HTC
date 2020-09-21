@@ -40,8 +40,9 @@ jobs:
       - run:
           name: Install Python Dependencies
           command : |
-            pip install -r requirements.txt
-            pip install -e .
+            pip install -r requirements.txt --ignore-installed certifi
+            pip install -e . --ignore-installed certifi
+
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:

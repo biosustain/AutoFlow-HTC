@@ -80,7 +80,7 @@ def main():
 	else : 
 		print("Volume loss correction : NOT COMPUTED")
 
-		bioshakers = df_gr["biosahker"].unique()
+		bioshakers = df_gr["bioshaker"].unique()
 	
 	
 	# ----- DATA RESHAPING FOR CROISSANCE INPUT REQUIREMENTS -----

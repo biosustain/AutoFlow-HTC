@@ -1,0 +1,4 @@
+List of non estimated samples :
+BS3.0_D3_SIJ216
+BS3.0_D7_MG1655
+BS3.0_D9_SIJ216

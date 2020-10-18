@@ -13,6 +13,10 @@ jobs:
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
+          name: Install linux dependencies
+          command : |
+            sudo apt-get install gfortran libopenblas-dev liblapack-dev
+      - run:
           name: Install Python Dependencies
           command : |
             python3 -m venv venv

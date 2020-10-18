@@ -8,6 +8,8 @@ import pickle
 
 from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, stats_summary, interpolation, exponential
 
+import pathlib
+current_dir = str(pathlib.Path(__file__).parent.absolute())
 
 class test_methods(unittest.TestCase) :
 
@@ -20,7 +22,7 @@ class test_methods(unittest.TestCase) :
 			raise self.failureException(msg) from e
 
 	def setUp(self):
-		file_obj = open('test_data.obj', 'rb') 
+		file_obj = open(current_dir + '/data/test_data.obj', 'rb') 
 		df_gr, df_vl, df_gr_time, df_vl_time, cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation = pickle.load(file_obj)
 		file_obj.close()
 
@@ -91,7 +93,7 @@ class test_methods(unittest.TestCase) :
 
 	def test_read_parsed_xlsx_is_dataframe(self):
 		"""test that returned objected is a dataframe with 5 columns"""
-		result = read_xlsx()
+		result = read_xlsx(current_dir + "/data/results.xlsx")
 		cols = len(result.columns)
 		self.assertIsInstance(result, pd.DataFrame)
 		self.assertEqual(cols, 5)
@@ -103,8 +105,8 @@ class test_methods(unittest.TestCase) :
 
 	def test_sample_outcome_output_is_dataframe(self):
 		"""test that 2 dataframes are returned and correspond to unique OD measurements"""
-		file = read_xlsx()
-		result1, result2 = sample_outcome("calc.tsv", file)
+		file = read_xlsx(current_dir + "/data/results.xlsx")
+		result1, result2 = sample_outcome(current_dir + "/data/calc.tsv", file)
 		result_1, result_2 = self.df_gr, self.df_vl
 
 		# Output type
@@ -119,8 +121,8 @@ class test_methods(unittest.TestCase) :
 	
 	def test_sample_outcome_output_contains_unique_OD_measurement(self):
 		"""test that the 2 dataframes returned contain only one type of measurement and that the measurement corresponds to the sample purpose"""
-		file = read_xlsx()
-		result1, result2 = sample_outcome("calc.tsv", file)
+		file = read_xlsx(current_dir + "/data/results.xlsx")
+		result1, result2 = sample_outcome(current_dir + "/data/calc.tsv", file)
 		unique_OD_1 = result1["Measurement_type"].unique()
 		unique_OD_2 = result2["Measurement_type"].unique()
 		
@@ -132,9 +134,9 @@ class test_methods(unittest.TestCase) :
 
 	def test_sample_outcome_drop_out_wells_not_in_output(self) :
 		"""test that drop_put wells are not included in the returned dataframe"""
-		file = read_xlsx()
-		result1, result2 = sample_outcome("calc.tsv", file)
-		df_calc = df_calc = pd.read_csv("calc.tsv", sep="\t")
+		file = read_xlsx(current_dir + "/data/results.xlsx")
+		result1, result2 = sample_outcome(current_dir + "/data/calc.tsv", file)
+		df_calc = df_calc = pd.read_csv(current_dir + "/data/calc.tsv", sep="\t")
 		dropped_wells = df_calc[df_calc.Drop_out == True]
 		
 		if dropped_wells.empty == False :
@@ -163,7 +165,7 @@ class test_methods(unittest.TestCase) :
 
 	def test_time_formater_numeric(self):
 		"""test function by comparing with a known output given different times, dates, samples and bioshakers"""
-		output = pd.read_csv("test_time_formater.tsv", sep='\t')
+		output = pd.read_csv(current_dir + "/data/test_time_formater.tsv", sep='\t')
 		timeformated = time_formater(output)
 		#compare known output with processed input
 		self.assertEqual(timeformated["Known_output"].tolist(), timeformated["time_hours"].tolist())
@@ -275,7 +277,7 @@ class test_methods(unittest.TestCase) :
 
 	def test_interpolation(self):
 		"""test the interpolation method"""
-		result = interpolation("od_measurements.tsv", self.df_annotations, self.mean_df_bs)
+		result = interpolation(current_dir + "/data/od_measurements.tsv", self.df_annotations, self.mean_df_bs)
 		expected_result = self.od_measurements
 
 		#output type

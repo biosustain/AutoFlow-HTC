@@ -18,6 +18,7 @@ jobs:
           name: Install Python Dependencies
           command : |
             pip install --upgrade pip
+            pip install cython
             pip install --no-use-pep517 -r requirements.txt
             pip install -e .
             pip install git+https://github.com/meono/croissance

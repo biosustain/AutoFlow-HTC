@@ -21,7 +21,7 @@ setup(
     description = ("OD data handling for growth curve estimation and visualization of TECAN OD readings"),
     long_description = long_description, 
     long_description_content_type="text/markdown",
-    url = "https://github.com/felixpacheco/AutoFlow-HTC/tree/felix_HTC",
+    url = "https://github.com/Biosustain/AutoFlow-HTC",
     packages=setuptools.find_packages(),
     entry_points = {
         "console_scripts": ["tecan_od_analyzer = tecan_od_analyzer.__main__:main"]

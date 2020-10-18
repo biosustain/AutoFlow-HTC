@@ -10,12 +10,19 @@ jobs:
     executor: python/default
     steps:
       - checkout
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install linux dependencies
+          command : |
+            sudo apt-get install gfortran libopenblas-dev liblapack-dev
       - run:
           name: Install Python Dependencies
           command : |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
             pip install -r requirements.txt
-            pip install -e .
-            pip install git+https://github.com/meono/croissance
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
@@ -23,6 +30,7 @@ jobs:
       - run:
           name : Run Unit Tests
           command: |
+            . venv/bin/activate
             cd tests
             python3 test_tecan_od_analyzer.py
 

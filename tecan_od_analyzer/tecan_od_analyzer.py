@@ -218,6 +218,8 @@ def sample_outcome(sample_file, df) : #done
 
 	#Open the file containing sample purposes
 	df_calc = pd.read_csv(sample_file, sep="\t")  #Info about the purpose of the sample (growth rate, volume loss compensation, species and drop-out samples)
+	
+	# Remove whitespaces in Sample_IDs
 	df["Sample_ID"] = df["Sample_ID"].str.replace(" ","")
 	df_calc["Sample_ID"] = df_calc["Sample_ID"].str.replace(" ","")
 

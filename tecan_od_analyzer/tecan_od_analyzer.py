@@ -734,7 +734,7 @@ def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ =
 			except ValueError:
 				pass
 
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), label=legend_label)
+		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), label=sample)
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
@@ -785,7 +785,7 @@ def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ =
 			except ValueError:
 				pass
 		
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label)
+		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label, linestyle='-')
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
 		plt.title("Growth rate curve of "+str(title_label), fontname="Arial", fontsize=12)

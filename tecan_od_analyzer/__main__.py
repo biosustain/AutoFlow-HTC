@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Libraries
 import sys
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, estimation_writter, stats_summary, interpolation, input_output, stats_plot
+from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, vol_correlation, compensation_lm, gr_estimation, estimation_writter, stats_summary, interpolation, input_output, stats_plot, step_gr_calculator
 from croissance.estimation.outliers import remove_outliers
 import pandas as pd
 import re
@@ -130,7 +130,30 @@ def main():
 		# Compute plot of the annotation parameters
 		status = stats_plot(summary_df)
 		print(status)
-		
+
+
+	# ----- CALCULATION OF GROWTH RATES BETWEEN EACH POINT ----- 
+
+	df_gr_est = df_gr_final.loc[:,~df_gr_final.columns.str.startswith('time')]
+	colnames = (df_gr_est.columns.values)
+
+	os.mkdir('Temporary_GR_check')
+	outfile = open('Temporary_GR_check/stepwise_growth_rates.txt', 'w')
+
+	for col in range(len(colnames)):
+		my_series = pd.Series(data = (df_gr_final[colnames[col]]).tolist(), index= df_gr_final["time_"+colnames[col]].tolist())
+		my_series = Series.dropna(my_series)
+		df = pd.DataFrame({"time":my_series.index, colnames[col]:my_series.values})
+		sample_name, rates, times = step_gr_calculator(df)
+		outfile.write("Sample name: " + sample_name + "\n")
+		for cnt, rate in enumerate(rates):
+			outfile.write("T2 time point: " + str(times[cnt]) + "\n")
+			outfile.write("GR T1 to T2: " + str(rates[cnt]) + "\n")
+	
+	outfile.close()
+
+	print("Calculating specific growth rates for each interval : DONE")
+
 
 	if flag_all == True or flag_fig == True :
 

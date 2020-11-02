@@ -699,6 +699,33 @@ def estimation_writter(df_data_series, df_annotations, error_list) :
 	
 	return None
 
+# ----- CALCULATING GROWTH RATE FOR EACH TIME POINT -----
+
+def step_gr_calculator(df):
+	sample_name = df.columns.values[1]
+	rates = []
+	times = []
+	for i, row_val in enumerate(df.iloc[:,1]):
+		if i == 0:
+			continue
+		else:
+			previous_val = df.iloc[:,1][i-1]
+			previous_time = df.iloc[:,0][i-1]
+			time_val = df.iloc[:,0][i]
+			gr = (np.log(row_val) - np.log(previous_val))/(time_val - previous_time)
+			rates.append(gr)
+			times.append(time_val)
+	
+	fig = plt.scatter(times,rates,5, facecolor=(.18, .31, .31), label=sample_name)
+	plt.violinplot(rates, positions=[0], showmeans=True, showextrema=True)
+	plt.plot(times,rates,linestyle='-', color=(.18, .31, .31), alpha=.25)
+	plt.ylabel('Growth rate ($h^{-1}$)', fontname="Arial", fontsize=12)
+	plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
+	plt.title("Growth rates of "+sample_name, fontname="Arial", fontsize=12)
+	plt.tight_layout()
+	plt.savefig('Temporary_GR_check/Temporary_GR_check_' + str(sample_name) + "_GRs.png")
+	plt.close()
+	return sample_name, rates, times, fig
 
 
 # ----- PLOTTING GROWTH RATE CURVE -----

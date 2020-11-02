@@ -15,4 +15,5 @@ sphinx
 sphinx_rtd_theme
 pytest
 xlrd
+wheel
 git+https://github.com/meono/croissance

@@ -1,4 +1,3 @@
-pip==18.1
 numpy
 matplotlib
 pandas==1.1.1

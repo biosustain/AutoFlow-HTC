@@ -725,7 +725,7 @@ def step_gr_calculator(df):
 	plt.tight_layout()
 	plt.savefig('Temporary_GR_check/Temporary_GR_check_' + str(sample_name) + "_GRs.png")
 	plt.close()
-	return sample_name, rates, times, fig
+	return sample_name, rates, times
 
 
 # ----- PLOTTING GROWTH RATE CURVE -----

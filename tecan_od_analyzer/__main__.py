@@ -138,19 +138,25 @@ def main():
 	colnames = (df_gr_est.columns.values)
 
 	os.mkdir('Temporary_GR_check')
-	outfile = open('Temporary_GR_check/stepwise_growth_rates.txt', 'w')
+
+	step_df = pd.DataFrame(columns = ['Sample_name', 'T2', 'GR_T1_to_T2'])
 
 	for col in range(len(colnames)):
 		my_series = pd.Series(data = (df_gr_final[colnames[col]]).tolist(), index= df_gr_final["time_"+colnames[col]].tolist())
 		my_series = Series.dropna(my_series)
 		df = pd.DataFrame({"time":my_series.index, colnames[col]:my_series.values})
 		sample_name, rates, times = step_gr_calculator(df)
-		outfile.write("Sample name: " + sample_name + "\n")
+
 		for cnt, rate in enumerate(rates):
-			outfile.write("T2 time point: " + str(times[cnt]) + "\n")
-			outfile.write("GR T1 to T2: " + str(rates[cnt]) + "\n")
-	
-	outfile.close()
+
+			temp_step_df = pd.DataFrame({'Sample_name':[sample_name], 'T2':[times[cnt]], 'GR_T1_to_T2':[rates[cnt]]})
+
+			step_df = step_df.append(temp_step_df)
+
+	# Create a Pandas Excel writer using XlsxWriter as the engine.
+	writer = pd.ExcelWriter('Temporary_GR_check/stepwise_growth_rates.xlsx', engine='xlsxwriter')
+	step_df.to_excel(writer, sheet_name='growth_rates', index=False)
+	writer.save()
 
 	print("Calculating specific growth rates for each interval : DONE")
 

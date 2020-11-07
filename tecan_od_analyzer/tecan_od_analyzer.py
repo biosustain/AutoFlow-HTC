@@ -270,9 +270,10 @@ def sample_outcome(sample_file, df) : #done
 	df_gr = df[df.Sample_ID.isin(gr_samples)]
 	df_gr = df_gr.loc[df_gr["Measurement_type"] == "OD600"]
 	df_vl = df[df.Sample_ID.isin(vol_loss_samples)]
-	df_vl = df_vl.loc[df_vl["Measurement_type"] == "OD450"]
-	
-	return df_gr, df_vl
+	df_vl450 = df_vl.loc[df_vl["Measurement_type"] == "OD450"]
+	df_vl600 = df_vl.loc[df_vl["Measurement_type"] == "OD600"]
+
+	return df_gr, df_vl450, df_vl600
 
 
 
@@ -362,7 +363,7 @@ def vol_correlation(df_vl): #done
 # ------ VOLUME LOSS COMPENSATION FOR EVERY SAMPLE ------
 
 
-def compensation_lm(cor_df, df_gr) : #done
+def compensation_lm(cor_df, df_gr, df_vl600) : #done
 	''' Given the correlation between volume and time, a linear model is built and plotted, the correction is applied to the growth measurements using the linear model, returns a figure with the LM and a dataframe with the corrected growth rate measurements.
 	
 	Args:
@@ -402,10 +403,28 @@ def compensation_lm(cor_df, df_gr) : #done
 	#Use the linear models to correct the volume loss by bioshaker
 	df_gr_comp = pd.DataFrame()
 	df_gr_comp_out = pd.DataFrame()
+	# prepare df for background correction
+	df_gr_background = pd.DataFrame()
 	for pos in range(len(lm_eq)) :
 		df_gr_comp = df_gr[df_gr["bioshaker"] ==  unique_bioshaker[pos]]
-		df_gr_comp["Correlation"] = lm_eq[pos][0]*df_gr_comp["time_hours"]+lm_eq[pos][1]
-		df_gr_comp["Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"]
+		
+		# The following two loops are there for background correction
+		# get OD600 values of volume correction samples to use for background correction
+		df_gr_background = df_vl600[df_vl600["bioshaker"] ==  unique_bioshaker[pos]]
+		sample_IDs = list(df_gr_comp['Sample_ID'].unique())
+		for sample in sample_IDs:
+			df_gr_comp_sample_limited = df_gr_comp[df_gr_comp['Sample_ID'] == sample]
+			times = list(df_gr_comp['time_hours'][df_gr_comp['Sample_ID'] == sample].unique())
+			for time in times:
+				df_gr_comp_sample_time_limited = df_gr_comp_sample_limited[df_gr_comp_sample_limited['time_hours'] == time]
+				df_gr_comp_index = df_gr_comp_sample_time_limited.index[0]
+				df_gr_background_time_limited = df_gr_background[df_gr_background['time_hours'] == time]
+				background_mean = np.mean(df_gr_background_time_limited["Measurement"])
+				df_gr_comp["Measurement"].loc[df_gr_comp_index] = df_gr_comp["Measurement"].loc[df_gr_comp_index] - background_mean
+
+		df_gr_comp["Correlation"] = lm_eq[pos][0]*df_gr_comp["time_hours"]+lm_eq[pos][1] # Should this just be 1? Or the normalized initial value
+		#df_gr_comp["Measurement"] = df_gr_comp["Measurement"]*df_gr_comp["Correlation"] # I guess this should be divided rather than multiplied
+		df_gr_comp["Measurement"] = df_gr_comp["Measurement"]/df_gr_comp["Correlation"]
 		df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
 
 	plt.savefig("lm_volume_loss.png", dpi=250)

@@ -44,7 +44,7 @@ def main():
 
 	#Separate data depending on sample purpose (growth rate or volume loss)
 	try :
-		df_gr, df_vl = sample_outcome("calc.tsv", df_raw)
+		df_gr, df_vl450, df_vl600 = sample_outcome("calc.tsv", df_raw)
 
 	except FileNotFoundError :
 		sys.exit("Error!\n calc.tsv file not found")
@@ -54,7 +54,8 @@ def main():
 
 
 	df_gr = time_formater(df_gr)
-	df_vl = time_formater(df_vl)
+	df_vl450 = time_formater(df_vl450)
+	df_vl600 = time_formater(df_vl600)
 
 	# Assess different species, this will be used as an argument in the reshape method
 	if len(df_gr["Species"].unique()) > 1 :
@@ -72,10 +73,9 @@ def main():
 	if flag_volumeloss == True :
 
 		#Compute correlation for every sample 
-		cor_df = vol_correlation(df_vl)
-
+		cor_df = vol_correlation(df_vl450)
 		#Compute compensation
-		fig, df_gr = compensation_lm(cor_df, df_gr)
+		fig, df_gr = compensation_lm(cor_df, df_gr, df_vl600)
 	
 	else : 
 		print("Volume loss correction : NOT COMPUTED")

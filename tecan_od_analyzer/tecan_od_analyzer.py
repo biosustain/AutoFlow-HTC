@@ -750,7 +750,7 @@ def step_gr_calculator(df):
 # ----- PLOTTING GROWTH RATE CURVE -----
 
 
-def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ = "bioshaker", title_ = "species") :
+def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ = "bioshaker", title_ = "species", separate_species = False) :
 	'''Generates a growth curve plot for a given series for common species, returns the plot.
 	
 	Args:
@@ -784,7 +784,7 @@ def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ =
 		plt.plot(df["time"],df[sample],linestyle='-', color=(.18, .31, .31), alpha=.25)
 		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
 		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
-		plt.title("Growth rate curve of "+str(sample), fontname="Arial", fontsize=12)
+		plt.title("Growth curve of "+str(sample), fontname="Arial", fontsize=12)
 		plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
 		plt.tight_layout()
 
@@ -832,12 +832,22 @@ def gr_plots(df, sample,interpolationplot, color_ = None, ind = False, legend_ =
 			except ValueError:
 				pass
 		
-		fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label, linestyle='-')
-		plt.plot(df["time"],df[sample],linestyle='-', color=color_, alpha=.1)
-		plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
-		plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
-		plt.title("Growth rate curve of "+str(title_label), fontname="Arial", fontsize=12)
-		plt.tight_layout()
+		if separate_species:
+			fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label, linestyle='-')
+			plt.plot(df["time"],df[sample],linestyle='-', color=color_, alpha=.1)
+			plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
+			plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
+			plt.title("Growth curves of all species", fontname="Arial", fontsize=12)
+			plt.tight_layout()
+		
+
+		else:	
+			fig = plt.scatter(df["time"],df[sample],5, facecolor=(.18, .31, .31), color = color_, label=legend_label, linestyle='-')
+			plt.plot(df["time"],df[sample],linestyle='-', color=color_, alpha=.1)
+			plt.ylabel('Absorbance (OD)', fontname="Arial", fontsize=12)
+			plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
+			plt.title("Growth curve of "+str(title_label), fontname="Arial", fontsize=12)
+			plt.tight_layout()
 		
 		return fig
 

@@ -352,6 +352,7 @@ def main():
 					plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
 				else :
+					# ADD COMBINATION PLOT HERE IF ALL OF THEM SHOULD BE IN THE SAME ONE
 
 					for df_gr_final in df_gr_final_list :
 						df_gr_est = df_gr_final.loc[:,~df_gr_final.columns.str.startswith('time')]
@@ -372,6 +373,35 @@ def main():
 						bioshaker_ = last_name[:3]
 						species_ = re.search(r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
 						plt.savefig(species_+"_GR_curve.png",  dpi=250)
+					
+					df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
+					df_gr_est = df_gr_final_total.loc[:,~df_gr_final_total.columns.str.startswith('time')]
+					colnames = (df_gr_est.columns.values)
+				
+					plt.figure()
+					species_list = []
+
+					color_palette = ["r", "b", "y", "g", "m", "c"]
+					for col in range(len(colnames)):
+						
+						bioshaker_label = re.search(r"([B][S]\d)",colnames[col]).group(1)
+						my_series = pd.Series(data = (df_gr_final_total[colnames[col]]).tolist(), index= df_gr_final_total["time_"+colnames[col]].tolist())
+						my_series = Series.dropna(my_series)
+						clean_series = remove_outliers(my_series)[0]	#Extract series without outliers
+						df = pd.DataFrame({"time":clean_series.index, colnames[col]:clean_series.values})
+						last_name = colnames[col]
+						bioshaker_ = last_name[:3]
+						species_ = re.search(r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
+						species_list.append(species_)
+						species_list= list(set(species_list))
+						col_nr = len(species_list) - 1
+						gr_plots(df, colnames[col], color_ = color_palette[col_nr], legend_ = "species", title_ = "species", interpolationplot=interpolationplot, separate_species = True)
+
+					plt.savefig("Combined_GR_curve.png",  dpi=250)
+
+
+
+
 
 		print("Plotting growth curves : DONE")
 

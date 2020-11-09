@@ -1,4 +1,5 @@
 xcode
+python3-dev
 numpy
 matplotlib
 pandas==1.1.1

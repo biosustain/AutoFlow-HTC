@@ -1,5 +1,7 @@
 xcode
-python3-dev
+setuptools
+Cython
+wheel
 numpy
 matplotlib
 pandas==1.1.1
@@ -17,5 +19,4 @@ sphinx
 sphinx_rtd_theme
 pytest
 xlrd
-wheel
 git+https://github.com/meono/croissance

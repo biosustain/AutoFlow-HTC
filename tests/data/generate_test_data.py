@@ -11,17 +11,20 @@ pd.set_option('mode.chained_assignment', None)
 filehandler = open("test_data.obj", 'wb') 
 
 # Generate variables to save
-df_gr, df_vl = sample_outcome("calc.tsv",read_xlsx())
+df_gr, df_vl450, df_vl600 = sample_outcome("calc.tsv", read_xlsx())
 df_gr_time = time_formater(df_gr)
-df_vl_time = time_formater(df_vl)
+df_vl_time = time_formater(df_vl450)
 cor_df = vol_correlation(df_vl_time)
-fig, df_gr_comp = compensation_lm(cor_df, df_gr_time)
+fig, df_gr_comp = compensation_lm(cor_df, df_gr_time, df_vl600)
 df_gr_final = reshape_dataframe(df_gr_comp)
 df_data_series, df_annotations, errors = gr_estimation(df_gr_final)
 summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
 od_measurements = interpolation("od_measurements.tsv",df_annotations, mean_df_bs)
 estimation = exponential(1, 2, 3, 0)
 
-pickle.dump([df_gr, df_vl, df_gr_time, df_vl_time, cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation], filehandler)
+pickle.dump([df_gr, df_vl450, df_vl600, df_gr_time, df_vl_time, cor_df,
+            df_gr_comp, df_gr_final, df_data_series, df_annotations, errors,
+            summary_df, mean_df_species, mean_df_bs, od_measurements,
+            estimation], filehandler)
 
 filehandler.close()

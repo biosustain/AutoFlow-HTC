@@ -22,12 +22,16 @@ class test_methods(unittest.TestCase) :
 			raise self.failureException(msg) from e
 
 	def setUp(self):
-		file_obj = open(current_dir + '/data/test_data.obj', 'rb') 
-		df_gr, df_vl, df_gr_time, df_vl_time, cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, summary_df, mean_df_species, mean_df_bs, od_measurements, estimation = pickle.load(file_obj)
+		file_obj = open(current_dir + '/data/test_data.obj', 'rb')
+		df_gr, df_vl450, df_vl600, df_gr_time, df_vl_time, cor_df, df_gr_comp, \
+			df_gr_final, df_data_series, df_annotations, errors, summary_df, \
+			mean_df_species, mean_df_bs, od_measurements, \
+			estimation = pickle.load(file_obj)
 		file_obj.close()
 
 		self.df_gr = df_gr
-		self.df_vl = df_vl
+		self.df_vl450 = df_vl450
+		self.df_vl600 = df_vl600
 		self.df_gr_time = df_gr_time
 		self.df_vl_time = df_vl_time
 		self.cor_df = cor_df
@@ -106,16 +110,18 @@ class test_methods(unittest.TestCase) :
 	def test_sample_outcome_output_is_dataframe(self):
 		"""test that 2 dataframes are returned and correspond to unique OD measurements"""
 		file = read_xlsx(current_dir + "/data/results.xlsx")
-		result1, result2 = sample_outcome(current_dir + "/data/calc.tsv", file)
-		result_1, result_2 = self.df_gr, self.df_vl
+		result1, result2, result3 = sample_outcome(current_dir + "/data/calc.tsv", file)
+		result_1, result_2, result_3 = self.df_gr, self.df_vl450, self.df_vl600
 
 		# Output type
 		self.assertIsInstance(result1, pd.DataFrame)
 		self.assertIsInstance(result2, pd.DataFrame)
+		self.assertIsInstance(result3, pd.DataFrame)
 
 		# Consistency of the method
 		self.assertEqual(result1, result_1)
 		self.assertEqual(result2, result_2)
+		self.assertEqual(result3, result_3)
 
 	
 	

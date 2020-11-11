@@ -275,7 +275,8 @@ def sample_outcome(sample_file, df):
                 converted to match the results.xlsx file")
 
     # Remove wells to drop
-    df_calc = df_calc.loc[not df_calc["Drop_out"]]
+    df_calc["Drop_out"] = [not elem for elem in df_calc["Drop_out"]]
+    df_calc = df_calc.loc[df_calc["Drop_out"]]
 
     # Add species and bioshaker labels to every observation
     cols = ["Sample_ID", "Species", "Dilution"]

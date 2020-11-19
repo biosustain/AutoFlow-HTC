@@ -17,4 +17,5 @@ sphinx_rtd_theme
 pytest
 xlrd
 pandas
+warnings
 git+https://github.com/meono/croissance

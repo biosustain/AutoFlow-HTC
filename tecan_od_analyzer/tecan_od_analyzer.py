@@ -6,6 +6,7 @@
 
 # Libraries #
 import pandas as pd
+# process_curve causes issues or one of the test data sets
 from croissance import process_curve
 from croissance.estimation.outliers import remove_outliers
 import re
@@ -20,6 +21,8 @@ import math
 import argparse
 import seaborn as sns
 import shutil
+import warnings
+from scipy.optimize import OptimizeWarning
 
 # Additional calls that were listed but not used (remove later)
 # from datetime import datetime
@@ -703,16 +706,18 @@ def gr_estimation(df_gr_final):
             index=df_gr_final["time_"+colnames[col]].tolist())
 
         # Estimation computation
-        try:
-            # Some samples are too noise to handle by the croissance library
-            # and raise an error
-            gr_estimation = process_curve(my_series)
-        except AssertionError:
-
-            # For those samples that raise errors, the outliers are removed and
-            # a series is returned
-            gr_estimation = remove_outliers(my_series)
-            errors.append(colnames[col])
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", OptimizeWarning)
+            try:
+                # Some samples are too noise to handle by the croissance
+                # library and raise an error
+                gr_estimation = process_curve(my_series)
+            # except AssertionError:
+            except OptimizeWarning:
+                # For those samples that raise errors, the outliers
+                # are removed and a series is returned
+                gr_estimation = remove_outliers(my_series)
+                errors.append(colnames[col])
 
         # --Outlier free series--
         est_series = gr_estimation[0]

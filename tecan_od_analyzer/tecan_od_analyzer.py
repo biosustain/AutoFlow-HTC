@@ -844,10 +844,12 @@ def step_gr_calculator(df):
         plt.plot(times, rates, linestyle='-', color=(.18, .31, .31), alpha=.25)
         plt.ylabel('Growth rate ($h^{-1}$)', fontname="Arial", fontsize=12)
         plt.xlabel('Time (h)', fontname="Arial", fontsize=12)
-        plt.title("Growth rates of "+sample_name, fontname="Arial", fontsize=12)
+        plt.title(
+            "Growth rates of "+sample_name, fontname="Arial", fontsize=12)
         plt.tight_layout()
-        plt.savefig('Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
-                    "_GRs.png")
+        plt.savefig(
+            'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
+            "_GRs.png")
         plt.close()
     return sample_name, rates, times
 

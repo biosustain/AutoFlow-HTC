@@ -35,6 +35,7 @@ class test_methods(unittest.TestCase):
         self.df_vl600 = df_vl600
         self.df_gr_time = df_gr_time
         self.df_vl_time = df_vl_time
+        self.df_vl600_time = df_vl600_time
         self.cor_df = cor_df
         self.df_gr_comp = df_gr_comp
         self.df_gr_final = df_gr_final

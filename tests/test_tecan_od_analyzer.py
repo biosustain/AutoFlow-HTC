@@ -148,7 +148,8 @@ class test_methods(unittest.TestCase):
         type of measurement and that the measurement corresponds
         to the sample purpose"""
         file = read_xlsx(current_dir + "/data/results.xlsx")
-        result1, result2, result3 = sample_outcome(current_dir + "/data/calc.tsv", file)
+        result1, result2, result3 = sample_outcome(current_dir +
+                                                   "/data/calc.tsv", file)
         unique_OD_1 = result1["Measurement_type"].unique()
         unique_OD_2 = result2["Measurement_type"].unique()
         unique_OD_3 = result3["Measurement_type"].unique()
@@ -164,7 +165,8 @@ class test_methods(unittest.TestCase):
         """test that drop_put wells are not included in the
         returned dataframe"""
         file = read_xlsx(current_dir + "/data/results.xlsx")
-        result1, result2, result3 = sample_outcome(current_dir + "/data/calc.tsv", file)
+        result1, result2, result3 = sample_outcome(current_dir +
+                                                   "/data/calc.tsv", file)
         df_calc = df_calc = pd.read_csv(
             current_dir + "/data/calc.tsv", sep="\t")
         dropped_wells = df_calc[df_calc.Drop_out]
@@ -269,11 +271,11 @@ class test_methods(unittest.TestCase):
         that all the Sample_IDs are contained and no variables are lost"""
         result = reshape_dataframe(self.df_gr_comp)
         result_ = self.df_gr_final
-        original_IDs = self.df_gr_comp["Sample_ID"].unique()
-        colnames = (result.columns.values)
+        # original_IDs = self.df_gr_comp["Sample_ID"].unique()
+        # colnames = (result.columns.values)
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(result, result_)
-        ### Add ID test
+        # Add ID test
 
     # ----- TEST gr_estimation METHOD -----
 
@@ -310,7 +312,6 @@ class test_methods(unittest.TestCase):
         self.assertIsInstance(result2, pd.DataFrame)
         self.assertIsInstance(result3, pd.DataFrame)
 
-        ### Added this here, let's see if it works
         # Comparison to expected output
         self.assertEqual(result1, result_1)
         self.assertEqual(result2, result_2)
@@ -339,6 +340,8 @@ class test_methods(unittest.TestCase):
         result = exponential(1, 2, 3, 0)
         result_ = self.estimation
         self.assertEqual(result, result_)
+
+
 """
     def test_background_correction(self, cor_df, df_gr, df_vl600):
 

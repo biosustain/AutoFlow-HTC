@@ -1,6 +1,6 @@
 # generate test_data
-# Last date : 5 Sept 2020
-# By : Felix Pacheco (s192496@student.dtu.dk)
+# Last date : 20 Nov 2020
+# By : Matthias Mattanovich (matmat@biosustain.dtu.dk)
 # This script is intended to generate sample data and save them into the
 # test_data file. The saved objects will then be used to test the
 # tecan_od_analyzer using unit testing.

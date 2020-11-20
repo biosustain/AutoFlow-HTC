@@ -109,8 +109,9 @@ class test_methods(unittest.TestCase):
                             data={"Test": ["", "ab", "cde",
                                            "B.02", "fg"]},
                             columns=["Test"])
+        test_df = pd.DataFrame(space_test_df["Test"].str.replace(" ", ""))
         self.assertEqual(
-            ctrl_test_df, space_test_df["Test"].str.replace(" ", ""))
+            ctrl_test_df, test_df)
 
     # ----- TEST read_xlsx METHOD -----
 

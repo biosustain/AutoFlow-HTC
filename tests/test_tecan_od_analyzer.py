@@ -24,9 +24,9 @@ class test_methods(unittest.TestCase):
 
     def setUp(self):
         file_obj = open(current_dir + '/data/test_data.obj', 'rb')
-        df_gr, df_vl450, df_vl600, df_gr_time, df_vl_time, cor_df, \
-            df_gr_comp, df_gr_final, df_data_series, df_annotations, errors, \
-            summary_df, mean_df_species, mean_df_bs, od_measurements, \
+        df_gr, df_vl450, df_vl600, df_gr_time, df_vl_time, df_vl600_time, \
+            cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations, \
+            errors, summary_df, mean_df_species, mean_df_bs, od_measurements, \
             estimation = pickle.load(file_obj)
         file_obj.close()
 

@@ -478,7 +478,8 @@ def compensation_lm(cor_df, df_gr, df_vl600):  # done
             df_gr_comp["Correlation"]
         df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
 
-    plt.savefig("lm_volume_loss.png", dpi=250)
+    # plt.savefig("lm_volume_loss.png", dpi=250)
+    plt.savefig("lm_volume_loss.svg", dpi=250)
     plt.close()
     print("Volume loss correction : DONE")
 
@@ -847,9 +848,12 @@ def step_gr_calculator(df):
         plt.title(
             "Growth rates of "+sample_name, fontname="Arial", fontsize=12)
         plt.tight_layout()
+        # plt.savefig(
+        #     'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
+        #     "_GRs.png")
         plt.savefig(
             'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
-            "_GRs.png")
+            "_GRs.svg")
         plt.close()
     return sample_name, rates, times
 
@@ -870,7 +874,7 @@ def gr_plots(df, sample, interpolationplot, color_=None, ind=False,
 
     Returns:
         fig: object containing the figure
-        plt.savefig: saving the figure as a png file
+        plt.savefig: saving the figure as a png or svg file
     '''
 
     # Create plots individually
@@ -903,7 +907,8 @@ def gr_plots(df, sample, interpolationplot, color_=None, ind=False,
         plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
         plt.tight_layout()
 
-        return fig, plt.savefig(str(sample)+"_GR_curve.png")
+        # return fig, plt.savefig(str(sample)+"_GR_curve.png")
+        return fig, plt.savefig(str(sample)+"_GR_curve.svg")
 
     # Create plots by combined by species
     elif not ind:
@@ -1057,7 +1062,8 @@ def stats_plot(summary_df):
         plt.close()
         sns.boxplot(x="species", y="start", hue="bioshaker", data=summary_df,
                     palette="Pastel1")
-        plt.savefig("start_boxplot",  dpi=250)
+        # plt.savefig("start_boxplot",  dpi=250)
+        plt.savefig("start_boxplot.svg",  dpi=250)
         plt.close()
 
         # plot_end = sns.boxplot(x="species", y="end", hue="bioshaker",

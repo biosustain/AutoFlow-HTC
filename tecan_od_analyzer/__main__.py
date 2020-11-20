@@ -285,7 +285,8 @@ def main():
 
                         plt.legend(bbox_to_anchor=(1.05, 1.0),
                                    loc='upper left')
-                        plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                        # plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                        plt.savefig(species_+"_GR_curve.svg",  dpi=250)
 
                 # Plots when more than one species is present
 
@@ -343,7 +344,8 @@ def main():
                         species_name = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
                         # species_name = last_name[-6:]
-                        plt.savefig(species_name+"_GR_curve.png",  dpi=250)
+                        # plt.savefig(species_name+"_GR_curve.png",  dpi=250)
+                        plt.savefig(species_name+"_GR_curve.svg",  dpi=250)
 
             # Get plots split by species and bioshaker
 
@@ -382,8 +384,10 @@ def main():
                         bioshaker_ = last_name[:3]
                         species_ = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
+                        # plt.savefig(
+                        #     bioshaker_+"_"+species_+"_GR_curve.png", dpi=250)
                         plt.savefig(
-                            bioshaker_+"_"+species_+"_GR_curve.png", dpi=250)
+                            bioshaker_+"_"+species_+"_GR_curve.svg", dpi=250)
 
             # Default plot without bioshaker coloring (combined by species and
             # containing the two bioshakers undiferentiated)
@@ -423,7 +427,8 @@ def main():
                     species_ = re.search(
                         r"^\S{3}.\d?_?\S{2,3}_(\S+)",
                         last_name).group(1)
-                    plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                    # plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                    plt.savefig(species_+"_GR_curve.svg",  dpi=250)
 
                 else:
                     # ADD COMBINATION PLOT HERE IF ALL OF THEM SHOULD BE IN
@@ -458,7 +463,8 @@ def main():
                         bioshaker_ = last_name[:3]
                         species_ = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
-                        plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                        # plt.savefig(species_+"_GR_curve.png",  dpi=250)
+                        plt.savefig(species_+"_GR_curve.svg",  dpi=250)
 
                     df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
                     df_gr_est = df_gr_final_total.loc[
@@ -496,7 +502,8 @@ def main():
                                  interpolationplot=interpolationplot,
                                  separate_species=True)
 
-                    plt.savefig("Combined_GR_curve.png",  dpi=250)
+                    # plt.savefig("Combined_GR_curve.png",  dpi=250)
+                    plt.savefig("Combined_GR_curve.svg",  dpi=250)
 
         print("Plotting growth curves : DONE")
 

@@ -122,6 +122,7 @@ def argument_parser(argv_list=None):
         cmd_dir = args.resultsdir
         path = args.path
         interpolationplot = args.interpolationplot
+        flag_svg = args.exportsvg
 
     return flag_all, flag_est, flag_sum, flag_fig, flag_ind, \
         flag_bioshakercolor, args.novolumeloss, flag_bioshaker, \

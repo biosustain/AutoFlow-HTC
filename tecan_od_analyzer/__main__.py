@@ -37,7 +37,7 @@ def main():
 
     flag_all, flag_est, flag_sum, flag_fig, flag_ind, flag_bioshakercolor, \
         flag_volumeloss, flag_bioshaker, flag_interpolation, cmd_dir, path, \
-        interpolationplot = argument_parser(argv_list=sys.argv)
+        interpolationplot, flag_svg = argument_parser(argv_list=sys.argv)
 
     # path input and output directory creation
     dir_ = input_output(cmd_dir, path)
@@ -86,7 +86,8 @@ def main():
         # Compute correlation for every sample
         cor_df = vol_correlation(df_vl450)
         # Compute compensation
-        fig, df_gr = compensation_lm(cor_df, df_gr, df_vl600)
+        fig, df_gr = compensation_lm(cor_df, df_gr, df_vl600,
+                                     flag_svg=flag_svg)
 
     else:
         print("Volume loss correction : NOT COMPUTED")
@@ -143,7 +144,7 @@ def main():
         summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
 
         # Compute plot of the annotation parameters
-        status = stats_plot(summary_df)
+        status = stats_plot(summary_df, flag_svg=flag_svg)
         print(status)
 
     # ----- CALCULATION OF GROWTH RATES BETWEEN EACH POINT -----
@@ -162,7 +163,8 @@ def main():
         my_series = Series.dropna(my_series)
         df = pd.DataFrame({"time": my_series.index,
                            colnames[col]: my_series.values})
-        sample_name, rates, times = step_gr_calculator(df)
+        sample_name, rates, times = step_gr_calculator(df,
+                                                       flag_svg=flag_svg)
 
         for cnt, rate in enumerate(rates):
 
@@ -204,7 +206,8 @@ def main():
                 df = pd.DataFrame({"time": clean_series.index,
                                    colnames[col]: clean_series.values})
                 # plot = gr_plots(df, colnames[col], ind = True,
-                #                 interpolationplot=interpolationplot)
+                #                 interpolationplot=interpolationplot,
+                #                 flag_svg=flag_svg)
                 plt.close()
 
         # Get plots combined together by species
@@ -259,7 +262,8 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="bioshaker", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
                                 start_leg = (colnames[col])[:3]
 
                             # New Bioshaker
@@ -268,7 +272,8 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="bioshaker", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
                                 start_leg = (colnames[col])[:3]
 
                             # Repeated bioshaker
@@ -276,7 +281,8 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="exclude", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
 
                         last_name = colnames[col]
                         bioshaker_ = last_name[:3]
@@ -285,8 +291,10 @@ def main():
 
                         plt.legend(bbox_to_anchor=(1.05, 1.0),
                                    loc='upper left')
-                        # plt.savefig(species_+"_GR_curve.png",  dpi=250)
-                        plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                        if flag_svg:
+                            plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                        else:
+                            plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
                 # Plots when more than one species is present
 
@@ -320,7 +328,8 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="bioshaker", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
                                 start_leg = (colnames[col])[:3]
 
                             # New Bioshaker
@@ -329,7 +338,8 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="bioshaker", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
                                 start_leg = (colnames[col])[:3]
 
                             # Repeated bioshaker
@@ -337,15 +347,18 @@ def main():
                                 gr_plots(df, colnames[col],
                                          color_=color_dict[bioshaker_label],
                                          legend_="exclude", title_="species",
-                                         interpolationplot=interpolationplot)
+                                         interpolationplot=interpolationplot,
+                                         flag_svg=flag_svg)
 
                         plt.legend()
                         last_name = colnames[col]
                         species_name = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
                         # species_name = last_name[-6:]
-                        # plt.savefig(species_name+"_GR_curve.png",  dpi=250)
-                        plt.savefig(species_name+"_GR_curve.svg",  dpi=250)
+                        if flag_svg:
+                            plt.savefig(species_name+"_GR_curve.svg",  dpi=250)
+                        else:
+                            plt.savefig(species_name+"_GR_curve.png",  dpi=250)
 
             # Get plots split by species and bioshaker
 
@@ -378,16 +391,21 @@ def main():
                                      color_=color_palette,
                                      legend_="exclude",
                                      title_="species_bioshaker",
-                                     interpolationplot=interpolationplot)
+                                     interpolationplot=interpolationplot,
+                                     flag_svg=flag_svg)
 
                         last_name = colnames[col]
                         bioshaker_ = last_name[:3]
                         species_ = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
-                        # plt.savefig(
-                        #     bioshaker_+"_"+species_+"_GR_curve.png", dpi=250)
-                        plt.savefig(
-                            bioshaker_+"_"+species_+"_GR_curve.svg", dpi=250)
+                        if flag_svg:
+                            plt.savefig(
+                                bioshaker_+"_"+species_+"_GR_curve.svg",
+                                dpi=250)
+                        else:
+                            plt.savefig(
+                                bioshaker_+"_"+species_+"_GR_curve.png",
+                                dpi=250)
 
             # Default plot without bioshaker coloring (combined by species and
             # containing the two bioshakers undiferentiated)
@@ -420,15 +438,18 @@ def main():
                         gr_plots(df, colnames[col],
                                  color_=color_palette,
                                  legend_="exclude", title_="species",
-                                 interpolationplot=interpolationplot)
+                                 interpolationplot=interpolationplot,
+                                 flag_svg=flag_svg)
 
                     last_name = colnames[col]
                     bioshaker_ = last_name[:3]
                     species_ = re.search(
                         r"^\S{3}.\d?_?\S{2,3}_(\S+)",
                         last_name).group(1)
-                    # plt.savefig(species_+"_GR_curve.png",  dpi=250)
-                    plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                    if flag_svg:
+                        plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                    else:
+                        plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
                 else:
                     # ADD COMBINATION PLOT HERE IF ALL OF THEM SHOULD BE IN
@@ -457,14 +478,17 @@ def main():
                                  colnames[col]: clean_series.values})
                             gr_plots(df, colnames[col], color_=color_palette,
                                      legend_="exclude", title_="species",
-                                     interpolationplot=interpolationplot)
+                                     interpolationplot=interpolationplot,
+                                     flag_svg=flag_svg)
 
                         last_name = colnames[col]
                         bioshaker_ = last_name[:3]
                         species_ = re.search(
                             r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name).group(1)
-                        # plt.savefig(species_+"_GR_curve.png",  dpi=250)
-                        plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                        if flag_svg:
+                            plt.savefig(species_+"_GR_curve.svg",  dpi=250)
+                        else:
+                            plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
                     df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
                     df_gr_est = df_gr_final_total.loc[
@@ -500,10 +524,12 @@ def main():
                                  color_=color_palette[col_nr],
                                  legend_="species", title_="species",
                                  interpolationplot=interpolationplot,
-                                 separate_species=True)
-
-                    # plt.savefig("Combined_GR_curve.png",  dpi=250)
-                    plt.savefig("Combined_GR_curve.svg",  dpi=250)
+                                 separate_species=True,
+                                 flag_svg=flag_svg)
+                    if flag_svg:
+                        plt.savefig("Combined_GR_curve.svg",  dpi=250)
+                    else:
+                        plt.savefig("Combined_GR_curve.png",  dpi=250)
 
         print("Plotting growth curves : DONE")
 

@@ -80,6 +80,9 @@ def argument_parser(argv_list=None):
     parser.add_argument("-ip", "--interpolationplot", help="Shows \
                         interpolation between points on growth rate curves",
                         action='store_true')
+    parser.add_argument("-svg", "--exportsvg", help="Changes .png output \
+                        to .svg output for use in publications",
+                        action='store_true')
 
     # Volume loss related arguments
     parser.add_argument("-v", "--novolumeloss", help="Volume loss compesation \
@@ -103,6 +106,7 @@ def argument_parser(argv_list=None):
         cmd_dir = args.resultsdir
         path = args.path
         interpolationplot = args.interpolationplot
+        flag_svg = args.exportsvg
 
     elif args.estimations or args.figures or args.summary:
 
@@ -121,7 +125,8 @@ def argument_parser(argv_list=None):
 
     return flag_all, flag_est, flag_sum, flag_fig, flag_ind, \
         flag_bioshakercolor, args.novolumeloss, flag_bioshaker, \
-        flag_interpolation, cmd_dir, path, interpolationplot
+        flag_interpolation, cmd_dir, path, interpolationplot, \
+        flag_svg
 
 # ------ INTERPRET INPUT ARGUMENTS AND CREATE OUTPUT DIR
 
@@ -391,7 +396,7 @@ def vol_correlation(df_vl):  # done
 # ------ VOLUME LOSS COMPENSATION FOR EVERY SAMPLE ------
 
 
-def compensation_lm(cor_df, df_gr, df_vl600):  # done
+def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
     ''' Given the correlation between volume and time, a linear model is built
     and plotted, the correction is applied to the growth measurements using
     the linear model, returns a figure with the LM and a dataframe with the
@@ -478,8 +483,10 @@ def compensation_lm(cor_df, df_gr, df_vl600):  # done
             df_gr_comp["Correlation"]
         df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
 
-    # plt.savefig("lm_volume_loss.png", dpi=250)
-    plt.savefig("lm_volume_loss.svg", dpi=250)
+    if flag_svg:
+        plt.savefig("lm_volume_loss.svg", dpi=250)
+    else:
+        plt.savefig("lm_volume_loss.png", dpi=250)
     plt.close()
     print("Volume loss correction : DONE")
 
@@ -822,7 +829,7 @@ def estimation_writter(df_data_series, df_annotations, error_list):
 # ----- CALCULATING GROWTH RATE FOR EACH TIME POINT -----
 
 
-def step_gr_calculator(df):
+def step_gr_calculator(df, flag_svg=False):
     sample_name = df.columns.values[1]
     rates = []
     times = []
@@ -848,12 +855,15 @@ def step_gr_calculator(df):
         plt.title(
             "Growth rates of "+sample_name, fontname="Arial", fontsize=12)
         plt.tight_layout()
-        # plt.savefig(
-        #     'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
-        #     "_GRs.png")
-        plt.savefig(
-            'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
-            "_GRs.svg")
+        if flag_svg:
+            plt.savefig(
+                'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
+                "_GRs.svg")
+        else:
+            plt.savefig(
+                'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
+                "_GRs.png")
+        
         plt.close()
     return sample_name, rates, times
 
@@ -862,7 +872,8 @@ def step_gr_calculator(df):
 
 
 def gr_plots(df, sample, interpolationplot, color_=None, ind=False,
-             legend_="bioshaker", title_="species", separate_species=False):
+             legend_="bioshaker", title_="species", separate_species=False,
+             flag_svg=False):
     '''Generates a growth curve plot for a given series for common species,
     returns the plot.
 
@@ -906,9 +917,10 @@ def gr_plots(df, sample, interpolationplot, color_=None, ind=False,
                   fontsize=12)
         plt.legend(bbox_to_anchor=(1.05, 1.0), loc='upper left')
         plt.tight_layout()
-
-        # return fig, plt.savefig(str(sample)+"_GR_curve.png")
-        return fig, plt.savefig(str(sample)+"_GR_curve.svg")
+        if flag_svg:
+            return fig, plt.savefig(str(sample)+"_GR_curve.svg")
+        else:
+            return fig, plt.savefig(str(sample)+"_GR_curve.png")
 
     # Create plots by combined by species
     elif not ind:
@@ -1045,7 +1057,7 @@ def stats_summary(df_annotations):
     return summary_df, mean_df_species, mean_df_bs
 
 
-def stats_plot(summary_df):
+def stats_plot(summary_df, flag_svg=False):
     '''Box plots of annotation growth rate parameters by species and bioshaker
     Args:
     summary_df : dataframe containing the annotation parameters
@@ -1062,8 +1074,10 @@ def stats_plot(summary_df):
         plt.close()
         sns.boxplot(x="species", y="start", hue="bioshaker", data=summary_df,
                     palette="Pastel1")
-        # plt.savefig("start_boxplot",  dpi=250)
-        plt.savefig("start_boxplot.svg",  dpi=250)
+        if flag_svg:
+            plt.savefig("start_boxplot.svg",  dpi=250)
+        else:
+            plt.savefig("start_boxplot",  dpi=250)
         plt.close()
 
         # plot_end = sns.boxplot(x="species", y="end", hue="bioshaker",

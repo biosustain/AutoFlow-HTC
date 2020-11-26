@@ -65,7 +65,8 @@ class test_methods(unittest.TestCase):
         flag_all, flag_est, flag_sum, flag_fig, flag_ind, \
             flag_bioshakercolor, flag_volumeloss, flag_bioshaker, \
             flag_interpolation, cmd_dir, path, \
-            flag_interpolationplot = argument_parser(argv_list)
+            flag_interpolationplot, \
+            flag_svg = argument_parser(argv_list)
         self.assertTrue(flag_all)
         self.assertFalse(flag_est)
         self.assertFalse(flag_sum)
@@ -88,7 +89,8 @@ class test_methods(unittest.TestCase):
         flag_all, flag_est, flag_sum, flag_fig, flag_ind, \
             flag_bioshakercolor, flag_volumeloss, flag_bioshaker, \
             flag_interpolation, cmd_dir, path, \
-            flag_interpolationplot = argument_parser(argv_list)
+            flag_interpolationplot, \
+            flag_svg = argument_parser(argv_list)
         self.assertFalse(flag_all)
         self.assertFalse(flag_est)
         self.assertTrue(flag_sum)
@@ -251,7 +253,7 @@ class test_methods(unittest.TestCase):
     def test_compensation_lm(self):
         """test the compensation_lm method outputs"""
         result1, result2 = compensation_lm(self.cor_df, self.df_gr_time,
-                                           self.df_vl600_time)
+                                           self.df_vl600_time, self.flag_svg)
         result_2 = self.df_gr_comp
         colnames = (result2.columns.values)
 

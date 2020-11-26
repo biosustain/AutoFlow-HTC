@@ -255,7 +255,7 @@ class test_methods(unittest.TestCase):
     def test_compensation_lm(self):
         """test the compensation_lm method outputs"""
         result1, result2 = compensation_lm(self.cor_df, self.df_gr_time,
-                                           self.df_vl600_time, self.flag_svg)
+                                           self.df_vl600_time)
         result_2 = self.df_gr_comp
         colnames = (result2.columns.values)
 

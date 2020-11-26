@@ -77,6 +77,7 @@ class test_methods(unittest.TestCase):
         self.assertTrue(flag_volumeloss)
         self.assertFalse(flag_interpolation)
         self.assertFalse(flag_interpolationplot)
+        self.assertFalse(flag_svg)
 
     def test_argument_parser_non_default(self):
         """test that the argument parser returns the correct flags given for a
@@ -101,6 +102,7 @@ class test_methods(unittest.TestCase):
         self.assertTrue(flag_volumeloss)
         self.assertFalse(flag_interpolation)
         self.assertFalse(flag_interpolationplot)
+        self.assertFalse(flag_svg)
 
     # ----- TEST WHITESPACE REMOVAL -----
 

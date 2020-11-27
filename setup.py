@@ -32,7 +32,7 @@ setup(
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
     ],
-    install_requires=['numpy','matplotlib','pandas','datetime','argparse','path','xlsxwriter', 'seaborn', 'scipy', 'pycodestyle','sphinx','sphinx_rtd_theme','xlrd'],
+    install_requires=['xcode','wheel','numpy','matplotlib','datetime','argparse','path','xlsxwriter', 'seaborn', 'scipy', 'pycodestyle','sphinx','sphinx_rtd_theme','xlrd','pandas'],
     dependency_links=['https://github.com/meono/croissance'],
     include_package_data = True,
 

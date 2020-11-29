@@ -1,17 +1,16 @@
-import pytest
 import unittest
 import pandas as pd
 import pandas.api.types as ptypes
 import pandas.testing
-import re
 import pickle
 import sys
+import pathlib
 sys.path.insert(1, '../')
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, \
-    parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, \
+from tecan_od_analyzer.tecan_od_analyzer import argument_parser, \
+    read_xlsx, sample_outcome, time_formater, reshape_dataframe, \
     vol_correlation, compensation_lm, gr_estimation, stats_summary, \
     interpolation, exponential
-import pathlib
+
 current_dir = str(pathlib.Path(__file__).parent.absolute())
 
 
@@ -282,6 +281,7 @@ class test_methods(unittest.TestCase):
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(result, result_)
         # Add ID test
+        self.assertEqual(result.columns.values, result_.columns.values)
 
     # ----- TEST gr_estimation METHOD -----
 
@@ -348,10 +348,5 @@ class test_methods(unittest.TestCase):
         self.assertEqual(result, result_)
 
 
-"""
-    def test_background_correction(self, cor_df, df_gr, df_vl600):
-
-    def test_volume_correction
-"""
 if __name__ == '__main__':
     unittest.main()

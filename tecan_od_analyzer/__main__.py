@@ -17,15 +17,6 @@ import matplotlib.pyplot as plt
 from pandas import Series
 import itertools
 
-# Additional calls that were listed but not used (remove later)
-# from matplotlib.pyplot import cm
-# import path
-# import seaborn as sns
-# from scipy.optimize import curve_fit
-# from pandas import Series
-# from platform import platform
-# from tecan_od_analyzer.tecan_od_analyzer import interpolation
-
 
 def main():
 
@@ -452,9 +443,6 @@ def main():
                         plt.savefig(species_+"_GR_curve.png",  dpi=250)
 
                 else:
-                    # ADD COMBINATION PLOT HERE IF ALL OF THEM SHOULD BE IN
-                    # THE SAME ONE
-
                     for df_gr_final in df_gr_final_list:
                         df_gr_est = df_gr_final.loc[
                             :, ~df_gr_final.columns.str.startswith('time')]

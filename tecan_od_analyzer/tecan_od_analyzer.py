@@ -24,18 +24,6 @@ import shutil
 import warnings
 from scipy.optimize import OptimizeWarning
 
-# Additional calls that were listed but not used (remove later)
-# from datetime import datetime
-# import croissance
-# import matplotlib
-# from croissance.estimation.util import with_overhangs
-# from croissance.estimation import regression
-# from pandas import Series
-# from matplotlib.legend_handler import HandlerLine2D
-# import xlsxwriter
-# import datetime
-# from scipy import stats
-
 
 __version__ = "0.1.6"
 
@@ -864,7 +852,7 @@ def step_gr_calculator(df, flag_svg=False):
             plt.savefig(
                 'Temporary_GR_check/Temporary_GR_check_' + str(sample_name) +
                 "_GRs.png")
-        
+
         plt.close()
     return sample_name, rates, times
 

@@ -62,6 +62,8 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ``tecan_od_analyser --volumeloss``      This option allows the user to not compute the volume loss correction. By default, the volume loss correction is always computed.
 
+``tecan_od_analyser --exportsvg``       With this option, plots will be saved as .svg rather than .png files. This is preferred if they are intended for a publication and allows for modifications in Illustrator.
+
 
 ## Input
 
@@ -118,7 +120,7 @@ It must be noted that all the time units will appear in hours. The Results direc
 
 ### Estimations / Linear phase estimations:
 
-- Linear phase annotations `` annotations.xlsx`` file containing the linear phase estimated parameters for all samples.
+- Linear phase annotations ``annotations.xlsx`` file containing the linear phase estimated parameters for all samples.
 - errors.txt  file containing the list of samples for which the linear phase estimation resulted in an error.
 - Data_series.xlsx   file containing all the data points after dilution and volume loss correction. The outliers have also been removed.
 
@@ -126,6 +128,10 @@ It must be noted that all the time units will appear in hours. The Results direc
 ### Summary statistics:
 
 - summary_stats.xlsx file containing summary statistics of the estimated parameters grouping by species, by bioshaker and both.
+
+### Temporary growth rate calculation
+
+- A temporary alternative is provided until the underlying issue with the implemented growth rate calculation is fixed. The specific growth rates between every time step are calculated and provided in an .xlsx file and the progression of specific growth rates is plotted for every well. These files can be found in the ``Temporary_GR_check`` folder in the produced ``Results`` folder.
 
 ## Contributing
 

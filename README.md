@@ -52,7 +52,7 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ``tecan_od_analyzer --individual``      Outputs the growth curves for every sample individually.
 
-``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and species.
+``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and colors them by species.
 
 ``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and colors by bioshaker.
 

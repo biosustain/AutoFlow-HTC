@@ -36,7 +36,7 @@ tecan_od_analyzer can be used from the command-line by executing it in the direc
 
 ``tecan_od_analyzer``
 
-The default command produces growth phase estimation, summary statistics on the estimations and growth rate plots split only by species. By default the volumess loss correction is computed.
+The default command produces growth phase estimation, summary statistics on the estimations and growth rate plots split by species and bioshaker. By default the volumess loss correction is computed.
 
 ##### Options :
 
@@ -54,7 +54,7 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and colors them by species.
 
-``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and colors by bioshaker.
+``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and does not color them by bioshaker.
 
 ``tecan_od_analyser --interpolationplot``  Outputs Growth rate curves instead of scatter plots.
 
@@ -63,6 +63,8 @@ The default command produces growth phase estimation, summary statistics on the 
 ``tecan_od_analyser --volumeloss``      This option allows the user to not compute the volume loss correction. By default, the volume loss correction is always computed.
 
 ``tecan_od_analyser --exportsvg``       With this option, plots will be saved as .svg rather than .png files. This is preferred if they are intended for a publication and allows for modifications in Illustrator.
+
+``tecan_od_analyser --onlyspecies``     Splits the visualization of the growth rate plots according to species and bioshaker.
 
 
 ## Input

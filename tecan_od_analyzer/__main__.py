@@ -53,6 +53,7 @@ def main():
         path,
         interpolationplot,
         flag_svg,
+        flag_os
     ) = argument_parser(argv_list=sys.argv)
 
     # path input and output directory creation
@@ -242,9 +243,9 @@ def main():
                         colnames[col]: clean_series.values,
                     }
                 )
-                # plot = gr_plots(df, colnames[col], ind = True,
-                #                 interpolationplot=interpolationplot,
-                #                 flag_svg=flag_svg)
+                gr_plots(df, colnames[col], ind=True,
+                         interpolationplot=interpolationplot,
+                         flag_svg=flag_svg)
                 plt.close()
 
         # Get plots combined together by species
@@ -252,8 +253,285 @@ def main():
         elif not flag_ind:
 
             # Get plots combined by species and colored by bioshaker
+            # plot without bioshaker coloring (combined by species and
+            # containing the two bioshakers undiferentiated)
 
             if flag_bioshakercolor and not flag_bioshaker:
+
+                color_palette = "r"
+
+                if not multiple_species_flag:
+
+                    df_gr_est = df_gr_final.loc[
+                        :, ~df_gr_final.columns.str.startswith("time")
+                    ]
+                    colnames = df_gr_est.columns.values
+
+                    plt.figure()
+
+                    for col in range(len(colnames)):
+
+                        bioshaker_label = re.search(
+                            r"([B][S]\d)", colnames[col]
+                        ).group(1)
+                        my_series = pd.Series(
+                            data=(df_gr_final[colnames[col]]).tolist(),
+                            index=df_gr_final[
+                                "time_" + colnames[col]
+                            ].tolist(),
+                        )
+                        my_series = Series.dropna(my_series)
+                        # Extract series without outliers
+                        clean_series = remove_outliers(my_series)[0]
+                        df = pd.DataFrame(
+                            {
+                                "time": clean_series.index,
+                                colnames[col]: clean_series.values,
+                            }
+                        )
+                        gr_plots(
+                            df,
+                            colnames[col],
+                            color_=color_palette,
+                            legend_="exclude",
+                            title_="species",
+                            interpolationplot=interpolationplot,
+                            flag_svg=flag_svg,
+                        )
+
+                    last_name = colnames[col]
+                    bioshaker_ = last_name[:3]
+                    species_ = re.search(
+                        r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
+                    ).group(1)
+                    if flag_svg:
+                        plt.savefig(species_ + "_GR_curve.svg", dpi=250)
+                    else:
+                        plt.savefig(species_ + "_GR_curve.png", dpi=250)
+
+                else:
+                    for df_gr_final in df_gr_final_list:
+                        df_gr_est = df_gr_final.loc[
+                            :, ~df_gr_final.columns.str.startswith("time")
+                        ]
+                        colnames = df_gr_est.columns.values
+
+                        plt.figure()
+
+                        for col in range(len(colnames)):
+
+                            bioshaker_label = re.search(
+                                r"([B][S]\d)", colnames[col]
+                            ).group(1)
+                            my_series = pd.Series(
+                                data=(df_gr_final[colnames[col]]).tolist(),
+                                index=df_gr_final[
+                                    "time_" + colnames[col]
+                                ].tolist(),
+                            )
+                            my_series = Series.dropna(my_series)
+                            # Extract series without outliers
+                            clean_series = remove_outliers(my_series)[0]
+                            df = pd.DataFrame(
+                                {
+                                    "time": clean_series.index,
+                                    colnames[col]: clean_series.values,
+                                }
+                            )
+                            gr_plots(
+                                df,
+                                colnames[col],
+                                color_=color_palette,
+                                legend_="exclude",
+                                title_="species",
+                                interpolationplot=interpolationplot,
+                                flag_svg=flag_svg,
+                            )
+
+                        last_name = colnames[col]
+                        bioshaker_ = last_name[:3]
+                        species_ = re.search(
+                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
+                        ).group(1)
+                        if flag_svg:
+                            plt.savefig(species_ + "_GR_curve.svg", dpi=250)
+                        else:
+                            plt.savefig(species_ + "_GR_curve.png", dpi=250)
+
+            # Get plots split by species and bioshaker
+            # Add new flag for this
+            elif flag_os:
+
+                color_palette = "r"
+
+                for df_gr_final in df_gr_final_list:
+                    if not df_gr_final.empty:
+                        df_gr_est = df_gr_final.loc[
+                            :, ~df_gr_final.columns.str.startswith("time")
+                        ]
+                        colnames = df_gr_est.columns.values
+
+                        plt.figure()
+
+                        for col in range(len(colnames)):
+                            bioshaker_label = re.search(
+                                r"([B][S]\d)", colnames[col]
+                            ).group(1)
+                            my_series = pd.Series(
+                                data=(df_gr_final[colnames[col]]).tolist(),
+                                index=df_gr_final[
+                                    "time_" + colnames[col]
+                                ].tolist(),
+                            )
+                            my_series = Series.dropna(my_series)
+                            # Extract series without outliers
+                            clean_series = remove_outliers(my_series)[0]
+                            df = pd.DataFrame(
+                                {
+                                    "time": clean_series.index,
+                                    colnames[col]: clean_series.values,
+                                }
+                            )
+                            gr_plots(
+                                df,
+                                colnames[col],
+                                color_=color_palette,
+                                legend_="exclude",
+                                title_="species_bioshaker",
+                                interpolationplot=interpolationplot,
+                                flag_svg=flag_svg,
+                            )
+
+                        last_name = colnames[col]
+                        bioshaker_ = last_name[:3]
+                        species_ = re.search(
+                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
+                        ).group(1)
+                        if flag_svg:
+                            plt.savefig(
+                                bioshaker_ + "_" + species_ + "_GR_curve.svg",
+                                dpi=250,
+                            )
+                        else:
+                            plt.savefig(
+                                bioshaker_ + "_" + species_ + "_GR_curve.png",
+                                dpi=250,
+                            )
+                        # plt.close()
+
+            # Get plots split by bioshaker and coloured by species
+
+            elif flag_bioshaker and not flag_ind:
+
+                bioshaker_list = (df_gr["Sample_ID"]).str.slice(0, 3).unique()
+                species_list = (df_gr["Species"]).unique()
+                colors = itertools.cycle(["g", "b", "r", "c"])
+                color_dict = dict()
+
+                df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
+                for species in species_list:
+                    color_dict.update({species: next(colors)})
+                for bioshaker in bioshaker_list:
+                    df_gr_bioshaker_cols = [col for col in
+                                            df_gr_final_total.columns
+                                            if bioshaker in col]
+                    df_gr_bioshaker = df_gr_final_total[df_gr_bioshaker_cols]
+                    if len(df_gr_bioshaker) > 0:
+                        df_gr_est = df_gr_bioshaker.loc[
+                            :, ~df_gr_bioshaker.columns.str.startswith("time")
+                        ]
+                        colnames = df_gr_est.columns.values
+
+                        plt.figure()
+
+                        start_leg = ""
+
+                        for col in range(len(colnames)):
+                            bioshaker_label = re.search(
+                                r"([B][S]\d)", colnames[col]
+                            ).group(1)
+                            my_series = pd.Series(
+                                data=(df_gr_bioshaker[colnames[col]]).tolist(),
+                                index=df_gr_bioshaker[
+                                    "time_" + colnames[col]
+                                ].tolist(),
+                            )
+                            my_series = Series.dropna(my_series)
+                            # Extract series without outliers
+                            clean_series = remove_outliers(my_series)[0]
+                            df = pd.DataFrame(
+                                {
+                                    "time": clean_series.index,
+                                    colnames[col]: clean_series.values,
+                                }
+                            )
+
+                            last_name = colnames[col]
+                            species_ = re.search(
+                                r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
+                            ).group(1)
+
+                            # First time
+                            if start_leg == "":
+                                gr_plots(
+                                    df,
+                                    colnames[col],
+                                    color_=color_dict[species_],
+                                    legend_="species",
+                                    title_="bioshaker",
+                                    interpolationplot=interpolationplot,
+                                    flag_svg=flag_svg,
+                                )
+
+                                start_leg = species_
+
+                            # New Species
+                            elif species_ != start_leg:
+
+                                gr_plots(
+                                    df,
+                                    colnames[col],
+                                    color_=color_dict[species_],
+                                    legend_="species",
+                                    title_="bioshaker",
+                                    interpolationplot=interpolationplot,
+                                    flag_svg=flag_svg,
+                                )
+                                start_leg = species_
+
+                            # Repeated species
+                            else:
+                                gr_plots(
+                                    df,
+                                    colnames[col],
+                                    color_=color_dict[species_],
+                                    legend_="",
+                                    title_="bioshaker",
+                                    interpolationplot=interpolationplot,
+                                    flag_svg=flag_svg,
+                                )
+                        plt.legend()
+                        last_name = colnames[col]
+                        bioshaker_ = last_name[:3]
+                        species_ = re.search(
+                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
+                        ).group(1)
+                        if flag_svg:
+                            plt.savefig(
+                                bioshaker_ + "_GR_curve.svg",
+                                dpi=250,
+                            )
+                        else:
+                            plt.savefig(
+                                bioshaker_ + "_GR_curve.png",
+                                dpi=250,
+                            )
+                        plt.close()
+
+            # Default plot with bioshaker coloring (combined by species and
+            # all together)
+
+            else:
 
                 # Color the plot according to bioshaker
 
@@ -441,282 +719,6 @@ def main():
                             plt.savefig(
                                 species_name + "_GR_curve.png", dpi=250
                             )
-
-            # Get plots split by species and bioshaker
-            # Add new flag for this
-            elif flag_bioshaker and flag_ind:
-
-                color_palette = "r"
-
-                for df_gr_final in df_gr_final_list:
-                    if not df_gr_final.empty:
-                        df_gr_est = df_gr_final.loc[
-                            :, ~df_gr_final.columns.str.startswith("time")
-                        ]
-                        colnames = df_gr_est.columns.values
-
-                        plt.figure()
-
-                        for col in range(len(colnames)):
-                            bioshaker_label = re.search(
-                                r"([B][S]\d)", colnames[col]
-                            ).group(1)
-                            my_series = pd.Series(
-                                data=(df_gr_final[colnames[col]]).tolist(),
-                                index=df_gr_final[
-                                    "time_" + colnames[col]
-                                ].tolist(),
-                            )
-                            my_series = Series.dropna(my_series)
-                            # Extract series without outliers
-                            clean_series = remove_outliers(my_series)[0]
-                            df = pd.DataFrame(
-                                {
-                                    "time": clean_series.index,
-                                    colnames[col]: clean_series.values,
-                                }
-                            )
-                            gr_plots(
-                                df,
-                                colnames[col],
-                                color_=color_palette,
-                                legend_="exclude",
-                                title_="species_bioshaker",
-                                interpolationplot=interpolationplot,
-                                flag_svg=flag_svg,
-                            )
-
-                        last_name = colnames[col]
-                        bioshaker_ = last_name[:3]
-                        species_ = re.search(
-                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
-                        ).group(1)
-                        if flag_svg:
-                            plt.savefig(
-                                bioshaker_ + "_" + species_ + "_GR_curve.svg",
-                                dpi=250,
-                            )
-                        else:
-                            plt.savefig(
-                                bioshaker_ + "_" + species_ + "_GR_curve.png",
-                                dpi=250,
-                            )
-                        # plt.close()
-
-            # Get plots split by bioshaker and coloured by species
-
-            elif flag_bioshaker and not flag_ind:
-
-                bioshaker_list = (df_gr["Sample_ID"]).str.slice(0, 3).unique()
-                species_list = (df_gr["Species"]).unique()
-                colors = itertools.cycle(["g", "b", "r", "c"])
-                color_dict = dict()
-
-                df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
-                for species in species_list:
-                    color_dict.update({species: next(colors)})
-                for bioshaker in bioshaker_list:
-                    df_gr_bioshaker_cols = [col for col in
-                                            df_gr_final_total.columns
-                                            if bioshaker in col]
-                    df_gr_bioshaker = df_gr_final_total[df_gr_bioshaker_cols]
-                    if len(df_gr_bioshaker) > 0:
-                        df_gr_est = df_gr_bioshaker.loc[
-                            :, ~df_gr_bioshaker.columns.str.startswith("time")
-                        ]
-                        colnames = df_gr_est.columns.values
-
-                        plt.figure()
-
-                        start_leg = ""
-
-                        for col in range(len(colnames)):
-                            bioshaker_label = re.search(
-                                r"([B][S]\d)", colnames[col]
-                            ).group(1)
-                            my_series = pd.Series(
-                                data=(df_gr_bioshaker[colnames[col]]).tolist(),
-                                index=df_gr_bioshaker[
-                                    "time_" + colnames[col]
-                                ].tolist(),
-                            )
-                            my_series = Series.dropna(my_series)
-                            # Extract series without outliers
-                            clean_series = remove_outliers(my_series)[0]
-                            df = pd.DataFrame(
-                                {
-                                    "time": clean_series.index,
-                                    colnames[col]: clean_series.values,
-                                }
-                            )
-
-                            last_name = colnames[col]
-                            species_ = re.search(
-                                r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
-                            ).group(1)
-
-                            # First time
-                            if start_leg == "":
-                                gr_plots(
-                                    df,
-                                    colnames[col],
-                                    color_=color_dict[species_],
-                                    legend_="species",
-                                    title_="bioshaker",
-                                    interpolationplot=interpolationplot,
-                                    flag_svg=flag_svg,
-                                )
-
-                                start_leg = species_
-
-                            # New Species
-                            elif species_ != start_leg:
-
-                                gr_plots(
-                                    df,
-                                    colnames[col],
-                                    color_=color_dict[species_],
-                                    legend_="species",
-                                    title_="bioshaker",
-                                    interpolationplot=interpolationplot,
-                                    flag_svg=flag_svg,
-                                )
-                                start_leg = species_
-
-                            # Repeated species
-                            else:
-                                gr_plots(
-                                    df,
-                                    colnames[col],
-                                    color_=color_dict[species_],
-                                    legend_="",
-                                    title_="bioshaker",
-                                    interpolationplot=interpolationplot,
-                                    flag_svg=flag_svg,
-                                )
-                        plt.legend()
-                        last_name = colnames[col]
-                        bioshaker_ = last_name[:3]
-                        species_ = re.search(
-                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
-                        ).group(1)
-                        if flag_svg:
-                            plt.savefig(
-                                bioshaker_ + "_GR_curve.svg",
-                                dpi=250,
-                            )
-                        else:
-                            plt.savefig(
-                                bioshaker_ + "_GR_curve.png",
-                                dpi=250,
-                            )
-                        plt.close()
-
-            # Default plot without bioshaker coloring (combined by species and
-            # containing the two bioshakers undiferentiated)
-
-            else:
-
-                color_palette = "r"
-
-                if not multiple_species_flag:
-
-                    df_gr_est = df_gr_final.loc[
-                        :, ~df_gr_final.columns.str.startswith("time")
-                    ]
-                    colnames = df_gr_est.columns.values
-
-                    plt.figure()
-
-                    for col in range(len(colnames)):
-
-                        bioshaker_label = re.search(
-                            r"([B][S]\d)", colnames[col]
-                        ).group(1)
-                        my_series = pd.Series(
-                            data=(df_gr_final[colnames[col]]).tolist(),
-                            index=df_gr_final[
-                                "time_" + colnames[col]
-                            ].tolist(),
-                        )
-                        my_series = Series.dropna(my_series)
-                        # Extract series without outliers
-                        clean_series = remove_outliers(my_series)[0]
-                        df = pd.DataFrame(
-                            {
-                                "time": clean_series.index,
-                                colnames[col]: clean_series.values,
-                            }
-                        )
-                        gr_plots(
-                            df,
-                            colnames[col],
-                            color_=color_palette,
-                            legend_="exclude",
-                            title_="species",
-                            interpolationplot=interpolationplot,
-                            flag_svg=flag_svg,
-                        )
-
-                    last_name = colnames[col]
-                    bioshaker_ = last_name[:3]
-                    species_ = re.search(
-                        r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
-                    ).group(1)
-                    if flag_svg:
-                        plt.savefig(species_ + "_GR_curve.svg", dpi=250)
-                    else:
-                        plt.savefig(species_ + "_GR_curve.png", dpi=250)
-
-                else:
-                    for df_gr_final in df_gr_final_list:
-                        df_gr_est = df_gr_final.loc[
-                            :, ~df_gr_final.columns.str.startswith("time")
-                        ]
-                        colnames = df_gr_est.columns.values
-
-                        plt.figure()
-
-                        for col in range(len(colnames)):
-
-                            bioshaker_label = re.search(
-                                r"([B][S]\d)", colnames[col]
-                            ).group(1)
-                            my_series = pd.Series(
-                                data=(df_gr_final[colnames[col]]).tolist(),
-                                index=df_gr_final[
-                                    "time_" + colnames[col]
-                                ].tolist(),
-                            )
-                            my_series = Series.dropna(my_series)
-                            # Extract series without outliers
-                            clean_series = remove_outliers(my_series)[0]
-                            df = pd.DataFrame(
-                                {
-                                    "time": clean_series.index,
-                                    colnames[col]: clean_series.values,
-                                }
-                            )
-                            gr_plots(
-                                df,
-                                colnames[col],
-                                color_=color_palette,
-                                legend_="exclude",
-                                title_="species",
-                                interpolationplot=interpolationplot,
-                                flag_svg=flag_svg,
-                            )
-
-                        last_name = colnames[col]
-                        bioshaker_ = last_name[:3]
-                        species_ = re.search(
-                            r"^\S{3}.\d?_?\S{2,3}_(\S+)", last_name
-                        ).group(1)
-                        if flag_svg:
-                            plt.savefig(species_ + "_GR_curve.svg", dpi=250)
-                        else:
-                            plt.savefig(species_ + "_GR_curve.png", dpi=250)
-
                     df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
                     df_gr_est = df_gr_final_total.loc[
                         :, ~df_gr_final_total.columns.str.startswith("time")

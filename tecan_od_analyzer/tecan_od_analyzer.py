@@ -97,7 +97,7 @@ def argument_parser(argv_list=None):
         "-bc",
         "--bioshakercolor",
         help="Get one growth rate \
-                        figure for every species colored by bioshaker",
+                        figure for every species not colored by bioshaker",
         action="store_true",
     )
     parser.add_argument(
@@ -112,6 +112,13 @@ def argument_parser(argv_list=None):
         "--exportsvg",
         help="Changes .png output \
                         to .svg output for use in publications",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-os",
+        "--onlyspecies",
+        help="Get separate growth rate \
+                        figures for every species on every bioshaker",
         action="store_true",
     )
 
@@ -143,6 +150,7 @@ def argument_parser(argv_list=None):
         path = args.path
         interpolationplot = args.interpolationplot
         flag_svg = args.exportsvg
+        flag_os = args.onlyspecies
 
     elif args.estimations or args.figures or args.summary:
 
@@ -159,6 +167,7 @@ def argument_parser(argv_list=None):
         path = args.path
         interpolationplot = args.interpolationplot
         flag_svg = args.exportsvg
+        flag_os = args.onlyspecies
 
     return (
         flag_all,
@@ -174,6 +183,7 @@ def argument_parser(argv_list=None):
         path,
         interpolationplot,
         flag_svg,
+        flag_os
     )
 
 

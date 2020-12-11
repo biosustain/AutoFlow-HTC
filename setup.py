@@ -53,6 +53,6 @@ setup(
         "xlrd",
         "pandas",
     ],
-    dependency_links=["https://github.com/meono/croissance@v1.2.x"],
+    dependency_links=["https://github.com/meono/croissance.git@v1.2.x"],
     include_package_data=True,
 )

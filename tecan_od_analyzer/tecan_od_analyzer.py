@@ -419,7 +419,7 @@ def time_formater(df):
         df_temp.loc["h"] = df_temp["time_hours"].dt.components["hours"]
         df_temp.loc["m"] = df_temp["time_hours"].dt.components["minutes"]
         df_temp.loc["s"] = df_temp["time_hours"].dt.components["seconds"]
-        df_temp.loc["time_hours"] = (
+        df_temp["time_hours"] = (
             df_temp["h"] + df_temp["m"] / 60 + df_temp["s"] / 360
         )
 
@@ -461,7 +461,7 @@ def vol_correlation(df_vl):  # done
     for pos in range(len(unique_IDs_vl)):
         df_vl_ID = df_vl.loc[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
         init_val = float((df_vl_ID["Measurement"].tolist()[0]))
-        df_vl_ID.loc["Correlation"] = df_vl_ID["Measurement"] / init_val
+        df_vl_ID["Correlation"] = df_vl_ID["Measurement"] / init_val
         cor_df = cor_df.append(df_vl_ID)
         df_vl_ID = pd.DataFrame()
 
@@ -574,8 +574,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp["Measurement"].loc[df_gr_comp_index] = (
-                    df_gr_comp["Measurement"].loc[df_gr_comp_index]
+                df_gr_comp.loc["Measurement", df_gr_comp_index] = (
+                    df_gr_comp.loc["Measurement", df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account

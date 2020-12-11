@@ -407,19 +407,19 @@ def time_formater(df):
         # unique_date = df["Sampling_date"].unique()
 
         # Merge date and time variable to datetime format
-        df_temp["date_time"] = (
+        df_temp.loc["date_time"] = (
             df_temp["Sampling_time"] + " " + df_temp["Sampling_date"]
         )
-        df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
+        df_temp.loc["date_time"] = pd.to_datetime(df_temp["date_time"])
 
         # Substracting the time of the first obs to all obs
-        df_temp["time_hours"] = (
+        df_temp.loc["time_hours"] = (
             df_temp["date_time"] - df_temp[df_temp.index[0], "date_time"]
         )
-        df_temp["h"] = df_temp["time_hours"].dt.components["hours"]
-        df_temp["m"] = df_temp["time_hours"].dt.components["minutes"]
-        df_temp["s"] = df_temp["time_hours"].dt.components["seconds"]
-        df_temp["time_hours"] = (
+        df_temp.loc["h"] = df_temp["time_hours"].dt.components["hours"]
+        df_temp.loc["m"] = df_temp["time_hours"].dt.components["minutes"]
+        df_temp.loc["s"] = df_temp["time_hours"].dt.components["seconds"]
+        df_temp.loc["time_hours"] = (
             df_temp["h"] + df_temp["m"] / 60 + df_temp["s"] / 360
         )
 
@@ -574,8 +574,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp.at["Measurement", df_gr_comp_index] = (
-                    df_gr_comp.at["Measurement", df_gr_comp_index]
+                df_gr_comp.loc["Measurement", df_gr_comp_index] = (
+                    df_gr_comp.loc["Measurement", df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account

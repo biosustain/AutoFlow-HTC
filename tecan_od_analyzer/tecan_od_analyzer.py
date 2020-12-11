@@ -461,7 +461,7 @@ def vol_correlation(df_vl):  # done
     for pos in range(len(unique_IDs_vl)):
         df_vl_ID = df_vl.loc[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
         init_val = float((df_vl_ID["Measurement"].tolist()[0]))
-        df_vl_ID["Correlation"] = df_vl_ID["Measurement"] / init_val
+        df_vl_ID.loc["Correlation"] = df_vl_ID["Measurement"] / init_val
         cor_df = cor_df.append(df_vl_ID)
         df_vl_ID = pd.DataFrame()
 
@@ -574,8 +574,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp.loc["Measurement", df_gr_comp_index] = (
-                    df_gr_comp.loc["Measurement", df_gr_comp_index]
+                df_gr_comp.loc["Measurement"].loc[df_gr_comp_index] = (
+                    df_gr_comp.loc["Measurement"].loc[df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account
@@ -666,7 +666,7 @@ def reshape_dataframe(df_gr, flag_species=False, flag_bioshaker=False):
 
     elif not flag_species and flag_bioshaker:
 
-        df_gr_temp["Sample_ID"] = (
+        df_gr_temp.loc["Sample_ID"] = (
             df_gr_temp["Sample_ID"] + "_" + df_gr_temp["Species"]
         )
         unique_species = df_gr_temp["Species"].unique()

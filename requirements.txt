@@ -17,4 +17,4 @@ sphinx_rtd_theme
 pytest
 xlrd
 pandas
-git+https://github.com/meono/croissance.git@v1.2.x
+git+https://github.com/biosustain/croissance.git@v1.2.x

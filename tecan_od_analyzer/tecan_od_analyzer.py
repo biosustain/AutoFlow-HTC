@@ -574,8 +574,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp.at["Measurement", df_gr_comp_index] = (
-                    df_gr_comp.at["Measurement", df_gr_comp_index]
+                df_gr_comp.loc["Measurement", df_gr_comp_index] = (
+                    df_gr_comp.loc["Measurement", df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account
@@ -666,7 +666,7 @@ def reshape_dataframe(df_gr, flag_species=False, flag_bioshaker=False):
 
     elif not flag_species and flag_bioshaker:
 
-        df_gr_temp["Sample_ID"] = (
+        df_gr_temp.loc["Sample_ID"] = (
             df_gr_temp["Sample_ID"] + "_" + df_gr_temp["Species"]
         )
         unique_species = df_gr_temp["Species"].unique()

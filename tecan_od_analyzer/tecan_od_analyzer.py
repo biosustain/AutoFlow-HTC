@@ -1424,7 +1424,7 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
     od_measurements["Estimation range"] = range_list
 
     # Drop unnamed columns
-    od_measurements = od_measurements[
+    od_measurements = od_measurements.loc[
         :, ~od_measurements.columns.str.contains("^Unnamed")
     ]
 

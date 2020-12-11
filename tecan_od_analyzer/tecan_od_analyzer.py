@@ -408,18 +408,18 @@ def time_formater(df):
 
         # Merge date and time variable to datetime format
         df_temp["date_time"] = (
-            df_temp["Sampling_time"] + " " + df_temp["Sampling_date"]
+            df_temp.loc["Sampling_time"] + " " + df_temp.loc["Sampling_date"]
         )
-        df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
+        df_temp.loc["date_time"] = pd.to_datetime(df_temp["date_time"])
 
         # Substracting the time of the first obs to all obs
-        df_temp["time_hours"] = (
+        df_temp.loc["time_hours"] = (
             df_temp["date_time"] - df_temp.loc[df_temp.index[0], "date_time"]
         )
-        df_temp["h"] = df_temp["time_hours"].dt.components["hours"]
-        df_temp["m"] = df_temp["time_hours"].dt.components["minutes"]
-        df_temp["s"] = df_temp["time_hours"].dt.components["seconds"]
-        df_temp["time_hours"] = (
+        df_temp.loc["h"] = df_temp["time_hours"].dt.components["hours"]
+        df_temp.loc["m"] = df_temp["time_hours"].dt.components["minutes"]
+        df_temp.loc["s"] = df_temp["time_hours"].dt.components["seconds"]
+        df_temp.loc["time_hours"] = (
             df_temp["h"] + df_temp["m"] / 60 + df_temp["s"] / 360
         )
 
@@ -461,7 +461,7 @@ def vol_correlation(df_vl):  # done
     for pos in range(len(unique_IDs_vl)):
         df_vl_ID = df_vl.loc[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
         init_val = float((df_vl_ID["Measurement"].tolist()[0]))
-        df_vl_ID["Correlation"] = df_vl_ID["Measurement"] / init_val
+        df_vl_ID.loc["Correlation"] = df_vl_ID["Measurement"] / init_val
         cor_df = cor_df.append(df_vl_ID)
         df_vl_ID = pd.DataFrame()
 
@@ -634,7 +634,7 @@ def reshape_dataframe(df_gr, flag_species=False, flag_bioshaker=False):
     df_gr = df_gr[cols]
 
     # Get unique ID and times
-    df_gr["Sample_ID"] = df_gr["Sample_ID"] + "_" + df_gr["Species"]
+    df_gr.loc["Sample_ID"] = df_gr["Sample_ID"] + "_" + df_gr["Species"]
     df_gr.drop(columns=["Species"])
     unique_IDs = df_gr["Sample_ID"].unique()
     # unique_times = df_gr["time_hours"].unique()

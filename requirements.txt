@@ -16,5 +16,5 @@ sphinx
 sphinx_rtd_theme
 pytest
 xlrd
-pandas==1.1.1
+pandas
 git+https://github.com/biosustain/croissance # .git@v1.2.x

@@ -100,6 +100,7 @@ class test_methods(unittest.TestCase):
             path,
             flag_interpolationplot,
             flag_svg,
+            flag_os
         ) = argument_parser(argv_list)
         self.assertTrue(flag_all)
         self.assertFalse(flag_est)
@@ -112,6 +113,7 @@ class test_methods(unittest.TestCase):
         self.assertFalse(flag_interpolation)
         self.assertFalse(flag_interpolationplot)
         self.assertFalse(flag_svg)
+        self.assertFalse(flag_os)
 
     def test_argument_parser_non_default(self):
         """test that the argument parser returns the correct flags given for a
@@ -135,6 +137,7 @@ class test_methods(unittest.TestCase):
             path,
             flag_interpolationplot,
             flag_svg,
+            flag_os
         ) = argument_parser(argv_list)
         self.assertFalse(flag_all)
         self.assertFalse(flag_est)
@@ -147,6 +150,7 @@ class test_methods(unittest.TestCase):
         self.assertFalse(flag_interpolation)
         self.assertFalse(flag_interpolationplot)
         self.assertFalse(flag_svg)
+        self.assertFalse(flag_os)
 
     # ----- TEST WHITESPACE REMOVAL -----
 

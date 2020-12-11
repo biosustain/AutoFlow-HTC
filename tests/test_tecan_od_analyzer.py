@@ -172,6 +172,10 @@ class test_methods(unittest.TestCase):
         """test that returned objected is a dataframe with 5 columns"""
         result = read_xlsx(current_dir + "/data/results.xlsx")
         cols = len(result.columns)
+        
+        print(current_dir)
+        print(results)
+
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(cols, 5)
 

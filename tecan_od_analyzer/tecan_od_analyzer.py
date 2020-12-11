@@ -574,8 +574,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp["Measurement"].loc[df_gr_comp_index] = (
-                    df_gr_comp["Measurement"].loc[df_gr_comp_index]
+                df_gr_comp.at["Measurement", df_gr_comp_index] = (
+                    df_gr_comp.at["Measurement", df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account

@@ -335,7 +335,7 @@ class test_methods(unittest.TestCase):
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(result, result_)
         # Add ID test
-        self.assertEqual(result.columns.values, result_.columns.values)
+        self.assertTrue(all(result.columns.values == result_.columns.values))
 
     # ----- TEST gr_estimation METHOD -----
 

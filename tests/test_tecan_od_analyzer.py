@@ -7,7 +7,7 @@ import sys
 import pathlib
 
 sys.path.insert(1, "../")
-from tecan_od_analyzer.tecan_od_analyzer import (
+from tecan_od_analyzer.tecan_od_analyzer import ( # noqa E402
     argument_parser,
     read_xlsx,
     sample_outcome,
@@ -172,10 +172,6 @@ class test_methods(unittest.TestCase):
         """test that returned objected is a dataframe with 5 columns"""
         result = read_xlsx(current_dir + "/data/results.xlsx")
         cols = len(result.columns)
-        
-        print(current_dir)
-        print(results)
-
         self.assertIsInstance(result, pd.DataFrame)
         self.assertEqual(cols, 5)
 

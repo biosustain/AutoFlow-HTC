@@ -354,7 +354,7 @@ def sample_outcome(sample_file, df):
 
     # Remove wells to drop
     df_calc["Drop_out"] = [not elem for elem in df_calc["Drop_out"]]
-    df_calc = df_calc.loc[df_calc["Drop_out"]]
+    df_calc = df_calc[df_calc["Drop_out"]]
 
     # Add species and bioshaker labels to every observation
     cols = ["Sample_ID", "Species", "Dilution"]
@@ -364,17 +364,17 @@ def sample_outcome(sample_file, df):
     df["Measurement"] = df["Measurement"] * df["Dilution"]
 
     # Separate samples for growth rate or volume loss according to calc.tsv
-    gr_samples = df_calc.loc[df_calc["calc_gr"]]
+    gr_samples = df_calc[df_calc["calc_gr"]]
     gr_samples = gr_samples["Sample_ID"].tolist()
-    vol_loss_samples = df_calc.loc[df_calc["calc_volumeloss"]]
+    vol_loss_samples = df_calc[df_calc["calc_volumeloss"]]
     vol_loss_samples = vol_loss_samples["Sample_ID"].tolist()
 
     # Separate initial dataframe in 2
     df_gr = df[df.Sample_ID.isin(gr_samples)]
-    df_gr = df_gr.loc[df_gr["Measurement_type"] == "OD600"]
+    df_gr = df_gr[df_gr["Measurement_type"] == "OD600"]
     df_vl = df[df.Sample_ID.isin(vol_loss_samples)]
-    df_vl450 = df_vl.loc[df_vl["Measurement_type"] == "OD450"]
-    df_vl600 = df_vl.loc[df_vl["Measurement_type"] == "OD600"]
+    df_vl450 = df_vl[df_vl["Measurement_type"] == "OD450"]
+    df_vl600 = df_vl[df_vl["Measurement_type"] == "OD600"]
     return df_gr, df_vl450, df_vl600
 
 
@@ -407,19 +407,20 @@ def time_formater(df):
         # unique_date = df["Sampling_date"].unique()
 
         # Merge date and time variable to datetime format
-        df_temp.loc["date_time"] = (
+        df_temp["date_time"] = (
             df_temp["Sampling_time"] + " " + df_temp["Sampling_date"]
         )
-        df_temp.loc["date_time"] = pd.to_datetime(df_temp["date_time"])
+        df_temp["date_time"] = pd.to_datetime(df_temp["date_time"])
 
         # Substracting the time of the first obs to all obs
-        df_temp.loc["time_hours"] = (
-            df_temp["date_time"] - df_temp[df_temp.index[0], "date_time"]
+        df_temp["time_hours"] = (
+            df_temp["date_time"] -
+            df_temp.loc[df_temp.index[0], "date_time"]
         )
-        df_temp.loc["h"] = df_temp["time_hours"].dt.components["hours"]
-        df_temp.loc["m"] = df_temp["time_hours"].dt.components["minutes"]
-        df_temp.loc["s"] = df_temp["time_hours"].dt.components["seconds"]
-        df_temp.loc["time_hours"] = (
+        df_temp["h"] = df_temp["time_hours"].dt.components["hours"]
+        df_temp["m"] = df_temp["time_hours"].dt.components["minutes"]
+        df_temp["s"] = df_temp["time_hours"].dt.components["seconds"]
+        df_temp["time_hours"] = (
             df_temp["h"] + df_temp["m"] / 60 + df_temp["s"] / 360
         )
 
@@ -459,9 +460,9 @@ def vol_correlation(df_vl):  # done
 
     # Compute correlation for every sample
     for pos in range(len(unique_IDs_vl)):
-        df_vl_ID = df_vl.loc[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
+        df_vl_ID = df_vl[df_vl["Sample_ID"] == unique_IDs_vl[pos]]
         init_val = float((df_vl_ID["Measurement"].tolist()[0]))
-        df_vl_ID.loc["Correlation"] = df_vl_ID["Measurement"] / init_val
+        df_vl_ID["Correlation"] = df_vl_ID["Measurement"] / init_val
         cor_df = cor_df.append(df_vl_ID)
         df_vl_ID = pd.DataFrame()
 
@@ -574,8 +575,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 background_mean = np.mean(
                     df_gr_background_time_limited["Measurement"]
                 )
-                df_gr_comp.loc["Measurement"].iloc[df_gr_comp_index] = (
-                    df_gr_comp.loc["Measurement"].iloc[df_gr_comp_index]
+                df_gr_comp["Measurement"].loc[df_gr_comp_index] = (
+                    df_gr_comp["Measurement"].loc[df_gr_comp_index]
                     - background_mean
                 )
         # 1 is added instead of the calculated intercept to only account
@@ -634,7 +635,7 @@ def reshape_dataframe(df_gr, flag_species=False, flag_bioshaker=False):
     df_gr = df_gr[cols]
 
     # Get unique ID and times
-    df_gr.loc["Sample_ID"] = df_gr["Sample_ID"] + "_" + df_gr["Species"]
+    df_gr["Sample_ID"] = df_gr["Sample_ID"] + "_" + df_gr["Species"]
     df_gr.drop(columns=["Species"])
     unique_IDs = df_gr["Sample_ID"].unique()
     # unique_times = df_gr["time_hours"].unique()
@@ -666,7 +667,7 @@ def reshape_dataframe(df_gr, flag_species=False, flag_bioshaker=False):
 
     elif not flag_species and flag_bioshaker:
 
-        df_gr_temp.loc["Sample_ID"] = (
+        df_gr_temp["Sample_ID"] = (
             df_gr_temp["Sample_ID"] + "_" + df_gr_temp["Species"]
         )
         unique_species = df_gr_temp["Species"].unique()
@@ -1378,7 +1379,7 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
         else:
 
             # subset to select appropriate bioshaker parameters
-            df_temp = mean_df_bs.loc[
+            df_temp = mean_df_bs[
                 (
                     mean_df_bs["bioshaker"]
                     == (estimated_samples_list[sample_pos])[:3]
@@ -1386,7 +1387,7 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
             ]
 
             # subset to select appropriate species parameteres
-            parameters = df_temp.loc[
+            parameters = df_temp[
                 df_temp["species"]
                 == re.search(
                     r"([A-Z0-9]+$)", estimated_samples_list[sample_pos]
@@ -1423,7 +1424,7 @@ def interpolation(od_measurements, df_annotations, mean_df_bs):
     od_measurements["Estimation range"] = range_list
 
     # Drop unnamed columns
-    od_measurements = od_measurements.loc[
+    od_measurements = od_measurements[
         :, ~od_measurements.columns.str.contains("^Unnamed")
     ]
 

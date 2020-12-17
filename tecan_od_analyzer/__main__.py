@@ -667,7 +667,7 @@ def main():
                             )
 
                             # First time
-                            if start_leg == "":
+                            if start_leg == "" and (colnames[col])[:3] != "":
                                 gr_plots(
                                     df,
                                     colnames[col],

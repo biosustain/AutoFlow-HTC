@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import re
 from setuptools import setup
 import setuptools
@@ -8,7 +7,7 @@ with open("README.md", "r") as doc:
     long_description = doc.read()
 
 version = re.search(
-    '^__version__\s*=\s*"(.*)"',
+    r'^__version__\s+([^,\s]+).+"',
     open("tecan_od_analyzer/tecan_od_analyzer.py").read(),
     re.M,
 ).group(1)
@@ -19,7 +18,7 @@ setup(
     author="Felix Pacheco Pastor",
     author_email="fepac@biosustain.com",
     description=(
-        "OD data handling for growth curve estimation and visualization of TECAN OD readings"
+        "OD data handling for growth curve estimation and visualization of TECAN OD readings" # noqa E501
     ),
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -53,6 +52,6 @@ setup(
         "xlrd==1.2.0",
         "pandas",
     ],
-    dependency_links=["https://github.com/biosustain/croissance"], # .git@v1.2.x
+    dependency_links=["https://github.com/biosustain/croissance.git@v1.2.x"],
     include_package_data=True,
 )

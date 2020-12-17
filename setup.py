@@ -15,8 +15,8 @@ version = re.search(
 setup(
     name="tecan_od_analyzer",
     version=version,
-    author="Felix Pacheco Pastor",
-    author_email="fepac@biosustain.com",
+    author="Matthias Mattanovich",
+    author_email="matmat@biosustain.dtu.dk",
     description=(
         "OD data handling for growth curve estimation and visualization of TECAN OD readings" # noqa E501
     ),

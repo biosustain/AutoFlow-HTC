@@ -309,6 +309,7 @@ def main():
                         plt.savefig(species_ + "_GR_curve.svg", dpi=250)
                     else:
                         plt.savefig(species_ + "_GR_curve.png", dpi=250)
+                    plt.close()
 
                 else:
                     for df_gr_final in df_gr_final_list:
@@ -358,6 +359,7 @@ def main():
                             plt.savefig(species_ + "_GR_curve.svg", dpi=250)
                         else:
                             plt.savefig(species_ + "_GR_curve.png", dpi=250)
+                        plt.close()
 
             # Get plots split by species and bioshaker
             # Add new flag for this
@@ -418,7 +420,7 @@ def main():
                                 bioshaker_ + "_" + species_ + "_GR_curve.png",
                                 dpi=250,
                             )
-                        # plt.close()
+                        plt.close()
 
             # Get plots split by bioshaker and coloured by species
 
@@ -632,6 +634,7 @@ def main():
                             plt.savefig(species_ + "_GR_curve.svg", dpi=250)
                         else:
                             plt.savefig(species_ + "_GR_curve.png", dpi=250)
+                        plt.close()
 
                 # Plots when more than one species is present
 
@@ -720,6 +723,7 @@ def main():
                             plt.savefig(
                                 species_name + "_GR_curve.png", dpi=250
                             )
+                        plt.close()
                     df_gr_final_total = pd.concat(df_gr_final_list, axis=1)
                     df_gr_est = df_gr_final_total.loc[
                         :, ~df_gr_final_total.columns.str.startswith("time")
@@ -768,12 +772,14 @@ def main():
                             separate_species=True,
                             flag_svg=flag_svg,
                         )
-                    lines = [Line2D([0], [0], color=c, linewidth=2) for c in color_palette[:len(species_list)]]
+                    lines = [Line2D([0], [0], color=c, linewidth=2)
+                             for c in color_palette[:len(species_list)]]
                     plt.legend(lines, species_list)
                     if flag_svg:
                         plt.savefig("Combined_GR_curve.svg", dpi=250)
                     else:
                         plt.savefig("Combined_GR_curve.png", dpi=250)
+                    plt.close()
 
         print("Plotting growth curves : DONE")
 

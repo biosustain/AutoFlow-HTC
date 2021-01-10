@@ -417,12 +417,18 @@ def time_formater(df):
             df_temp["date_time"] -
             df_temp.loc[df_temp.index[0], "date_time"]
         )
+        # TEST
+        df_temp["d"] = df_temp["time_hours"].dt.components["days"]
+        # TEST
         df_temp["h"] = df_temp["time_hours"].dt.components["hours"]
         df_temp["m"] = df_temp["time_hours"].dt.components["minutes"]
         df_temp["s"] = df_temp["time_hours"].dt.components["seconds"]
+        # ALSO TEST IN THERE
         df_temp["time_hours"] = (
-            df_temp["h"] + df_temp["m"] / 60 + df_temp["s"] / 360
+            df_temp["d"] * 24 + df_temp["h"] +
+            df_temp["m"] / 60 + df_temp["s"] / 360
         )
+        # ALSO TEST IN THERE
 
         # df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
 

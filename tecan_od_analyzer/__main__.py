@@ -27,6 +27,7 @@ import pandas as pd
 import re
 import os
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from pandas import Series
 import itertools
 
@@ -767,6 +768,8 @@ def main():
                             separate_species=True,
                             flag_svg=flag_svg,
                         )
+                    lines = [Line2D([0], [0], color=c, linewidth=2) for c in color_palette[:len(species_list)]]
+                    plt.legend(lines, species_list)
                     if flag_svg:
                         plt.savefig("Combined_GR_curve.svg", dpi=250)
                     else:

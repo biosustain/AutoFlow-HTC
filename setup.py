@@ -52,6 +52,6 @@ setup(
         "xlrd==1.2.0",
         "pandas",
     ],
-    dependency_links=["https://github.com/biosustain/croissance.git@v1.2.x"],
+    dependency_links=["https://github.com/biosustain/croissance"],  # .git@v1.2.x"],
     include_package_data=True,
 )

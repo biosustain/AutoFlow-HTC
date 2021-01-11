@@ -1229,14 +1229,18 @@ def stats_summary(df_annotations):
     summary_df.loc[:, "bioshaker"] = bioshaker_list
 
     # Append annotations as rows in df_summary
-
-    summary_df.loc[:, "start"] = pd.to_numeric((df_annotations.iloc[0, 1:]).values)
-    summary_df.loc[:, "end"] = pd.to_numeric((df_annotations.iloc[1, 1:]).values)
-    summary_df.loc[:, "slope"] = pd.to_numeric((df_annotations.iloc[2, 1:]).values)
-    summary_df.loc[:, "intercep"] = pd.to_numeric((df_annotations.iloc[3, 1:]).values)
-    summary_df.loc[:, "n0"] = pd.to_numeric((df_annotations.iloc[4, 1:]).values)
-    summary_df.loc[:, "SNR"] = pd.to_numeric((df_annotations.iloc[5, 1:]).values)
-
+    summary_df.loc[:, "start"] = pd.to_numeric(
+        (df_annotations.iloc[0, 1:]).values)
+    summary_df.loc[:, "end"] = pd.to_numeric(
+        (df_annotations.iloc[1, 1:]).values)
+    summary_df.loc[:, "slope"] = pd.to_numeric(
+        (df_annotations.iloc[2, 1:]).values)
+    summary_df.loc[:, "intercep"] = pd.to_numeric(
+        (df_annotations.iloc[3, 1:]).values)
+    summary_df.loc[:, "n0"] = pd.to_numeric(
+        (df_annotations.iloc[4, 1:]).values)
+    summary_df.loc[:, "SNR"] = pd.to_numeric(
+        (df_annotations.iloc[5, 1:]).values)
     # Mean and std on annotations per species
     summary_df_species = summary_df.drop(columns=["bioshaker"])
     mean_df_species = (

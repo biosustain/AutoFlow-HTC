@@ -404,7 +404,6 @@ class test_methods(unittest.TestCase):
         result = result["Estimation"].tolist()
 
         for i in range(len(result)):
-
             # Comparison to expected output
             self.assertTrue(result[i] == expected_result[i])
 
@@ -412,8 +411,6 @@ class test_methods(unittest.TestCase):
         """test the exponential method"""
         result = exponential(1, 2, 3, 0)
         result_ = self.estimation
-        print('calculated here', result)
-        print('imported', result_)
         self.assertEqual(result, result_)
 
 

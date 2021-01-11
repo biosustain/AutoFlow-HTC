@@ -412,6 +412,8 @@ class test_methods(unittest.TestCase):
         """test the exponential method"""
         result = exponential(1, 2, 3, 0)
         result_ = self.estimation
+        print('calculated here', result)
+        print('imported', result_)
         self.assertEqual(result, result_)
 
 

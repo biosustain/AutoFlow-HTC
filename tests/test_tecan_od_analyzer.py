@@ -405,6 +405,7 @@ class test_methods(unittest.TestCase):
 
         for i in range(len(result)):
             # Comparison to expected output
+            print(result[i] == expected_result[i])
             self.assertTrue(result[i] == expected_result[i])
 
     def test_exponential(self):

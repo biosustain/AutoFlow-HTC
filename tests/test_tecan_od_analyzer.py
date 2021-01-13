@@ -6,7 +6,7 @@ import pickle
 import sys
 import pathlib
 
-sys.path.insert(1, "../")
+#sys.path.insert(1, "../")
 from tecan_od_analyzer.tecan_od_analyzer import ( # noqa E402
     argument_parser,
     read_xlsx,

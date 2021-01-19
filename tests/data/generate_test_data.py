@@ -1,5 +1,5 @@
 # generate test_data
-# Last date : 20 Nov 2020
+# Last date : 10 Jan 2021
 # By : Matthias Mattanovich (matmat@biosustain.dtu.dk)
 # This script is intended to generate sample data and save them into the
 # test_data file. The saved objects will then be used to test the
@@ -7,14 +7,22 @@
 
 import pickle
 import pandas as pd
-from tecan_od_analyzer.tecan_od_analyzer import argument_parser, gr_plots, \
-    parse_data, read_xlsx, sample_outcome, time_formater, reshape_dataframe, \
-    vol_correlation, compensation_lm, gr_estimation, stats_summary, \
-    interpolation, exponential
+from tecan_od_analyzer.tecan_od_analyzer import (
+    read_xlsx,
+    sample_outcome,
+    time_formater,
+    reshape_dataframe,
+    vol_correlation,
+    compensation_lm,
+    gr_estimation,
+    stats_summary,
+    interpolation,
+    exponential,
+)
 
-pd.set_option('mode.chained_assignment', None)
+pd.set_option("mode.chained_assignment", None)
 # Use pickle to save python variables
-filehandler = open("test_data.obj", 'wb')
+filehandler = open("test_data.obj", "wb")
 
 # Generate variables to save
 df_gr, df_vl450, df_vl600 = sample_outcome("calc.tsv", read_xlsx())
@@ -26,13 +34,32 @@ fig, df_gr_comp = compensation_lm(cor_df, df_gr_time, df_vl600_time)
 df_gr_final = reshape_dataframe(df_gr_comp)
 df_data_series, df_annotations, errors = gr_estimation(df_gr_final)
 summary_df, mean_df_species, mean_df_bs = stats_summary(df_annotations)
-od_measurements = interpolation("od_measurements.tsv", df_annotations,
-                                mean_df_bs)
+od_measurements = interpolation(
+    "od_measurements.tsv", df_annotations, mean_df_bs
+)
 estimation = exponential(1, 2, 3, 0)
 
-pickle.dump([df_gr, df_vl450, df_vl600, df_gr_time, df_vl_time, df_vl600_time,
-            cor_df, df_gr_comp, df_gr_final, df_data_series, df_annotations,
-            errors, summary_df, mean_df_species, mean_df_bs, od_measurements,
-            estimation], filehandler)
+pickle.dump(
+    [
+        df_gr,
+        df_vl450,
+        df_vl600,
+        df_gr_time,
+        df_vl_time,
+        df_vl600_time,
+        cor_df,
+        df_gr_comp,
+        df_gr_final,
+        df_data_series,
+        df_annotations,
+        errors,
+        summary_df,
+        mean_df_species,
+        mean_df_bs,
+        od_measurements,
+        estimation,
+    ],
+    filehandler,
+)
 
 filehandler.close()

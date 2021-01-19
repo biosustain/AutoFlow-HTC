@@ -36,7 +36,7 @@ tecan_od_analyzer can be used from the command-line by executing it in the direc
 
 ``tecan_od_analyzer``
 
-The default command produces growth phase estimation, summary statistics on the estimations and growth rate plots split only by species. By default the volumess loss correction is computed.
+The default command produces growth phase estimation, summary statistics on the estimations and growth rate plots split by species and bioshaker. By default the volumess loss correction is computed.
 
 ##### Options :
 
@@ -52,15 +52,19 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ``tecan_od_analyzer --individual``      Outputs the growth curves for every sample individually.
 
-``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and species.
+``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and colors them by species.
 
-``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and colors by bioshaker.
+``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and does not color them by bioshaker.
 
 ``tecan_od_analyser --interpolationplot``  Outputs Growth rate curves instead of scatter plots.
 
 ``tecan_od_analyser --interpolation``   Computes interpolation of samples given the measure time and outputs an xlsx file with the estimations.
 
 ``tecan_od_analyser --volumeloss``      This option allows the user to not compute the volume loss correction. By default, the volume loss correction is always computed.
+
+``tecan_od_analyser --exportsvg``       With this option, plots will be saved as .svg rather than .png files. This is preferred if they are intended for a publication and allows for modifications in Illustrator.
+
+``tecan_od_analyser --onlyspecies``     Splits the visualization of the growth rate plots according to species and bioshaker.
 
 
 ## Input
@@ -118,7 +122,7 @@ It must be noted that all the time units will appear in hours. The Results direc
 
 ### Estimations / Linear phase estimations:
 
-- Linear phase annotations `` annotations.xlsx`` file containing the linear phase estimated parameters for all samples.
+- Linear phase annotations ``annotations.xlsx`` file containing the linear phase estimated parameters for all samples.
 - errors.txt  file containing the list of samples for which the linear phase estimation resulted in an error.
 - Data_series.xlsx   file containing all the data points after dilution and volume loss correction. The outliers have also been removed.
 
@@ -126,6 +130,10 @@ It must be noted that all the time units will appear in hours. The Results direc
 ### Summary statistics:
 
 - summary_stats.xlsx file containing summary statistics of the estimated parameters grouping by species, by bioshaker and both.
+
+### Temporary growth rate calculation
+
+- A temporary alternative is provided until the underlying issue with the implemented growth rate calculation is fixed. The specific growth rates between every time step are calculated and provided in an .xlsx file and the progression of specific growth rates is plotted for every well. These files can be found in the ``Temporary_GR_check`` folder in the produced ``Results`` folder.
 
 ## Contributing
 

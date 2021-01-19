@@ -430,7 +430,6 @@ def time_formater(df):
             df_temp["d"] * 24 + df_temp["h"] +
             df_temp["m"] / 60 + df_temp["s"] / 360
         )
-        # ALSO TEST IN THERE
 
         # df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
 
@@ -859,7 +858,11 @@ def gr_estimation(df_gr_final):
                 # Some samples are too noise to handle by the croissance
                 # library and raise an error
                 gr_estimation = process_curve(my_series)
-            # except AssertionError:
+            except Exception:
+                # For those samples that raise errors, the outliers
+                # are removed and a series is returned
+                gr_estimation = remove_outliers(my_series)
+                errors.append(colnames[col])
             except OptimizeWarning:
                 # For those samples that raise errors, the outliers
                 # are removed and a series is returned
@@ -991,7 +994,7 @@ def step_gr_calculator(df, flag_svg=False):
             continue
         else:
             previous_val = df.iloc[:, 1][i - 1]
-            if previous_val < 0 or row_val < 0:
+            if previous_val <= 0 or row_val <= 0:
                 continue
             else:
                 previous_time = df.iloc[:, 0][i - 1]

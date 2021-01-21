@@ -911,8 +911,8 @@ def gr_estimation(df_gr_final):
                 list_annotations.append(Annotated_gc[0].slope)
                 list_annotations.append(Annotated_gc[0].intercept)
                 list_annotations.append(Annotated_gc[0].n0)
-                list_annotations.append((Annotated_gc[0].attributes)["SNR"])
-                list_annotations.append((Annotated_gc[0].attributes)["rank"])
+                list_annotations.append(Annotated_gc[0].SNR
+                list_annotations.append(Annotated_gc[0].rank
 
             except IndexError:
 

@@ -369,7 +369,17 @@ def sample_outcome(sample_file, df):
     rename = False
     species_list = list(temp_df['Species'].unique())
     for pos, species in enumerate(species_list):
-        if any(species in s for s in species_list):
+        print(pos, len(species_list) - 1)
+        if pos == len(species_list) - 1:
+            print('here')
+            print(species_list[:pos])
+        elif pos == 0:
+            print(species_list[pos+1:])
+        else:
+            print(species_list[:pos] +
+                  species_list[pos+1:])
+        if any(species in s for s in species_list[:pos] +
+               species_list[pos+1:]):
             rename = True
             break
         else:

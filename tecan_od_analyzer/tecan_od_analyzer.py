@@ -361,6 +361,27 @@ def sample_outcome(sample_file, df):
     # Add species and bioshaker labels to every observation
     cols = ["Sample_ID", "Species", "Dilution"]
     temp_df = df_calc[cols]
+
+    # Check if there is an issue with the species names;
+    # if one name is entirely included in a different one the
+    # later functions will crash. Here we check for that and add
+    # unique identifiers (numbering the species) if necessary
+    rename = False
+    species_list = list(temp_df['Species'].unique())
+    for pos, species in enumerate(species_list):
+        if any(species in s for s in species_list):
+            rename = True
+            break
+        else:
+            continue
+    if rename:
+        species_col = temp_df['Species']
+        for pos, species in enumerate(species_list):
+            species_col = ['0' + str(pos+1) + '_' + x if x == species
+                           else x for x in species_col]
+        temp_df.loc[:, 'Species'] = species_col
+
+    # Add bioshaker label and correct Measurements by dilution
     df = pd.merge(df, temp_df, how="left", on="Sample_ID")
     df.loc[:, "bioshaker"] = df["Sample_ID"].str[0:3]
     df.loc[:, "Measurement"] = df["Measurement"] * df["Dilution"]

@@ -371,19 +371,24 @@ def sample_outcome(sample_file, df):
     for pos, species in enumerate(species_list):
         print(pos, len(species_list) - 1)
         if pos == len(species_list) - 1:
-            print('here')
-            print(species_list[:pos])
+            if any(species in s for s in species_list[:pos]):
+                rename = True
+                break
+            else:
+                continue
         elif pos == 0:
-            print(species_list[pos+1:])
+            if any(species in s for s in species_list[pos+1:]):
+                rename = True
+                break
+            else:
+                continue
         else:
-            print(species_list[:pos] +
-                  species_list[pos+1:])
-        if any(species in s for s in species_list[:pos] +
-               species_list[pos+1:]):
-            rename = True
-            break
-        else:
-            continue
+            if any(species in s for s in species_list[:pos] +
+                   species_list[pos+1:]):
+                rename = True
+                break
+            else:
+                continue
     if rename:
         species_col = temp_df['Species']
         for pos, species in enumerate(species_list):

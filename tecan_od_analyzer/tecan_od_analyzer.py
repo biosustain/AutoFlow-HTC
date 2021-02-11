@@ -369,7 +369,6 @@ def sample_outcome(sample_file, df):
     rename = False
     species_list = list(temp_df['Species'].unique())
     for pos, species in enumerate(species_list):
-        print(pos, len(species_list) - 1)
         if pos == len(species_list) - 1:
             if any(species in s for s in species_list[:pos]):
                 rename = True
@@ -910,8 +909,8 @@ def gr_estimation(df_gr_final):
         # Dataframe generation with outlier free data
         df_temp = pd.DataFrame(
             {
-                colnames[col] + "_data": est_series.index,
-                colnames[col] + "_time": est_series.values,
+                colnames[col] + "_time": est_series.index,
+                colnames[col] + "_data": est_series.values,
             }
         )
         df_data_series = pd.concat(

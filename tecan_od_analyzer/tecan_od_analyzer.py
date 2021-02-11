@@ -361,6 +361,41 @@ def sample_outcome(sample_file, df):
     # Add species and bioshaker labels to every observation
     cols = ["Sample_ID", "Species", "Dilution"]
     temp_df = df_calc[cols]
+
+    # Check if there is an issue with the species names;
+    # if one name is entirely included in a different one the
+    # later functions will crash. Here we check for that and add
+    # unique identifiers (numbering the species) if necessary
+    rename = False
+    species_list = list(temp_df['Species'].unique())
+    for pos, species in enumerate(species_list):
+        if pos == len(species_list) - 1:
+            if any(species in s for s in species_list[:pos]):
+                rename = True
+                break
+            else:
+                continue
+        elif pos == 0:
+            if any(species in s for s in species_list[pos+1:]):
+                rename = True
+                break
+            else:
+                continue
+        else:
+            if any(species in s for s in species_list[:pos] +
+                   species_list[pos+1:]):
+                rename = True
+                break
+            else:
+                continue
+    if rename:
+        species_col = temp_df['Species']
+        for pos, species in enumerate(species_list):
+            species_col = ['0' + str(pos+1) + '_' + x if x == species
+                           else x for x in species_col]
+        temp_df.loc[:, 'Species'] = species_col
+
+    # Add bioshaker label and correct Measurements by dilution
     df = pd.merge(df, temp_df, how="left", on="Sample_ID")
     df.loc[:, "bioshaker"] = df["Sample_ID"].str[0:3]
     df.loc[:, "Measurement"] = df["Measurement"] * df["Dilution"]
@@ -874,8 +909,8 @@ def gr_estimation(df_gr_final):
         # Dataframe generation with outlier free data
         df_temp = pd.DataFrame(
             {
-                colnames[col] + "_data": est_series.index,
-                colnames[col] + "_time": est_series.values,
+                colnames[col] + "_time": est_series.index,
+                colnames[col] + "_data": est_series.values,
             }
         )
         df_data_series = pd.concat(
@@ -911,8 +946,8 @@ def gr_estimation(df_gr_final):
                 list_annotations.append(Annotated_gc[0].slope)
                 list_annotations.append(Annotated_gc[0].intercept)
                 list_annotations.append(Annotated_gc[0].n0)
-                list_annotations.append((Annotated_gc[0].attributes)["SNR"])
-                list_annotations.append((Annotated_gc[0].attributes)["rank"])
+                list_annotations.append(Annotated_gc[0].SNR)
+                list_annotations.append(Annotated_gc[0].rank)
 
             except IndexError:
 

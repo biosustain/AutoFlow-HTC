@@ -33,6 +33,7 @@ jobs:
             . venv/bin/activate
             cd tests
             python3 test_tecan_od_analyzer.py
+            flake8 --max-line-length=120 --ignore=PT009,E203,W503,W601
 
   build-on-windows:
     executor:
@@ -60,6 +61,7 @@ jobs:
           command: |
             cd tests
             python test_tecan_od_analyzer.py
+            flake8 --max-line-length=120 --ignore=PT009,E203,W503,W601
 
 
 workflows:

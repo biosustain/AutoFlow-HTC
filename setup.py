@@ -36,7 +36,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        # "xcode==0.0.1",
+        "flake8"
         "wheel==0.36.2",
         "numpy==1.19.5",
         "matplotlib==3.3.3",

@@ -39,7 +39,7 @@ setup(
         "flake8",
         "wheel==0.36.2",
         "numpy==1.19.5",
-        "matplotlib==3.3.3",
+        "matplotlib",
         "datetime==4.3",
         "argparse==1.4.0",
         "path==15.0.1",

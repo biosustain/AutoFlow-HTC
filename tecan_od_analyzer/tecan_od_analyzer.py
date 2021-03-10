@@ -587,8 +587,13 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
     df_gr_comp_out = pd.DataFrame()
     # prepare df for background correction
     df_gr_background = pd.DataFrame()
+    # prepare dict for volume correction correlation value
+    corr_val_dict = {}
     for pos in range(len(lm_eq)):
         df_gr_comp = df_gr[df_gr["bioshaker"] == unique_bioshaker[pos]]
+        # Save the volume correction correlation value
+        corr_val_dict[pos] = {"BS": unique_bioshaker[pos],
+                              "Corr_val": lm_eq[pos][0]}
 
         # The following two loops are there for background correction
         # get OD600 values of volume correction samples to use for
@@ -629,6 +634,12 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
             df_gr_comp["Measurement"] / df_gr_comp["Correlation"]
         )
         df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
+
+    #  Save the volume correction correlation value
+    corr_val = pd.DataFrame.from_dict(corr_val_dict, "index")
+    # np.savetxt('correlation_value.txt', corr_val.values)#, fmt='%d')
+    corr_val.to_csv('correlation_value.txt', header=None,
+                    index=None, sep=' ', mode='a')
 
     if flag_svg:
         plt.savefig("lm_volume_loss.svg", dpi=250)

@@ -183,7 +183,7 @@ def argument_parser(argv_list=None):
         path,
         interpolationplot,
         flag_svg,
-        flag_os
+        flag_os,
     )
 
 
@@ -337,14 +337,16 @@ def sample_outcome(sample_file, df):
         )
 
         if re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is not None:
-            df_calc.loc[:, "Sample_ID"] = \
-                df_calc["Sample_ID"].str.replace(".0_", "_")
+            df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(
+                ".0_", "_"
+            )
             print("The ID format will be redefined to match the results file.")
             print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
 
         elif re.search(r"BS\d[.]\d_[A-Z]\d", IDs_calc[0]) is None:
-            df_calc.loc[:, "Sample_ID"] = \
-                df_calc["Sample_ID"].str.replace("_", ".0_")
+            df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(
+                "_", ".0_"
+            )
             print("The ID format will be redefined to match the results file.")
             print(f'e.g {IDs_calc[0]} --> {df_calc["Sample_ID"].tolist()[0]}')
 
@@ -367,7 +369,7 @@ def sample_outcome(sample_file, df):
     # later functions will crash. Here we check for that and add
     # unique identifiers (numbering the species) if necessary
     rename = False
-    species_list = list(temp_df['Species'].unique())
+    species_list = list(temp_df["Species"].unique())
     for pos, species in enumerate(species_list):
         if pos == len(species_list) - 1:
             if any(species in s for s in species_list[:pos]):
@@ -376,24 +378,28 @@ def sample_outcome(sample_file, df):
             else:
                 continue
         elif pos == 0:
-            if any(species in s for s in species_list[pos+1:]):
+            if any(species in s for s in species_list[pos + 1 :]):
                 rename = True
                 break
             else:
                 continue
         else:
-            if any(species in s for s in species_list[:pos] +
-                   species_list[pos+1:]):
+            if any(
+                species in s
+                for s in species_list[:pos] + species_list[pos + 1 :]
+            ):
                 rename = True
                 break
             else:
                 continue
     if rename:
-        species_col = temp_df['Species']
+        species_col = temp_df["Species"]
         for pos, species in enumerate(species_list):
-            species_col = ['0' + str(pos+1) + '_' + x if x == species
-                           else x for x in species_col]
-        temp_df.loc[:, 'Species'] = species_col
+            species_col = [
+                "0" + str(pos + 1) + "_" + x if x == species else x
+                for x in species_col
+            ]
+        temp_df.loc[:, "Species"] = species_col
 
     # Add bioshaker label and correct Measurements by dilution
     df = pd.merge(df, temp_df, how="left", on="Sample_ID")
@@ -451,8 +457,7 @@ def time_formater(df):
 
         # Substracting the time of the first obs to all obs
         df_temp.loc[:, "time_hours"] = (
-            df_temp["date_time"] -
-            df_temp.loc[df_temp.index[0], "date_time"]
+            df_temp["date_time"] - df_temp.loc[df_temp.index[0], "date_time"]
         )
         # TEST
         df_temp.loc[:, "d"] = df_temp["time_hours"].dt.components.days
@@ -462,8 +467,10 @@ def time_formater(df):
         df_temp.loc[:, "s"] = df_temp["time_hours"].dt.components.seconds
         # ALSO TEST IN THERE
         df_temp.loc[:, "time_hours"] = (
-            df_temp["d"] * 24 + df_temp["h"] +
-            df_temp["m"] / 60 + df_temp["s"] / 360
+            df_temp["d"] * 24
+            + df_temp["h"]
+            + df_temp["m"] / 60
+            + df_temp["s"] / 360
         )
 
         # df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
@@ -587,8 +594,15 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
     df_gr_comp_out = pd.DataFrame()
     # prepare df for background correction
     df_gr_background = pd.DataFrame()
+    # prepare dict for volume correction correlation value
+    corr_val_dict = {}
     for pos in range(len(lm_eq)):
         df_gr_comp = df_gr[df_gr["bioshaker"] == unique_bioshaker[pos]]
+        # Save the volume correction correlation value
+        corr_val_dict[pos] = {
+            "BS": unique_bioshaker[pos],
+            "Corr_val": lm_eq[pos][0],
+        }
 
         # The following two loops are there for background correction
         # get OD600 values of volume correction samples to use for
@@ -602,8 +616,9 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
                 df_gr_comp["Sample_ID"] == sample
             ]
             times = list(
-                df_gr_comp.loc[df_gr_comp["Sample_ID"] == sample,
-                               "time_hours"].unique()
+                df_gr_comp.loc[
+                    df_gr_comp["Sample_ID"] == sample, "time_hours"
+                ].unique()
             )
             for time in times:
                 df_gr_comp_sample_time_limited = df_gr_comp_sample_limited[
@@ -629,6 +644,12 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
             df_gr_comp["Measurement"] / df_gr_comp["Correlation"]
         )
         df_gr_comp_out = df_gr_comp_out.append(df_gr_comp)
+
+    #  Save the volume correction correlation value
+    corr_val = pd.DataFrame.from_dict(corr_val_dict, "index")
+    corr_val.to_csv(
+        "correlation_value.txt", header=None, index=None, sep=" ", mode="a"
+    )
 
     if flag_svg:
         plt.savefig("lm_volume_loss.svg", dpi=250)
@@ -1268,17 +1289,23 @@ def stats_summary(df_annotations):
 
     # Append annotations as rows in df_summary
     summary_df.loc[:, "start"] = pd.to_numeric(
-        (df_annotations.iloc[0, 1:]).values)
+        (df_annotations.iloc[0, 1:]).values
+    )
     summary_df.loc[:, "end"] = pd.to_numeric(
-        (df_annotations.iloc[1, 1:]).values)
+        (df_annotations.iloc[1, 1:]).values
+    )
     summary_df.loc[:, "slope"] = pd.to_numeric(
-        (df_annotations.iloc[2, 1:]).values)
+        (df_annotations.iloc[2, 1:]).values
+    )
     summary_df.loc[:, "intercep"] = pd.to_numeric(
-        (df_annotations.iloc[3, 1:]).values)
+        (df_annotations.iloc[3, 1:]).values
+    )
     summary_df.loc[:, "n0"] = pd.to_numeric(
-        (df_annotations.iloc[4, 1:]).values)
+        (df_annotations.iloc[4, 1:]).values
+    )
     summary_df.loc[:, "SNR"] = pd.to_numeric(
-        (df_annotations.iloc[5, 1:]).values)
+        (df_annotations.iloc[5, 1:]).values
+    )
     # Mean and std on annotations per species
     summary_df_species = summary_df.drop(columns=["bioshaker"])
     mean_df_species = (

@@ -453,28 +453,24 @@ def time_formater(df):
         df_temp.loc[:, "date_time"] = (
             df_temp["Sampling_time"] + " " + df_temp["Sampling_date"]
         )
-        df_temp.loc[:, "date_time"] = pd.to_datetime(df_temp["date_time"])
-
+        df_temp.loc[:, "date_time"] = pd.to_datetime(df_temp["date_time"],
+                                                     dayfirst=True)
         # Substracting the time of the first obs to all obs
         df_temp.loc[:, "time_hours"] = (
             df_temp["date_time"] - df_temp.loc[df_temp.index[0], "date_time"]
         )
-        # TEST
         df_temp.loc[:, "d"] = df_temp["time_hours"].dt.components.days
-        # TEST
         df_temp.loc[:, "h"] = df_temp["time_hours"].dt.components.hours
         df_temp.loc[:, "m"] = df_temp["time_hours"].dt.components.minutes
         df_temp.loc[:, "s"] = df_temp["time_hours"].dt.components.seconds
-        # ALSO TEST IN THERE
         df_temp.loc[:, "time_hours"] = (
             df_temp["d"] * 24
             + df_temp["h"]
             + df_temp["m"] / 60
             + df_temp["s"] / 360
         )
-
+        
         # df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
-
         # Append dataframes together
         df_out = df_out.append(df_temp)
 
@@ -1345,8 +1341,8 @@ def stats_plot(summary_df, flag_svg=False):
     """
 
     if len(summary_df.index) == 0:
-        call = "Summary statistics plots not computed: No parameters were \
-            estimated and thus no plots can be shown"
+        call = ("Summary statistics plots not computed: No parameters were "
+            "estimated and thus no plots can be shown")
         return call
 
     else:

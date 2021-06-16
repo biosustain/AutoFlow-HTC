@@ -61,6 +61,7 @@ jobs:
           command: |
             cd tests
             python test_tecan_od_analyzer.py
+            exit($LASTEXITCODE)
             flake8 --max-line-length=120 --ignore=PT009,E203,W503,W601
 
 

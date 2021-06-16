@@ -1,0 +1,13 @@
+20190620
+
+Experiment over about 24h.
+
+Experiment started from a concentrated sample from a fermenter (PPP group, Jolanda).
+Cultivation medium is 2xYT
+
+2 Bioshakers used: 1 and 3.
+OD for metabolomics: BS1:2; BS3:1.
+
+OD600 and OD450 followed.
+
+LogFile.txt is the file to use to correlate data files (time points) and bioshaker ID.

@@ -7,7 +7,7 @@ with open("README.md", "r") as doc:
     long_description = doc.read()
 
 version = re.search(
-    r'^__version__\s+([^,\s]+).+"',
+    r'^__version__\s*=\s*"(.*)"',
     open("tecan_od_analyzer/tecan_od_analyzer.py").read(),
     re.M,
 ).group(1)
@@ -18,7 +18,10 @@ setup(
     author="Matthias Mattanovich",
     author_email="matmat@biosustain.dtu.dk",
     description=(
-        "OD data handling for growth curve estimation and visualization of TECAN OD readings" # noqa E501
+        "OD data handling for growth curve estimation and "
+        "visualization of TECAN OD readings. "
+        "Includes scripts to parse and reshape plate-reader "
+        "data for AutoFlow"
     ),
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -33,25 +36,29 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
         "Operating System :: OS Independent",
     ],
     install_requires=[
         "flake8",
-        "wheel==0.36.2",
-        "numpy==1.19.5",
-        "matplotlib==3.3.3",
-        "datetime==4.3",
-        "argparse==1.4.0",
-        "path==15.0.1",
+        "wheel>=0.36.2",
+        "numpy>=1.19.5",
+        "matplotlib",
+        "datetime>=4.3",
+        "argparse>=1.4.0",
+        "path>=15.0.1",
         "xlsxwriter==1.3.7",
         "seaborn==0.11.1",
-        "scipy==1.6.0",
+        "scipy>=1.6.0",
         "pycodestyle==2.6.0",
-        "sphinx==3.4.3",
-        "sphinx_rtd_theme==0.5.1",
-        "pytest==6.2.1",
+        "sphinx>=3.4.3",
+        "sphinx_rtd_theme>=0.5.1",
+        "pytest>=6.2.1",
         "xlrd==1.2.0",
         "pandas==1.2.1",
+        "click>=6.0",
+        "openpyxl>=2.6.2",
     ],
     dependency_links=["https://github.com/biosustain/croissance.git@v1.2.x"],
     include_package_data=True,

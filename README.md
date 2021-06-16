@@ -1,10 +1,12 @@
+=================
+Tecan OD Analyzer
+=================
 
 ## Description
 
-
 tecan_od_analyzer is a Python package for analysing optical density (OD) measurements taken from the Tecan Nano plate reader. 
 
-The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file using the autoflow_parse library. The merged file is read as a dataframe and every sample is labelled according to the calc.tsv file, 
+The tool parses the individual xlsx files from the plate reader and merges them into a single xlsx file using the internalized autoflow_parse library. The merged file is read as a dataframe and every sample is labelled according to the calc.tsv file, 
 provided by the user. The labelling helps to differentiate the sample purpose, indeed, some samples correspond to growth rate estimation and plotting while others are used to estimate the volume loss.
 
 Once the samples are labelled according to the experiment, the volume loss throughout the culture is estimated and its effect is neutralized using a simple regression model. The next step concerns the outlier detection and growth phase estimation, which are done by using the croissance package. Subsequently, growth rate plots and summary statistics are also computed. The library also provides the functionality of interpolating OD measurements on processed samples at any given time.
@@ -144,3 +146,10 @@ Please make sure to update tests as appropriate.
 ## License
 
 MIT
+
+## Credits
+
+This autoflow_parser part of the package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

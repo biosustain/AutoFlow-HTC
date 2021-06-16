@@ -314,7 +314,6 @@ def sample_outcome(sample_file, df):
     df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(" ", "")
 
     # Remove special characters from species names
-    df.loc[:, "Species"] = df["Species"].str.replace(r"\W+", "_")
     df_calc.loc[:, "Species"] = df_calc["Species"].str.replace(r"\W+", "_")
 
     # Check format consistency across files

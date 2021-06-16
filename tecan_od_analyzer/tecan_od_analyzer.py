@@ -310,8 +310,8 @@ def sample_outcome(sample_file, df):
     df_calc = pd.read_csv(sample_file, sep="\t")
 
     # Remove whitespaces in Sample_IDs
-    df.loc[:, "Sample_ID"] = df["Sample_ID"].str.replace(" ", "")
-    df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(" ", "")
+    df.loc[:, "Sample_ID"] = df["Sample_ID"].str.replace(r"\W+", "_")
+    df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(r"\W+", "_")
 
     # Check format consistency across files
     IDs_parsed = df["Sample_ID"].tolist()

@@ -15,7 +15,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
-import subprocess
 import sys
 from scipy import interpolate
 import math
@@ -24,6 +23,7 @@ import seaborn as sns
 import shutil
 import warnings
 from scipy.optimize import OptimizeWarning
+import tecan_od_analyzer.cli as cli
 
 
 __version__ = "0.1.6"
@@ -253,14 +253,7 @@ def input_output(cmd_dir, path):
 def parse_data():
     """Calls the autoflow_parser and returns a merged xlsx document with all
     the OD readings combined"""
-    try:
-        call = subprocess.call("autoflow_parser", shell=True)
-    except subprocess.CalledProcessError:
-        return sys.exit(
-            "The data could not be parsed due to some error, check \
-                        the input documentation"
-        )
-    return call
+    cli.main(".", 60)
 
 
 # ------ DATA LOADING AND VARIABLE SELECTION ------
@@ -320,6 +313,9 @@ def sample_outcome(sample_file, df):
     df.loc[:, "Sample_ID"] = df["Sample_ID"].str.replace(" ", "")
     df_calc.loc[:, "Sample_ID"] = df_calc["Sample_ID"].str.replace(" ", "")
 
+    # Remove special characters from species names
+    df_calc.loc[:, "Species"] = df_calc["Species"].str.replace(r"\W+", "_")
+
     # Check format consistency across files
     IDs_parsed = df["Sample_ID"].tolist()
     IDs_calc = df_calc["Sample_ID"].tolist()
@@ -378,7 +374,7 @@ def sample_outcome(sample_file, df):
             else:
                 continue
         elif pos == 0:
-            if any(species in s for s in species_list[pos + 1 :]):
+            if any(species in s for s in species_list[pos + 1:]):
                 rename = True
                 break
             else:
@@ -386,7 +382,7 @@ def sample_outcome(sample_file, df):
         else:
             if any(
                 species in s
-                for s in species_list[:pos] + species_list[pos + 1 :]
+                for s in species_list[:pos] + species_list[pos + 1:]
             ):
                 rename = True
                 break
@@ -469,7 +465,7 @@ def time_formater(df):
             + df_temp["m"] / 60
             + df_temp["s"] / 360
         )
-        
+
         # df_temp["time_hours"] = df_temp["time_hours"].dt.total_seconds()/3600
         # Append dataframes together
         df_out = df_out.append(df_temp)
@@ -1342,7 +1338,7 @@ def stats_plot(summary_df, flag_svg=False):
 
     if len(summary_df.index) == 0:
         call = ("Summary statistics plots not computed: No parameters were "
-            "estimated and thus no plots can be shown")
+                "estimated and thus no plots can be shown")
         return call
 
     else:

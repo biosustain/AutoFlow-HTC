@@ -125,7 +125,7 @@ def argument_parser(argv_list=None):
         "-l",
         "--legendoff",
         help="Do not show the legend in plots",
-        action="store_false",
+        action="store_true",
     )
 
     # Volume loss related arguments

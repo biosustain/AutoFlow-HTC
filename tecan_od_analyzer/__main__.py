@@ -54,7 +54,8 @@ def main():
         path,
         interpolationplot,
         flag_svg,
-        flag_os
+        flag_os,
+        flag_loff,
     ) = argument_parser(argv_list=sys.argv)
 
     # path input and output directory creation
@@ -107,7 +108,11 @@ def main():
         cor_df = vol_correlation(df_vl450)
         # Compute compensation
         fig, df_gr = compensation_lm(
-            cor_df, df_gr, df_vl600, flag_svg=flag_svg
+            cor_df,
+            df_gr,
+            df_vl600,
+            flag_svg=flag_svg,
+            flag_loff=flag_loff,
         )
 
     else:
@@ -246,7 +251,9 @@ def main():
                 )
                 gr_plots(df, colnames[col], ind=True,
                          interpolationplot=interpolationplot,
-                         flag_svg=flag_svg)
+                         flag_svg=flag_svg,
+                         flag_loff=flag_loff,
+                         )
                 plt.close()
 
         # Get plots combined together by species
@@ -298,6 +305,7 @@ def main():
                             title_="species",
                             interpolationplot=interpolationplot,
                             flag_svg=flag_svg,
+                            flag_loff=flag_loff,
                         )
 
                     last_name = colnames[col]
@@ -348,6 +356,7 @@ def main():
                                 title_="species",
                                 interpolationplot=interpolationplot,
                                 flag_svg=flag_svg,
+                                flag_loff=flag_loff,
                             )
 
                         last_name = colnames[col]
@@ -403,6 +412,7 @@ def main():
                                 title_="species_bioshaker",
                                 interpolationplot=interpolationplot,
                                 flag_svg=flag_svg,
+                                flag_loff=flag_loff,
                             )
 
                         last_name = colnames[col]
@@ -484,6 +494,7 @@ def main():
                                     title_="bioshaker",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
 
                                 start_leg = species_
@@ -499,6 +510,7 @@ def main():
                                     title_="bioshaker",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                                 start_leg = species_
 
@@ -512,6 +524,7 @@ def main():
                                     title_="bioshaker",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                         plt.legend()
                         last_name = colnames[col]
@@ -592,6 +605,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                                 start_leg = (colnames[col])[:3]
 
@@ -606,6 +620,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                                 start_leg = (colnames[col])[:3]
 
@@ -619,6 +634,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
 
                         last_name = colnames[col]
@@ -680,6 +696,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                                 start_leg = (colnames[col])[:3]
 
@@ -694,6 +711,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
                                 start_leg = (colnames[col])[:3]
 
@@ -707,6 +725,7 @@ def main():
                                     title_="species",
                                     interpolationplot=interpolationplot,
                                     flag_svg=flag_svg,
+                                    flag_loff=flag_loff,
                                 )
 
                         plt.legend()
@@ -771,6 +790,7 @@ def main():
                             interpolationplot=interpolationplot,
                             separate_species=True,
                             flag_svg=flag_svg,
+                            flag_loff=flag_loff,
                         )
                     lines = [Line2D([0], [0], color=c, linewidth=2)
                              for c in color_palette[:len(species_list)]]

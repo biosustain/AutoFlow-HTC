@@ -121,6 +121,12 @@ def argument_parser(argv_list=None):
                         figures for every species on every bioshaker",
         action="store_true",
     )
+    parser.add_argument(
+        "-l",
+        "--legendoff",
+        help="Do not show the legend in plots",
+        action="store_false",
+    )
 
     # Volume loss related arguments
     parser.add_argument(
@@ -151,6 +157,7 @@ def argument_parser(argv_list=None):
         interpolationplot = args.interpolationplot
         flag_svg = args.exportsvg
         flag_os = args.onlyspecies
+        flag_loff = args.legendoff
 
     elif args.estimations or args.figures or args.summary:
 
@@ -168,6 +175,7 @@ def argument_parser(argv_list=None):
         interpolationplot = args.interpolationplot
         flag_svg = args.exportsvg
         flag_os = args.onlyspecies
+        flag_loff = args.legendoff
 
     return (
         flag_all,
@@ -184,6 +192,7 @@ def argument_parser(argv_list=None):
         interpolationplot,
         flag_svg,
         flag_os,
+        flag_loff,
     )
 
 
@@ -513,7 +522,7 @@ def vol_correlation(df_vl):  # done
 # ------ VOLUME LOSS COMPENSATION FOR EVERY SAMPLE ------
 
 
-def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
+def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False, flag_loff=False):
     """Given the correlation between volume and time, a linear model is built
     and plotted, the correction is applied to the growth measurements using
     the linear model, returns a figure with the LM and a dataframe with the
@@ -579,7 +588,8 @@ def compensation_lm(cor_df, df_gr, df_vl600, flag_svg=False):  # done
         ax.set_xlabel("Time (h)", labelpad=10)
         ax.set_title("\n" + str(unique_bioshaker[shaker]))
         plt.tight_layout()
-    plt.legend(bbox_to_anchor=(1.2, 1.1))
+    if not flag_loff:
+        plt.legend(bbox_to_anchor=(1.2, 1.1))
 
     # Use the linear models to correct the volume loss by bioshaker
     df_gr_comp = pd.DataFrame()
@@ -1093,6 +1103,7 @@ def gr_plots(
     title_="species",
     separate_species=False,
     flag_svg=False,
+    flag_loff=False,
 ):
     """Generates a growth curve plot for a given series for common species,
     returns the plot.
@@ -1147,7 +1158,8 @@ def gr_plots(
         plt.title(
             "Growth curve of " + str(sample), fontname="Arial", fontsize=12
         )
-        plt.legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
+        if not flag_loff:
+            plt.legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
         plt.tight_layout()
         if flag_svg:
             return fig, plt.savefig(str(sample) + "_GR_curve.svg")

@@ -23,7 +23,7 @@ import seaborn as sns
 import shutil
 import warnings
 from scipy.optimize import OptimizeWarning
-import tecan_od_analyzer.cli as cli
+from tecan_od_analyzer.cli.cli import main as cli
 
 
 __version__ = "0.1.6"
@@ -262,7 +262,7 @@ def input_output(cmd_dir, path):
 def parse_data():
     """Calls the autoflow_parser and returns a merged xlsx document with all
     the OD readings combined"""
-    cli.main(".", 60)
+    cli(".", 60)
 
 
 # ------ DATA LOADING AND VARIABLE SELECTION ------

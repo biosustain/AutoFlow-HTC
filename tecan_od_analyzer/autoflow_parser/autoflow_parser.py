@@ -127,7 +127,6 @@ def parse_tecan_files(entry: str, file: str, path: str):
             ("Dilution Factor", entry[5]),
         ]
     )
-
     # read in the workbook and pick up more details
     wb = load_workbook(join(path, file), read_only=True, data_only=True)
     ws = wb["Sheet2"]  # seems to be the standard
@@ -174,13 +173,12 @@ def parse_tecan_files(entry: str, file: str, path: str):
                 details.update(value(row))
                 # del lambdas[key]  # can't do this to eliminate found keys.
                 continue
-
     # read the measured values table into dataframe
     df = pd.melt(
         pd.read_excel(
             join(path, file), skiprows=details["<>"][0] - 1, skipfooter=1
         )
-        .dropna()
+        .dropna(axis=1, how='all').dropna()
         .rename(columns={"<>": "Row"}),
         id_vars="Row",
         var_name="Column",
@@ -207,7 +205,6 @@ def parse_tecan_files(entry: str, file: str, path: str):
         lambda row: f"BS{row['Bioshaker processed']}_{row['Sample row']}{row['Sample column']}",  # noqa E501
         axis=1,
     )
-
     return df
 
 

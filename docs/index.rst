@@ -1,18 +1,17 @@
 .. tecan_od_analyzer documentation master file
-tecan_od_analyzer's Documentation
-=============================================
 
-.. toctree::
-   :maxdepth: 2
-
-General Documentation
-=====================
 .. include::  README.rst
 
 
 tecan_od_analyzer methods
 =========================
 .. automodule:: tecan_od_analyzer.tecan_od_analyzer
+	:members:
+
+.. automodule:: tecan_od_analyzer.autoflow_parser.autoflow_parser
+	:members:
+
+.. automodule:: tecan_od_analyzer.cli.cli
 	:members:
 
 Indices and tables

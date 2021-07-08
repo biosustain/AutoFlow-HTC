@@ -1,4 +1,3 @@
-=================
 Tecan OD Analyzer
 =================
 
@@ -56,17 +55,19 @@ The default command produces growth phase estimation, summary statistics on the 
 
 ``tecan_od_analyzer --bioshaker``       Splits the visualization of the growth rate plots according to the bioshaker and colors them by species.
 
-``tecan_od_analyser --bioshakercolor``  Splits the visualization of the growth rate plots according to species and does not color them by bioshaker.
+``tecan_od_analyzer --bioshakercolor``  Splits the visualization of the growth rate plots according to species and does not color them by bioshaker.
 
-``tecan_od_analyser --interpolationplot``  Outputs Growth rate curves instead of scatter plots.
+``tecan_od_analyzer --interpolationplot``  Outputs Growth rate curves instead of scatter plots.
 
-``tecan_od_analyser --interpolation``   Computes interpolation of samples given the measure time and outputs an xlsx file with the estimations.
+``tecan_od_analyzer --interpolation``   Computes interpolation of samples given the measure time and outputs an xlsx file with the estimations.
 
-``tecan_od_analyser --volumeloss``      This option allows the user to not compute the volume loss correction. By default, the volume loss correction is always computed.
+``tecan_od_analyzer --volumeloss``      This option allows the user to not compute the volume loss correction. By default, the volume loss correction is always computed.
 
-``tecan_od_analyser --exportsvg``       With this option, plots will be saved as .svg rather than .png files. This is preferred if they are intended for a publication and allows for modifications in Illustrator.
+``tecan_od_analyzer --exportsvg``       With this option, plots will be saved as .svg rather than .png files. This is preferred if they are intended for a publication and allows for modifications in Illustrator.
 
-``tecan_od_analyser --onlyspecies``     Splits the visualization of the growth rate plots according to species and bioshaker.
+``tecan_od_analyzer --onlyspecies``     Splits the visualization of the growth rate plots according to species and bioshaker.
+
+``tecan_od_analzer --legendoff``        Disables display of the legend in plots.
 
 
 ## Input
@@ -104,7 +105,7 @@ It's relevant to remark, that the numbers appearing in the time column must be w
 
 ## Plotting options
 
-The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately and split or color labelled by bioshaker.
+The plots can be customized by selecting how to group the samples and combine them on a single plot. By default, the generated plot will contain all the samples within the same species in one plot. The plots can also be generated separately and split or color labelled by bioshaker. Also, the legends can be disabled which might come in handy if a lot of different strains are displayed. The output images can be generated as .png or .svg files.
 
 
 The different options can be consulted by typing : ``tecan_od_analyzer --help`` or ``tecan_od_analyzer -h``
